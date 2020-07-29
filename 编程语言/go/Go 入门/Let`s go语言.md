@@ -1,5 +1,5 @@
 ----------------------------------------------
-> *Made By Herolh*
+> *Made By Herolh， 忠告：语言只是工具*
 ----------------------------------------------
 
 # go 语言  {#index}
@@ -19,289 +19,31 @@
 
 
 # 初识Go语言
+
+## 什么是Go语言？
+
 &emsp;&emsp;Go 是一个开源的编程语言，它能让构造简单、可靠且高效的软件变得容易。
 &emsp;&emsp;Go 是从 2007 年末由 Robert Griesemer, Rob Pike, Ken Thompson 主持开发，后来还加入了 Ian Lance Taylor, Russ Cox 等人，并最终于 2009 年 11 月开源，在 2012 年早些时候发布了 Go 1 稳定版本。现在 Go 的开发已经是完全开放的，并且拥有一个活跃的社区。
 
-## 语言特性
-Go语言是一门全新的**静态类型开发语言**，这里先给读者罗列一下Go语言最主要的特性：
-
-### 自动垃圾回收
-我们可以先看下不支持垃圾回收的语言的资源管理方式，以下为一小段 C++ 语言代码：
-
-```c++
-void foo()
-{
-    char* p = new char[128];
-    ... 						// 对p指向的内存块进行赋值
-    func1(p); 					// 使用内存指针
-    delete[] p;
-} 
-```
-
-&emsp;&emsp;各种非预期的原因，比如由于开发者的疏忽导致最后的 delete 语句没有被调用，都会引发经典而恼人的内存泄露问题。假如该函数被调用得非常频繁，那么我们观察该进程执行时，会发现该进程所占用的内存会一直疯长，直至占用所有系统内存并导致程序崩溃，而如果泄露的是系统资源的话，那么后果还会更加严重，最终很有可能导致系统崩溃。 
-&emsp;&emsp;手动管理内存的另外一个问题就是由于指针的到处传递而无法确定何时可以释放该指针所指向的内存块。假如代码中某个位置释放了内存，而另一些地方还在使用指向这块内存的指针，那么这些指针就变成了所谓的""野指针"(wild pointer)或者“悬空指针”(dangling pointer)，对这些指针进行的任何读写操作都会导致不可预料的后果。
-&emsp;&emsp;到目前为止，内存泄露的最佳解决方案是在语言级别引入自动垃圾回收算法(Garbage Collection，简称GC)。所谓垃圾回收，即所有的内存分配动作都会被在运行时记录，同时任何对 该内存的使用也都会被记录，然后垃圾回收器会对所有已经分配的内存进行跟踪监测，一旦发现 有些内存已经不再被任何人使用，就阶段性地回收这些没人用的内存。当然，因为需要尽量最小 化垃圾回收的性能损耗，以及降低对正常程序执行过程的影响，现实中的垃圾回收算法要比这个 复杂得多，比如为对象增加年龄属性等，但基本原理都是如此。
-&emsp;&emsp;自动垃圾回收在 C/C++ 社区一直作为一柄双刃剑看待，虽然到 C++11 正式发布时，这个呼声颇高的特性总算是有人发起提案，但按 C++ 之父的说法，由于 C++ 本身过于强大，导致在 C++ 中支持垃圾收集变成了一个困难的工作，这也使得垃圾回收最终与 C++11 无缘。 假如 C++ 支持垃圾收集，以下的代码片段在运行时就会是一个严峻的考验：
-
-```c++
-int* p = new int;
-p += 10; 				// 对指针进行了偏移，因此那块内存不再被引用
-						// …… 这里可能会发生针对这块int内存的垃圾收集 ……
-p -= 10; 				// 咦，居然又偏移到原来的位置
-*p = 10; 				// 如果有垃圾收集，这里就无法保证可以正常运行了
-```
-&emsp;&emsp;微软的 C++/CLI 算是用一种偏门的方式让 C++ 程序员们有机会品尝一下垃圾回收功能的鲜美 味道。在 C/C++ 之后出现的新语言，比如 Java 和 C# 等，基本上都已经自带自动垃圾回收功能。 Go语言作为一门新生的开发语言，当然不能忽略内存管理这个问题。又因为Go语言没有C++ 这么“强大”的指针计算功能，因此可以很自然地包含垃圾回收功能。因为垃圾回收功能的支持， 开发者无需担心所指向的对象失效的问题，因此Go语言中不需要 delete 关键字，也不需要 `free()` 方法来明确释放内存。例如，对于以上的这个C语言例子，如果使用Go语言实现，我们就完全不 用考虑何时需要释放之前分配的内存的问题，系统会自动帮我们判断，并在合适的时候( 比如CPU 相对空闲的时候 )进行自动垃圾收集工作。
 
 
+### 版本更新：
 
-### 更丰富的内置类型
-
-&emsp;&emsp;除了几乎所有语言都支持的简单内置类型( 比如整型和浮点型等 )外，Go语言也内置了一些比较新的语言中内置的高级类型，比如 C# 和 Java 中的数组和字符串。除此之外，Go语言还内置 了一个对于其他静态类型语言通常用库方式支持的字典类型( map )。Go语言设计者对为什么内 置map这个问题的回答也颇为简单：既然绝大多数开发者都需要用到这个类型，为什么还非要每个人都写一行import语句来包含一个库？这也是一个典型的实战派观点，与很多其他语言的学院派气息迥然不同。
-&emsp;&emsp;另外有一个新增的数据类型：数组切片( Slice )。我们可以认为数组切片是一种可动态增长的数组。这几种数据结构基本上覆盖了绝大部分的应用场景。数组切片的功能与C++标准库中的vector非常类似。Go语言在语言层面对数组切片的支持，相比 C++ 开发者有效地消除了反复写以下几行代码的工作量：
-```C++
-#include <vector>
-#include <map>
-#include <algorithm>
-using namespace std; 
-```
-&emsp;&emsp;因为是语言内置特性，开发者根本不用费事去添加依赖的包，既可以少一些输入工作量，也 可以让代码看起来尽量简洁。
-
-
-
-### 函数多返回值
-
-&emsp;&emsp;目前的主流语言中除 Python 外基本都不支持函数的多返回值功能，不是没有这类需求，可能 是语言设计者没有想好该如何提供这个功能，或者认为这个功能会影响语言的美感。 比如我们如果要定义一个函数用于返回个人名字信息，而名字信息因为包含多个部分——姓氏、名字、中间名和别名，在不支持多返回值的语言中我们有以下两种做法：要么专门定义一个结构体用于返回回，比如：
-
-```C++
-struct name
-{
- char first_name[20];
- char middle_name[20];
- char last_name[20];
- char nick_name[48];
-};
-// 函数原型
-extern name get_name();
-// 函数调用
-name n = get_name();
-```
-
-或者以传出参数的方式返回多个结果：
-
-```c++
-// 函数原型
-extern void get_name(
- /*out*/char* first_name,
- /*out*/char* middle_name,
- /*out*/char* last_name,
- /*out*/char* nick_name
-);
-// 先分配内存
-char first_name[20];
-char middle_name[20];
-char last_name[20];
-char nick_name[48];
-// 函数调用
-get_name(first_name, middle_name, last_name, nick_name); 
-```
-
-&emsp;&emsp;Go 语言革命性地在静态开发语言阵营中率先提供了多返回值功能。这个特性让开发者可以 从原来用各种比较别扭的方式返回多个值的痛苦中解脱出来，既不用再区分参数列表中哪几个用于输入，哪几个用于输出，也不用再只为了返回多个值而专门定义一个数据结构。在Go语言中，上述的例子可以修改为以下的样子：
-
-```go
-func getName()(firstName, middleName, lastName, nickName string){ 
-    return "May", "M", "Chen", "Babe" 
-} 
-```
-
-&emsp;&emsp;因为返回值都已经有名字，因此各个返回值也可以用如下方式来在不同的位置进行赋值，从 而提供了极大的灵活性： 
-
-```go
-func getName()(firstName, middleName, lastName, nickName string){ 
-    firstName = "May" 
-    middleName = "M" 
-    lastName = "Chen" 
-    nickName = "Babe" 
-    return 
-}
-```
-
-并不是每一个返回值都必须赋值，没有被明确赋值的返回值将保持默认的空值。而函数的调用相比C/C++语言要简化很多：
-
-```go
-fn, mn, ln, nn := getName() 
-```
-
-如果开发者只对该函数其中的某几个返回值感兴趣的话，也可以直接用下划线作为占位符来忽略其他不关心的返回值。下面的调用表示调用者只希望接收 lastName 的值，这样可以避免声明完全没用的变量：
-
-```go
-_, _, lastName, _ := getName() 
-```
-
-
-
-### 错误处理
-
-&emsp;&emsp;Go 语言引入了 `defer` 关键字用于标准的错误处理流程，并提供了内置函线 `panic`、`recover` 完成异常的抛出与捕获。整体上而言与C++和Java等语言中的异常捕 获机制相比，Go语言的错误处理机制可以大量减少代码量，让开发者也无需仅仅为了程序安全 性而添加大量一层套一层的try-catch语句。这对于代码的阅读者和维护者来说也是一件很好的。
-
-
-
-### 匿名函数和闭包
-
-&emsp;&emsp;在 Go 语言中，所有的函数也是值类型，可以作为参数传递。Go 语言支持常规的匿名函数和 闭包，比如下列代码就定义了一个名为f的匿名函数，开发者可以随意对该匿名函数变量进行传递和调用：
-
-```go
- f := func(x, y int) int { 
-     return x + y 
- } 
-```
-
-
-
-### 类型和接口
-
-&emsp;&emsp;Go语言的类型定义非常接近于C语言中的结构( struct )，甚至直接沿用了 struct 关键字。相比而言，Go语言并没有直接沿袭 C++ 和 Java 的传统去设计一个超级复杂的类型系统，不支持继承和重载，而只是支持了最基本的类型组合功能。 巧妙的是，虽然看起来支持的功能过于简洁，细用起来你却会发现，C++ 和 Java 使用那些复杂的类型系统实现的功能在 Go 语言中并不会出现无法表现的情况，这反而让人反思其他语言中引入这些复杂概念的必要性。我们在第3章中将详细描述Go语言的类型系统。 Go语言也不是简单的对面向对象开发语言做减法，它还引入了一个无比强大的“非侵入式” 接口的概念，让开发者从以往对 C++ 和 Java 开发中的接口管理问题中解脱出来。在 C++ 中，我们 通常会这样来确定接口和类型的关系：
-
-```C++
-// 抽象接口
-interface IFly
-{
- 	virtual void Fly()=0;
-};
-// 实现类
-class Bird : public IFly
-{
-public:
- 	Bird(){}
- 	virtual ~Bird(){}
-public:
- 	void Fly()
- 	{
- 		// 以鸟的方式飞行
- 	}
-};
-
-void main()
-{
- 	IFly* pFly = new Bird();
- 	pFly->Fly();
- 	delete pFly;
-}
-```
-
-&emsp;&emsp;显然，在实现一个接口之前必须先定义该接口，并且将类型和接口紧密绑定，即接口的修改 会影响到所有实现了该接口的类型，而Go语言的接口体系则避免了这类问题：
-
-```go
-type Bird struct {
- 	...
-}
-func (b *Bird) Fly() {
- 	// 以鸟的方式飞行
-} 
-```
-
-&emsp;&emsp;我们在实现 Bird 类型时完全没有任何 IFly 的信息。我们可以在另外一个地方定义这个 IFly 接口： 
-
-```go
-type IFly interface { 
-    Fly() 
-} 
-```
-
-这两者目前看起来完全没有关系，现在看看我们如何使用它们： 
-
-```go
-func main() { 
-    var fly IFly = new(Bird) 
-    fly.Fly() 
-} 
-```
-
-可以看出，虽然Bird类型实现的时候，没有声明与接口 IFly 的关系，但接口和类型可以直 接转换，甚至接口的定义都不用在类型定义之前，这种比较松散的对应关系可以大幅降低因为接 口调整而导致的大量代码调整工作。
-
-
-
-### 并发编程
-
-&emsp;&emsp;Go语言引入了 goroutine 概念，它使得并发编程变得非常简单。通过使用 goroutine 而不是裸用操作系统的并发机制，以及使用消息传递来共享内存而不是使用共享内存来通信，Go语言让并 发编程变得更加轻盈和安全。通过在函数调用前使用关键字go，我们即可让该函数以goroutine 方式执行。goroutine 是一种比线程更加轻盈、更省资源的协程。Go 语言通过系统的线程来多路派遣这些函数的执行，使得每个用go关键字执行的函数可以运行成为一个单位协程。当一个协程阻塞的时候，调度器就会自 动把其他协程安排到另外的线程中去执行，从而实现了程序无等待并行化运行。而且调度的开销非常小，一颗CPU调度的规模不下于每秒百万次，这使得我们能够创建大量的 goroutine，从而可以很轻松地编写高并发程序，达到我们想要的目的。 Go语言实现了 CSP( 通信顺序进程，Communicating Sequential Process )模型来作为 goroutine 间的推荐通信方式。在CSP模型中，一个并发系统由若干并行运行的顺序进程组成，每个进程不 能对其他进程的变量赋值。进程之间只能通过一对通信原语实现协作。Go语言用channel( 通道 ) 这个概念来轻巧地实现了CSP模型。channel的使用方式比较接近Unix系统中的管道( pipe )概念， 可以方便地进行跨goroutine的通信。 另外，由于一个进程内创建的所有goroutine运行在同一个内存地址空间中，因此如果不同的 goroutine不得不去访问共享的内存变量，访问前应该先获取相应的读写锁。Go语言标准库中的 sync包提供了完备的读写锁功能。 下面我们用一个简单的例子来演示goroutine和channel的使用方式。这是一个并行计算的例 子，由两个goroutine进行并行的累加计算，待这两个计算过程都完成后打印计算结果：
-
-```go
-package main
-import "fmt"
-func sum(values [] int, resultChan chan int) {
- 	sum := 0
- 	for _, value := range values {
- 		sum += value
- 	}
- 	resultChan <- sum 						// 将计算结果发送到channel中
-}
-func main() {
- 	values := [] int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
- 	resultChan := make(chan int, 2)
- 	go sum(values[:len(values)/2], resultChan)
- 	go sum(values[len(values)/2:], resultChan)
- 	sum1, sum2 := <-resultChan, <-resultChan 				// 接收结果
- 	fmt.Println("Result:", sum1, sum2, sum1 + sum2)
-} 
-```
-
-
-
-### 反射
-
-反射( reflection )是在Java语言出现后迅速流行起来的一种概念。通过反射，你可以获取对象类型的详细信息，并可动态操作对象。反射是把双刃剑，功能强大但代码可读性并不理想。若非必要，我们并不推荐使用反射。 Go 语言的反射实现了反射的大部分功能，但没有像Java语言那样内置类型工厂，故而无法做到像 Java 那样通过类型字符串创建对象实例。在 Java 中，你可以读取配置并根据类型名称创建对应的类型，这是一种常见的编程手法，但在 Go 语言中这并不被推荐。 反射最常见的使用场景是做对象的序列化( serialization，有时候也叫Marshal & Unmarshal )。 例如，Go语言标准库的 encoding/json、encoding/xml、encoding/gob、encoding/binary 等包就大量依赖于反射功能来实现。 这里先举一个小例子，可以利用反射功能列出某个类型中所有成员变量的值，如代码清单1-2 所示。
-
-```go
-package main
-import (
- 	"fmt"
- 	"reflect"
-)
-type Bird struct { 
-	Name string
- 	LifeExpectance int
-}
-func (b *Bird) Fly() {
- 	fmt.Println("I am flying...")
-}
-func main() {
- 	sparrow := &Bird{"Sparrow", 3}
- 	s := reflect.ValueOf(sparrow).Elem()
- 	typeOfT := s.Type()
- 	for i := 0; i < s.NumField(); i++ {
- 		f := s.Field(i)
- 		fmt.Printf("%d: %s %s = %v\n", i, typeOfT.Field(i).Name, f.Type(),
- 		f.Interface())
- 	}
-} 
-```
-
-该程序的输出结果为：
-
-```shell
-0: Name string = Sparrow 
-1: LifeExpectance int = 3 
-```
-
-
-
-### 语言交互性
-
-&emsp;&emsp;由于 Go 语言与 C 语言之间的天生联系，Go 语言的设计者们自然不会忽略如何重用现有 C 模块的这个问题，这个功能直接被命名为 Cgo。Cgo 既是语言特性，同时也是一个工具的名称。在 Go 代码中，可以按 Cgo 的特定语法混合编写 C 语言代码，然后 Cgo 工具可以将这些混合的 C 代码提取并生成对于 C 功能的调用包装代码。开发者基本上可以完全忽略这个 Go 语言和 C 语言的边界是如何跨越的。 与Java中的 JNI 不同，Cgo 的用法非常简单，比如以下代码就可以实现在Go中调用C语言标准库的puts函数。
-
-```go
-package main
-/*
-#include <stdio.h>
-#include <stdlib.h>
-*/
-import "C"
-import "unsafe"
-func main() {
- cstr := C.CString("Hello, world")
- C.puts(cstr)
- C.free(unsafe.Pointer(cstr))
-}
-```
+- Go 1.14 (February 2020)
+- Go 1.13 (September 2019)
+- Go 1.12 (February 2019)
+- Go 1.11 (August 2018)
+- Go 1.10 (February 2018)
+- Go 1.9 (August 2017)
+- Go 1.8 (February 2017)
+- Go 1.7 (August 2016)
+- Go 1.6 (February 2016)
+- Go 1.5 (August 2015)
+- Go 1.4 (December 2014)
+- Go 1.3 (June 2014)
+- Go 1.2 (December 2013)
+- Go 1.1 (May 2013)
+- Go 1 (March 2012)
 
 
 
@@ -447,11 +189,9 @@ E:\Project\go
 
 
 
-## 第一个Go程序
+## 第一个Go程序 Hello World!
 
-### Hello World!
-
-#### 目录结构
+### 目录结构
 
 &emsp;&emsp;在 `GOPATH` 下的 `src` 目录中创建一个 `文件夹（项目）`，进入文件夹并创建一个以 `.go` 为后缀名的文件（如 `first.go`），并在 `first.go` 文件中写入 go 代码。
 
@@ -467,7 +207,7 @@ E:\Project\go
 
 
 
-#### 代码示例
+### 代码示例
 
 ```go
 package main
@@ -480,8 +220,9 @@ func main() {		// 程序开始执行的函数。
 ```
 
 - **package main**
+  
     > 每个 Go 源代码文件的开头都是一个 package 声明，表示该 Go 代码所属的包。
-    > 必须在源文件中非注释的第一行指明这个文件属于哪个包，包是Go 语言里最基本的分发单位，也是工程管理中依赖关系的体现。
+> 必须在源文件中非注释的第一行指明这个文件属于哪个包，包是Go 语言里最基本的分发单位，也是工程管理中依赖关系的体现。
 
 - **import "fmt"**
     >  在包声明之后，是一系列的import语句，用于导入该程序所依赖的包。由于本示例程序用到了 `Println()` 函数，所以需要导入该函数所属的 fmt 包。 
@@ -512,13 +253,13 @@ func main() {		// 程序开始执行的函数。
 
 
 
-#### 运行代码
+### 运行代码
 
 本质上是将 go 代码交给 go 编译器去执行
 
 
 
-##### 方式一：`go run`
+#### 方式一：`go run`
 
 > compile and run Go program ，其内部会【先编译】代码文件【再运行】（二合一）。
 
@@ -534,7 +275,7 @@ go run helloWorld.go
 
 
 
-##### 方式二：`go build`
+#### 方式二：`go build`
 
 > compile packages and dependencies，其内部就是将 go 代码进行编译，然后手动执行。
 >
@@ -562,7 +303,7 @@ helloWorld.exe
 
 
 
-##### 方式三：`go install`
+#### 方式三：`go install`
 
 > compile and install packages and dependencies，其内部就是编译 go 代码，并将可执行文件/包文件分别放到 bin 和 pkg 目录。包文件的生成必须用 `go install`
 
@@ -634,7 +375,7 @@ Go 程序的代码注释与 C++ 保持一致，即同时支持以下两种用法
 // 行注释 
 ```
 
-&emsp;&emsp;Go程序并不要求开发者在每个语句后面加上分号表示语句结束，这是与C和C++的一个明显不同之处。需要注意的是 `{` 不能单独放在一行，所以以下代码在运行时会产生错误，这样做的结果是 Go 编译器报告编译错误，这点需要特别注意：
+&emsp;&emsp;Go程序并不要求开发者在每个语句后面加上分号表示语句结束，这是与C和C++的一个明显不同之处。**需要注意的是 `{` 不能单独放在一行**，所以以下代码在运行时会产生错误，这样做的结果是 Go 编译器报告编译错误，这点需要特别注意：
 
 ```go
 package main
@@ -663,15 +404,18 @@ fmt.Println("Hello, World!")
 
 
 
+
+
+
+
 ## 初识包管理
 
-&emsp;&emsp;`包（package）`是多个 Go 源码的集合，是一种高级的代码复用方案，Go 语言为我们提供了很多内置包，如`fmt`、`os`、`io`等。
+> &emsp;&emsp;`包（package）`是多个 Go 源码的集合，是一种高级的代码复用方案，Go 语言为我们提供了很多内置包，如`fmt`、`os`、`io`等。
 
-一个文件夹就可以成为一个包
-
-在文件夹( 包 )中可以创建对讴歌文件
-
-在同一个包下的每个文件必须指定包名且相同
+一般来说，一个文件夹可以作为 package，同一个 package 内部变量、类型、方法等定义可以相互看到。
+- 一个文件夹就可以成为一个包
+- 在文件夹( 包 )中可以创建对讴歌文件
+- 在同一个包下的每个文件必须指定包名且相同
 
 
 
@@ -756,17 +500,21 @@ fmt.Println("Hello, World!")
 
 
 
-## 输出
+
+
+## 输入与输出
+
+### 输出
 
 在终端将数据显示出来
 
-### 扩展：
+#### 扩展：
 
 进程里有 `stdin/stdout/stderr` ==> `标准输入/标准输出/标准错误`
 
 
 
-### 法一：内置函数
+#### 法一：内置函数
 
 > 官方不保证以后一直有这个功能
 >
@@ -788,7 +536,9 @@ fmt.Println("Hello, World!")
 
 
 
-### 法二：fmt 包( 推荐 )
+
+
+#### 法二：fmt 包( 推荐 )
 
 - **fmt.Print**
 
@@ -820,11 +570,119 @@ fmt.Println("Hello, World!")
 
 
 
+
+
+### 输入
+
+#### `fmt` 包获取
+
+&emsp;&emsp;Go 语言`fmt`包下有`fmt.Scan`、`fmt.Scanf`、`fmt.Scanln`三个函数，可以在程序运行过程中从标准输入获取用户的输入。
+
+- **fmt.Scan**
+
+    ```go
+    func Scan(a ...interface{}) (n int, err error)
+    ```
+
+```
+    
+    `fmt.Scan` <u>要求输入两个值， 就必须输入两个值，否则会一直等待。</u>用户输入成功后，会得到两个值：
+    
+    > **count**: 用户输入了几个值
+    > **err**： 用户输入错误时的错误信息，没有错误返回 <nil>
+    
+    ```go
+    var name string
+    var age int
+    
+    count, err := fmt.Scan(&name, &age)
+    fmt.Println(count, err)
+    if err == nil{
+        fmt.Println(name, age)
+    }
+    fmt.Println("用户输入错误：", err)
+```
+
+
+​    
+
+- **fmt.Scanln**
+
+    ```go
+    func Scanln(a ...interface{}) (n int, err error)
+    ```
+
+    `fmt.Scanln` <u>等待回车，输入回车，输入结束</u>。用户输入成功后，会得到两个值：
+
+    >**count**: 用户输入了几个值
+    >**err**： 用户输入错误时的错误信息，没有错误返回 <nil>
+
+    ```GO
+    var name string
+    var age int
+    
+    count, err := fmt.Scanln(&name, &age)
+    fmt.Println(count, err)
+    if err == nil{
+        fmt.Println(name, age)
+    }
+    fmt.Println("用户输入错误：", err)
+    ```
+
+
+
+- **fmt.Scanf**
+
+    ```go
+    func Scanf(format string, a ...interface{}) (n int, err error)
+    ```
+
+    > 占位符后面要有空格，否则切分不准确
+
+    ```go
+    var name string
+    var age int
+    
+    count, err := fmt.Scanf("我叫%s 今年%d 岁", &name, &age)
+    fmt.Println(count, err)
+    if err == nil{
+        fmt.Println(name, age)
+    }
+    fmt.Println("用户输入错误：", err)
+    ```
+
+
+
+#### `bufio`包获取
+
+&emsp;&emsp;有时候我们想完整获取输入的内容，而输入的内容可能包含空格，这种情况下可以使用 `bufio` 包来实现。示例代码如下：
+
+```go
+reader := bufio.NewReader(os.Stdin) // 从标准输入生成读对象
+fmt.Println("请输入内容：")
+// line：	 从 stdin 中读取一行的数据( 字节集合 -> 转化为字符串)
+// isPrefix：默认一次能读 4096 个字节：
+//		一次读完，isPrefix = false
+//		一次读不完，isPrefix = true
+// err:
+line, isPrefix, err := reader.ReadLine()
+data := string(line)
+fmt.Println(data, isPrefix, err)
+
+//text, _ := reader.ReadString('\n') 			// 读到换行
+//text = strings.TrimSpace(text)
+//fmt.Printf("%#v\n", text)
+```
+
+
+
+
+
 ## 基本数据类型
 
-### 整型
+### 数值类型
 
-Go语言的数值类型包含不同大小的整数型、浮点数和负数，每种数值类型都有大小范围以及正负符号。
+&emsp;&emsp;Go语言的数值类型包含不同大小的整数型、浮点数和负数，每种数值类型都有大小范围以及正负符号。
 
 ```go
 fmt.Println(666)
@@ -834,8 +692,6 @@ fmt.Println(6 * 6)
 fmt.Println(6 / 6)		// 商
 fmt.Println(6 % 6)		// 余数
 ```
-
-
 
 
 
@@ -862,6 +718,8 @@ addr := "---"
 result := fmt.Sprintf("我叫%s, 今年%d, 家在%s", name, age, addr)
 fmt.Println(result)
 ```
+
+
 
 
 
@@ -903,16 +761,21 @@ fmt.Println(1 < 2)		// ture		真
 
 
 
+## 常量与变量
 
+### 变量
 
-## 变量
-### 变量声明
+> Go 语言变量名由字母、数字、下划线组成，其中首个字符不能为数字。声明变量的一般形式是使用 var 关键字：
+
+#### 变量声明
+
 > Go 语言中的变量需要声明后才能使用，同一作用域内不支持重复声明。
 >  **Go语言的变量声明后必须使用**。
 
 
 
-#### 标准声明
+##### 标准声明
+
 &emsp;&emsp;Go语言的变量声明格式为 `var 变量名 变量类型`。变量声明以关键字`var`开头，变量类型放在变量的后面，行尾无需分号：
 
 ```go
@@ -934,7 +797,7 @@ fmt.Println(str2)
 
 
 
-#### 批量声明
+##### 批量声明
 
 &emsp;&emsp;每声明一个变量就需要写`var`关键字会比较繁琐，go语言中还支持批量变量声明：
 
@@ -973,9 +836,7 @@ fmt.Println(str2)
 
 
 
-
-
-### 变量简写
+#### 变量简写
 
 - **先声明再赋值**
 
@@ -1001,7 +862,8 @@ fmt.Println(str2)
 
 
 
-### 作用域
+#### 作用域
+
 > 如果我们定义了一个大括号，大括号内定义的变量：
 > - 不能被括号外的使用。
 > - 可以在同级和子级中使用。
@@ -1020,7 +882,7 @@ fmt.Println(name)
 
 
 
-### 全局变量与局部变量
+#### 全局变量与局部变量
 
 ```go
 //全局变量( 不能以省略的方式 )
@@ -1042,7 +904,7 @@ func main() {
 
 
 
-### 赋值与内存相关
+#### 赋值与内存相关
 
 使用值类型 int、string、bool 这三种数据类型时，如果遇到变量的赋值会拷贝一份
 
@@ -1076,7 +938,7 @@ func main() {
 
 
 
-## 常量
+### 常量
 
 &emsp;&emsp;相对于变量，常量是恒定不变的值，多用于定义程序运行期间不会改变的那些值，一般情况下，常量都会定义在全局。 常量的声明和变量声明非常类似，只是把`var`换成了`const`，**常量在定义的时候必须赋值, 常量可以不被使用**。
 
@@ -1182,9 +1044,9 @@ const (
 
 
 
-## 标识符、关键字
+### 标识符、关键字
 
-### 标识符
+#### 标识符
 
 > 标识符用来命名变量、类型等程序实体。
 
@@ -1209,7 +1071,7 @@ a+b				// 运算符是不允许的
 
 
 
-### 关键字
+#### 关键字
 
 - 下面列举了 Go 代码中会使用到的 25 个关键字或保留字：
 
@@ -1240,105 +1102,6 @@ a+b				// 运算符是不允许的
 
 
 
-
-## 输入
-
-### `fmt` 包获取
-
-&emsp;&emsp;Go 语言`fmt`包下有`fmt.Scan`、`fmt.Scanf`、`fmt.Scanln`三个函数，可以在程序运行过程中从标准输入获取用户的输入。
-- **fmt.Scan**
-  
-    ```go
-    func Scan(a ...interface{}) (n int, err error)
-    ```
-```
-    
-    `fmt.Scan` <u>要求输入两个值， 就必须输入两个值，否则会一直等待。</u>用户输入成功后，会得到两个值：
-    
-    > **count**: 用户输入了几个值
-    > **err**： 用户输入错误时的错误信息，没有错误返回 <nil>
-    
-    ```go
-    var name string
-    var age int
-    
-    count, err := fmt.Scan(&name, &age)
-    fmt.Println(count, err)
-    if err == nil{
-        fmt.Println(name, age)
-    }
-    fmt.Println("用户输入错误：", err)
-```
-
-
-​    
-- **fmt.Scanln**
-
-    ```go
-    func Scanln(a ...interface{}) (n int, err error)
-    ```
-
-    `fmt.Scanln` <u>等待回车，输入回车，输入结束</u>。用户输入成功后，会得到两个值：
-
-    >**count**: 用户输入了几个值
-    >**err**： 用户输入错误时的错误信息，没有错误返回 <nil>
-
-    ```GO
-    var name string
-    var age int
-    
-    count, err := fmt.Scanln(&name, &age)
-    fmt.Println(count, err)
-    if err == nil{
-        fmt.Println(name, age)
-    }
-    fmt.Println("用户输入错误：", err)
-    ```
-
-
-
-- **fmt.Scanf**
-
-    ```go
-    func Scanf(format string, a ...interface{}) (n int, err error)
-    ```
-
-    > 占位符后面要有空格，否则切分不准确
-
-    ```go
-    var name string
-    var age int
-    
-    count, err := fmt.Scanf("我叫%s 今年%d 岁", &name, &age)
-    fmt.Println(count, err)
-    if err == nil{
-        fmt.Println(name, age)
-    }
-    fmt.Println("用户输入错误：", err)
-    ```
-
-
-
-### `bufio`包获取
-
-&emsp;&emsp;有时候我们想完整获取输入的内容，而输入的内容可能包含空格，这种情况下可以使用 `bufio` 包来实现。示例代码如下：
-
-```go
-reader := bufio.NewReader(os.Stdin) // 从标准输入生成读对象
-fmt.Println("请输入内容：")
-// line：	 从 stdin 中读取一行的数据( 字节集合 -> 转化为字符串)
-// isPrefix：默认一次能读 4096 个字节：
-//		一次读完，isPrefix = false
-//		一次读不完，isPrefix = true
-// err:
-line, isPrefix, err := reader.ReadLine()
-data := string(line)
-fmt.Println(data, isPrefix, err)
-
-//text, _ := reader.ReadString('\n') 			// 读到换行
-//text = strings.TrimSpace(text)
-//fmt.Printf("%#v\n", text)
-```
 
 
 
@@ -1699,12 +1462,6 @@ SVIP:
 
 
 
-
-
-
-
-
-
 ## 数据类型
 在 Go 编程语言中，数据类型用于声明函数和变量。
 数据类型的出现是为了把数据分成所需内存大小不同的数据，编程的时候需要用大数据的时候才需要申请大内存，就可以充分利用内存。
@@ -1806,7 +1563,7 @@ Go 语言按类别有以下几种数据类型：
 
 ### 变量
 
-Go 语言变量名由字母、数字、下划线组成，其中首个字符不能为数字。声明变量的一般形式是使用 var 关键字：
+
 
 ```go
 var identifier type
@@ -1814,7 +1571,7 @@ var identifier type
 var identifier1, identifier2 type
 ```
 
-\
+
 
 #### 变量声明
 
@@ -1875,11 +1632,49 @@ func main() {
 
 
 
+## 异常捕捉
+
+Go语言处理异常不同于其他语言处理异常的方式：
+
+```go
+// 传统语言处理异常：
+try 
+catch
+finally
+
+// go 语言处理异常：
+引入了defer、panic、recover
+1.Go程序抛出一个panic异常，在defer中通过recover捕获异常，然后处理
+```
 
 
 
+### defer与recover捕获异常
 
-
+```go
+package main
+import "fmt"
+func test() {
+    //在函数退出前，执行defer
+    //捕捉异常后，程序不会异常退出
+    defer func() {
+        err := recover() //内置函数，可以捕捉到函数异常
+        if err != nil {
+            //这里是打印错误，还可以进行报警处理，例如微信，邮箱通知
+            fmt.Println("err错误信息：", err)
+        }
+    }()
+    //如果没有异常捕获，直接报错panic，运行时出错
+    num1 := 10
+    num2 := 0
+    res := num1 / num2
+    fmt.Println("res结果：", res)
+}
+func main() {
+    test()
+    fmt.Println("如果程序没退出，就走我这里")
+}
+```
 
 
 
