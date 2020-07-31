@@ -193,7 +193,7 @@ E:\Project\go
 
 ### 目录结构
 
-&emsp;&emsp;在 `GOPATH` 下的 `src` 目录中创建一个 `文件夹（项目）`，进入文件夹并创建一个以 `.go` 为后缀名的文件（如 `first.go`），并在 `first.go` 文件中写入 go 代码。
+&emsp;&emsp;在 `GOPATH` 下的 `src` 目录中创建一个 `文件夹( 项目 )`，进入文件夹并创建一个以 `.go` 为后缀名的文件( 如 `first.go` )，并在 `first.go` 文件中写入 go 代码。
 
 ```shell
 E:\Project\go
@@ -248,7 +248,7 @@ func main() {		// 程序开始执行的函数。
 
 - **main(){}**
   
-    > main 函数是每一个可执行程序所必须包含的，一般来说都是在启动后第一个执行的函数（如果有 init() 函数则会先执行该函数）。main 函数是 Go 可执行程序的执行起点 )。
+    > main 函数是每一个可执行程序所必须包含的，一般来说都是在启动后第一个执行的函数( 如果有 init() 函数则会先执行该函数 )。main 函数是 Go 可执行程序的执行起点 )。
     > **Go语言的main()函数不能带参数，也不能定义返回值。**命令行传入的参数在` os.Args` 变量中保存。如果需要支持命令行开关，可使用 flag 包。
 
 
@@ -261,7 +261,7 @@ func main() {		// 程序开始执行的函数。
 
 #### 方式一：`go run`
 
-> compile and run Go program ，其内部会【先编译】代码文件【再运行】（二合一）。
+> compile and run Go program ，其内部会【先编译】代码文件【再运行】( 二合一 )。
 
 注意：`go run` 内部创建可执行文件默认保存在系统的临时目录，可以使用 `go run -work main.go`查看。
 
@@ -289,7 +289,7 @@ go run helloWorld.go
 >
 > 注意：在win系统中 build 命令会生成的可执行文件默认以 .exe 为后缀。
 
-&emsp;&emsp;执行完命令之后，就会在当前项目目录下自动生成一个可执行文件（默认文件名为项目），然后在执行此可执行文件即可。
+&emsp;&emsp;执行完命令之后，就会在当前项目目录下自动生成一个可执行文件( 默认文件名为项目 )，然后在执行此可执行文件即可。
 
 ```shell
 go build
@@ -309,7 +309,7 @@ helloWorld.exe
 
 <img src=".assets/image-20200430010105368.png" alt="img" style="zoom: 33%;" />
 
-&emsp;&emsp;如果项目没有main包（只是一个类库），则 install 生成的包文件会放在 `$GOPATH/pkg` 目录；有 main 包则生成的可执行文件放在 `$GOPATH/src` 目录。
+&emsp;&emsp;如果项目没有main包( 只是一个类库 )，则 install 生成的包文件会放在 `$GOPATH/pkg` 目录；有 main 包则生成的可执行文件放在 `$GOPATH/src` 目录。
 &emsp;&emsp;对于生成的 可执行文件 直接运行即可，而对于 包文件 可以当做是一个类库来供其他程序使用，
 
 ```shell
@@ -410,7 +410,7 @@ fmt.Println("Hello, World!")
 
 ## 初识包管理
 
-> &emsp;&emsp;`包（package）`是多个 Go 源码的集合，是一种高级的代码复用方案，Go 语言为我们提供了很多内置包，如`fmt`、`os`、`io`等。
+> &emsp;&emsp;`包( package )`是多个 Go 源码的集合，是一种高级的代码复用方案，Go 语言为我们提供了很多内置包，如`fmt`、`os`、`io`等。
 
 一般来说，一个文件夹可以作为 package，同一个 package 内部变量、类型、方法等定义可以相互看到。
 - 一个文件夹就可以成为一个包
@@ -680,9 +680,12 @@ fmt.Println(data, isPrefix, err)
 
 ## 基本数据类型
 
+&emsp;&emsp;在 Go 编程语言中，数据类型用于声明函数和变量。
+数据类型的出现是为了把数据分成所需内存大小不同的数据，编程的时候需要用大数据的时候才需要申请大内存，就可以充分利用内存。
+
 ### 数值类型
 
-&emsp;&emsp;Go语言的数值类型包含不同大小的整数型、浮点数和负数，每种数值类型都有大小范围以及正负符号。
+&emsp;&emsp;Go语言的数值类型包含不同大小的整数型、浮点数和负数，每种数值类型都有大小范围以及正负符号。并且支持复数，其中位的运算采用补码。
 
 ```go
 fmt.Println(666)
@@ -695,9 +698,107 @@ fmt.Println(6 % 6)		// 余数
 
 
 
+#### 整数类型
+
+Go语言的整数类型分为有符号和无符号两大类，有符号的包括负数，五福好的不包含负数。
+
+- **无符号整型**
+
+    | 序号 | 类型和描述                                                   |
+    | :--- | :----------------------------------------------------------- |
+    | 1    | **uint8** 无符号 8 位整型 (0 到 255)                         |
+    | 2    | **uint16** 无符号 16 位整型 (0 到 65535)                     |
+    | 3    | **uint32** 无符号 32 位整型 (0 到 4294967295)                |
+    | 4    | **uint64** 无符号 64 位整型 (0 到 18446744073709551615)      |
+    | 5    | **uint** 在 32 位系统上使用32位( 同 uint32 ), 在64位操作系统上使用 64 位( 同 uint64 ) |
+
+
+
+- **有符号整型**
+
+    | 序号 | 类型和描述                                                   |
+    | ---- | ------------------------------------------------------------ |
+    | 1    | **int8** 有符号 8 位整型 (-128 到 127)                       |
+    | 2    | **int16** 有符号 16 位整型 (-32768 到 32767)                 |
+    | 3    | **int32** 有符号 32 位整型 (-2147483648 到 2147483647)       |
+    | 4    | **int64** 有符号 64 位整型 (-9223372036854775808 到 9223372036854775807) |
+    | 5    | **int** 在 32 位系统上使用32位( 同int32 ), 在64位操作系统上使用 64 位( 同int64 ) |
+
+```go
+func main() {
+	int1 := 9223372036854775807
+	int2 := -9223372036854775808
+	fmt.Println(int1, int2)
+
+	//int3 := 9223372036854775809				// 超出范围，会报错
+	//fmt.Println(int3)
+}
+```
+
+
+
+#### 浮点型
+
+> Go 语言提供了两种精度的浮点数，float32 和 float64，编译器默认声明为 float64
+
+|      类型      | 占用存储空间 |        表数范围        |
+| :------------: | :----------: | :--------------------: |
+| 单精度 float32 |    4 字节    |  -3.403E38 ~ 3.403E38  |
+| 双精度 float64 |    8 字节    | -1.798E308 ~ 1.798E308 |
+|   complex64    |              |    32 位实数和虚数     |
+|   complex64    |              |    64 位实数和虚数     |
+
+> 浮点数=符号位+指数位+位数位
+
+```go
+func main() {
+	var price float32 = 11.22 					//正数符号
+	fmt.Println("price =", price)
+	var num1 float32 = -3.4 					//负数符号
+	var num2 float64 = -8.23
+	fmt.Println("num1 =", num1, "num2 =", num2)
+	//尾数可能丢失，精度缺损
+	var num3 float32 = -123.11111111105			//精度丢失了
+	var num4 float64 = -123.11111111105			//float64 的精度高于 float32
+	fmt.Println("num3 =", num3, "num4 =", num4)
+	//输出结果
+	//num3= -123.111115 num4= -123.11111111105
+}
+```
+
+
+
+#### 其他数值类型
+
+|  类型   |             描述             |
+| :-----: | :--------------------------: |
+|  byte   |          类似 uint8          |
+|  rune   |          类似 int32          |
+| uintptr | 无符号整型，用于存放一个指针 |
+
+
+
+#### 注意
+
+- go 1.9版本对于数字类型，无需定义 int 及 float32、float64，系统会自动识别。
+
+    ```go
+    func main() {
+       var a = 1.5
+       var b =2
+       fmt.Println(a,b)
+    }
+    // 1.5 2
+    ```
+
+
+
 
 
 ### 字符串
+
+字符串就是一串固定长度的字符连接起来的字符序列。Go 的字符串是由单个字节连接起来的。
+Go 语言的字符串的字节使用 UTF-8 编码标识 Unicode 文本。
 
 > 字符串默认值为 ""
 
@@ -717,6 +818,97 @@ age := 18
 addr := "---"
 result := fmt.Sprintf("我叫%s, 今年%d, 家在%s", name, age, addr)
 fmt.Println(result)
+```
+
+
+
+#### 字符串常用方法
+
+|                    方法                     | 说明                                                   |
+| :-----------------------------------------: | ------------------------------------------------------ |
+|      strings.HasPrefix(str, begin_str)      | 判断是不是以某个字符串开头，返回布尔值                 |
+|       strings.HasSuffix(str, end_str)       | 判断是不是以某个字符串结尾，返回布尔值                 |
+|        strings.Index(str, find_str)         | 判断字符在字符串中首次出现的索引位置，没有返回-1       |
+|      strings.LastIndex(str, find_str)       | 返回字符最后一次出现的索引位置，没有返回-1             |
+|       strings.Contains(str, find_str)       | 返回字符串是否包含字符，返回 bool                      |
+|          strings.Count(str, a_str)          | 求字符在字符串中出现的次数，不存在返回0次              |
+|          strings.Repeat(str, num)           | 字符串的重复叠加("原字符串", 重复次数)                 |
+|            strings.ToUpper(str)             | 字符串改大写                                           |
+|            strings.ToLower(str)             | 字符串改小写                                           |
+|           strings.TrimSpace(str)            | 去除首尾的空格                                         |
+|       strings.TrimLeft(str, find_str)       | 去除开头指定的字符                                     |
+|      strings.TrimRight(str, find_str)       | 去除结尾指定的字符                                     |
+|         strings.Trim(str,find_str)          | 去除首尾指定的字符,遍历然后去除                        |
+|          strings.Join(str1, a_str)          | 用指定的字符串将string类型的切片元素结合               |
+|        strings.Split(str, find_str)         | 根据字符2进行切割，返回一个切片                        |
+| strings.Replace(str, old_str, new_str, num) | 字符串替换("原字符串", "被替换的", "替换的", 替换次数) |
+
+```go
+func main() {
+    str := "hello world"
+    //判断是不是以某个字符串开头，返回布尔值
+    res0 := strings.HasPrefix(str, "http://")
+    res1 := strings.HasPrefix(str, "hello")
+    fmt.Printf("res0 is %v\n", res0)
+    fmt.Printf("res1 is %v\n", res1)
+    //判断是不是以某个字符串结尾
+    res3 := strings.HasSuffix(str, "http://")
+    res4 := strings.HasSuffix(str, "world")
+    fmt.Printf("res3 is %v\n", res3)
+    fmt.Printf("res4 is %v\n", res4)
+    //判断字符在字符串中首次出现的索引位置，没有返回-1
+    res5 := strings.Index(str, "o")
+    res6 := strings.Index(str, "x")
+    fmt.Printf("res5 is %v\n", res5)
+    fmt.Printf("res6 is %v\n", res6)
+    //返回字符最后一次出现的索引位置，没有返回-1
+    res7 := strings.LastIndex(str, "o")
+    res8 := strings.LastIndex(str, "x")
+    fmt.Printf("res7 is %v\n", res7)
+    fmt.Printf("res8 is %v\n", res8)
+    //字符串替换
+    res9 := strings.Replace(str, "world", "golang", 2)
+    res10 := strings.Replace(str, "world", "golang", 1)
+    //trings.Replace("原字符串", "被替换的内容", "替换的内容", 替换次数)
+    //原字符串中有2个world，才能替换2次
+    fmt.Printf("res9 is %v\n", res9)
+    fmt.Printf("res10 is %v\n", res10)
+    //求字符在字符串中出现的次数，不存在返回0次
+    countTime0 := strings.Count(str, "h")
+    countTime1 := strings.Count(str, "x")
+    fmt.Printf("countTime0 is %v\n", countTime0)
+    fmt.Printf("countTime1 is %v\n", countTime1)
+    //重复几次字符串
+    res11 := strings.Repeat(str, 0)
+    res12 := strings.Repeat(str, 1)
+    res13 := strings.Repeat(str, 2)
+    // strings.Repeat("原字符串", 重复次数)
+    fmt.Printf("res11 is %v\n", res11)
+    fmt.Printf("res12 is %v\n", res12)
+    fmt.Printf("res13 is %v\n", res13)
+    //字符串改大写
+    res14 := strings.ToUpper(str)
+    fmt.Printf("res14 is %v\n", res14)
+    //字符串改小写
+    res15 := strings.ToLower(str)
+    fmt.Printf("res15 is %v\n", res15)
+    //去除首尾的空格
+    res16 := strings.TrimSpace(str)
+    fmt.Printf("res16 is %v\n", res16)
+    //去除首尾指定的字符,遍历l、d、e然后去除
+    res17 := strings.Trim(str, "ld")
+    fmt.Printf("res17 is %v\n", res17)
+    //去除开头指定的字符
+    res18 := strings.TrimLeft(str, "he")
+    fmt.Printf("res18 is %v\n", res18)
+    //去除结尾指定的字符,遍历d、l、r
+    res19 := strings.TrimRight(str, "dlr")
+    fmt.Printf("res19 is %v\n", res19)
+    //用指定的字符串将string类型的切片元素结合
+    str1 := []string{"hello", "world", "hello", "golang"}
+    res20 := strings.Join(str1, "+")
+    fmt.Printf("res20 is %v\n", res20)
+}
 ```
 
 
@@ -748,13 +940,162 @@ fmt.Println(name2[6], name2[7], name2[8])
 
 
 
+#### 字符串常见运用
+
+- Go 语言的字符串可以通过 **+** 实现：
+
+    ```go
+    package main
+    import "fmt"
+    func main() {
+        // 不建议
+        fmt.Println("Google" + "Runoob")
+        
+        // 效率更更更高一些
+        var builder string.Builder
+        builder.WriteString("str1")
+        builder.WriteString("str2")
+        value := builder,String()
+    	fmt.Println(value)
+    }
+    // GoogleRunoob
+    
+    
+    ```
+
+- 字符串去除空格和换行符
+
+    ```go
+    package main  
+      
+    import (  
+        "fmt"  
+        "strings"  
+    )  
+      
+    func main() {  
+        str := "这里是 www\n.runoob\n.com"  
+        fmt.Println("-------- 原字符串 ----------")  
+        fmt.Println(str)  
+        // 去除空格  
+        str = strings.Replace(str, " ", "", -1)  
+        // 去除换行符  
+        str = strings.Replace(str, "\n", "", -1)  
+        fmt.Println("-------- 去除空格与换行后 ----------")  
+        fmt.Println(str)  
+    }
+    
+    // -------- 原字符串 ----------
+    // 这里是 www
+    // .runoob
+    // .com
+    // -------- 去除空格与换行后 ----------
+    // 这里是www.runoob.com
+    ```
+
+    
+
+
+
+
+
+
+
 
 
 ### 布尔类型
 
+布尔型的值只可以是常量 true 或者 false。在 Go 中，布尔值的类型为 bool，值是 true 或 false，默认为 false。
+
 ```go
 fmt.Println(1 > 2)		// false	假
 fmt.Println(1 < 2)		// ture		真
+```
+
+
+
+
+
+### 数据类型转换
+
+#### 整型之间的数据转换
+
+```go
+data := intxxx()
+```
+
+```go
+func main() {
+	var v1 int8 = 8
+	var v2 int16 = 16
+	//v3 := v1 + v2								// 报错
+	v3 := int16(v1) + v2
+	fmt.Println(v3)
+}
+```
+
+> **注意：**
+> 低位向高位转没问题，高位向低位转会有进度损失( 轮回 )
+>
+> ```go
+> func main() {
+> 	var v1 int16 = 128
+> 	var v2 int16 = 129
+> 	fmt.Println(int8(v1), int8(v2))
+> 	// -128 -127
+> }
+> ```
+
+
+
+
+
+#### 整型与字符串转换
+
+```go
+strconv.Itoa.Itoa(int)(string)
+```
+
+```go
+func main() {
+	v1 := 18
+	result := strconv.Itoa(v1)					// 必须是 int 类型的才能转换
+	fmt.Println(result, reflect.TypeOf(result))			
+    // reflect.TypeOf(data) 查看 data 类型
+    
+    var v2 int8 = 18
+	//result := strconv.Itoa(v2)							// 不是 int 类型会报错
+	result = strconv.Itoa(int(v2))
+	fmt.Println(result, reflect.TypeOf(result))
+}
+```
+
+
+
+
+
+#### 字符串转化成整型
+
+```go
+strconv.Atoi(s string) (int, error)
+```
+
+```go
+func main() {
+	// 字符串转化为整型
+	v1 := "18"
+	result1, err := strconv.Atoi(v1)
+	fmt.Println(result1, reflect.TypeOf(result1), err)
+
+	v2 := "十八"
+	result2, err := strconv.Atoi(v2)					// 抛出错误，默认返回 0
+	if err == nil{
+		fmt.Println(result2, reflect.TypeOf(result1))
+	}else {
+        fmt.Println("转换失败: ", err)
+		fmt.Println(result2, reflect.TypeOf(result1))
+	}
+}
 ```
 
 
@@ -771,6 +1112,10 @@ fmt.Println(1 < 2)		// ture		真
 
 > Go 语言中的变量需要声明后才能使用，同一作用域内不支持重复声明。
 >  **Go语言的变量声明后必须使用**。
+
+变量是一种方便的占位符，用于引用计算机内存地址。基本数据类型中，如 `name="yugo"` ，变量 `name` 存的值是 `yugo`基本数据类型，变量存的是值，称为值类型; 通过`&`符号获取变量的地址，例如 `&name`
+
+
 
 
 
@@ -974,7 +1319,7 @@ const (
 
 
 
-#### iota （常量计数器）
+#### iota ( 常量计数器 )
 
 &emsp;&emsp;`iota`是go语言的常量计数器，只能在常量的表达式中使用。
 &emsp;&emsp;`iota`在const关键字出现时将被重置为0。const中每新增一行常量声明将使`iota`计数一次(iota可理解为const语句块中的行索引)。 使用iota能简化定义，在定义枚举时很有用。
@@ -1067,7 +1412,7 @@ a+b				// 运算符是不允许的
 
 
 
-当标识符（包括常量、变量、类型、函数名、结构字段等等）以一个大写字母开头，如：Group1，那么使用这种形式的标识符的对象就可以被外部包的代码所使用（客户端程序需要先导入这个包），这被称为导出（像面向对象语言中的 public）；标识符如果以小写字母开头，则对包外是不可见的，但是他们在整个包的内部是可见并且可用的（像面向对象语言中的 protected ）
+当标识符( 包括常量、变量、类型、函数名、结构字段等等 )以一个大写字母开头，如：Group1，那么使用这种形式的标识符的对象就可以被外部包的代码所使用( 客户端程序需要先导入这个包 )，这被称为导出( 像面向对象语言中的 public )；标识符如果以小写字母开头，则对包外是不可见的，但是他们在整个包的内部是可见并且可用的( 像面向对象语言中的 protected  )
 
 
 
@@ -1098,6 +1443,207 @@ a+b				// 运算符是不允许的
 - 程序中可能会使用到这些分隔符：括号 `()`，中括号 `[]` 和大括号 `{}`。
 
 - 程序中可能会使用到这些标点符号：`.`、`,`、`;`、`:` 和 `…`。
+
+
+
+
+
+## 运算符与进制
+
+### 运算符
+
+> 运算符用于在程序运行时执行数学或逻辑运算。
+
+#### 算数运算符
+
+| 运算符 | 描述 |
+| :----: | :--: |
+|   +    | 相加 |
+|   -    | 相减 |
+|   *    | 相乘 |
+|   /    | 相除 |
+|   %    | 求余 |
+
+**注意：** `++`( 自增 )和`--`( 自减 )在Go语言中是单独的语句，并不是运算符。
+
+#### 关系运算符
+
+| 运算符 |                             描述                             |
+| :----: | :----------------------------------------------------------: |
+|   ==   |    检查两个值是否相等，如果相等返回 True 否则返回 False。    |
+|   !=   |  检查两个值是否不相等，如果不相等返回 True 否则返回 False。  |
+|   >    |  检查左边值是否大于右边值，如果是返回 True 否则返回 False。  |
+|   >=   | 检查左边值是否大于等于右边值，如果是返回 True 否则返回 False。 |
+|   <    |  检查左边值是否小于右边值，如果是返回 True 否则返回 False。  |
+|   <=   | 检查左边值是否小于等于右边值，如果是返回 True 否则返回 False。 |
+
+#### 逻辑运算符
+
+| 运算符 |                             描述                             |
+| :----: | :----------------------------------------------------------: |
+|   &&   | 逻辑 AND 运算符。 如果两边的操作数都是 True，则为 True，否则为 False。 |
+|  \|\|  | 逻辑 OR 运算符。 如果两边的操作数有一个 True，则为 True，否则为 False。 |
+|   !    | 逻辑 NOT 运算符。 如果条件为 True，则为 False，否则为 True。 |
+
+#### 位运算符
+
+位运算符对整数在内存中的二进制位进行操作。
+
+| 运算符 |                             描述                             |
+| :----: | :----------------------------------------------------------: |
+|   &    |    参与运算的两数各对应的二进位相与。 ( 两位均为1才为1 )     |
+|   \|   |  参与运算的两数各对应的二进位相或。 ( 两位有一个为1就为1 )   |
+|   ^    | 参与运算的两数各对应的二进位相异或，当两对应的二进位相异时，结果为1。 ( 两位不一样则为1 ) |
+|   <<   | 左移n位就是乘以2的n次方。 “a<<b”是把a的各二进位全部左移b位，高位丢弃，低位补0。 |
+|   >>   | 右移n位就是除以2的n次方。 “a>>b”是把a的各二进位全部右移b位。 |
+
+#### 赋值运算符
+
+| 运算符 |                      描述                      |
+| :----: | :--------------------------------------------: |
+|   =    | 简单的赋值运算符，将一个表达式的值赋给一个左值 |
+|   +=   |                  相加后再赋值                  |
+|   -=   |                  相减后再赋值                  |
+|   *=   |                  相乘后再赋值                  |
+|   /=   |                  相除后再赋值                  |
+|   %=   |                  求余后再赋值                  |
+|  <<=   |                   左移后赋值                   |
+|  >>=   |                   右移后赋值                   |
+|   &=   |                  按位与后赋值                  |
+|  \|=   |                  按位或后赋值                  |
+|   ^=   |                 按位异或后赋值                 |
+
+
+
+
+
+### 进制转化
+
+#### 十进制转为其他进制
+
+```go
+strconv.FormatInt(i int64, base int) string
+```
+
+```go
+func main() {
+	v1 := 97
+	result1 := strconv.FormatInt(int64(v1), 2)		// 转化为为二进制
+	result2 := strconv.FormatInt(int64(v1), 8)		// 转化为为八进制
+	result3 := strconv.FormatInt(int64(v1), 16)		// 转化为为十六进制
+	fmt.Println(result1, result2, result3)
+	// 1100001 141 61
+}
+```
+
+
+
+#### 其他进制转为十进制
+
+```go
+ParseInt(s string, base int, bitSize int) (i int64, err error)
+// s 			为要转化的字符串
+// base 		为 s 的进制数，如进制则为2
+// bitSize		转化过程中对结果进行约束，超出则会报错
+
+// i			返回值永远以 int64 的形式返回
+// err			转换成功返回 nil
+```
+
+```go
+func main() {
+	v1 := "1100001"
+	result1, err := strconv.ParseInt(v1, 2, 10)				// 结果以 int16 进行约束
+	fmt.Println(result1, err, reflect.TypeOf(result1))
+	result2, err := strconv.ParseInt(v1, 2, 16)				// 结果以 int16 进行约束
+	fmt.Println(result2, err, reflect.TypeOf(result2))
+	result3, err := strconv.ParseInt(v1, 2, 0)				// 结果以 int 进行约束
+	fmt.Println(result3, err, reflect.TypeOf(result3))
+
+	v2 := "10000001"
+	result4, err := strconv.ParseInt(v2, 2, 8)
+	fmt.Println(result4, err, reflect.TypeOf(result4))
+	result5, err := strconv.ParseInt(v2, 2, 16)
+	fmt.Println(result5, err, reflect.TypeOf(result5))
+}
+```
+
+
+
+
+
+### 单位
+
+&emsp;&emsp;由于计算机中本质上所有的东西以为二进制存储和操作的，为了方便对于二进制值大小的表示，所以就搞了一些单位，例如：流量还有多少M、硬盘容量有1T、计算机8G内存等、宽带是200M、千兆网络等。计算机中表示对于二进制大小的常见单位有：
+
+- **b( bit )，位**
+
+    > 表示二进制有多少位，例如：
+
+    ```shell
+    01101     		# 就是 5位 = 5b      
+    011011010 		# 就是 9位 = 9b
+    ```
+
+- **B( byte )，字节**
+
+    > 8 位就是 1 个字节，例如:
+
+    ```shell
+    10100101                # 就是 8位 = 8b = 1B= 1个字节  
+    1010010110100101        # 就是 16位 = 16b = 2B= 2个字节
+    ```
+
+- **KB( Kilobyte )，千字节**
+
+    > 1024个字节就是1千字节( 1KB )，即： 
+
+    ```shell
+    1 KB = 1024 B = 1024*8 b
+    ```
+
+- **M( Megabyte )，兆**
+
+    > 1024个千字节就是1兆( 1M)，即：
+
+    ```shell
+    1M = 1024 KB = 1024 * 1024 B = 1024 * 1024 * 8 b
+    ```
+
+- **G( Gigabyte )，千兆**
+
+    > 1024个兆就是1千兆( 1G)  ,即：
+
+    ```shell
+    1G = 1024 M = 1024 * 1024 KB = 1024 * 1024 * 1024 B = 1024 * 1024 * 1024 * 8 b
+    ```
+
+- **T( Terabyte )，万亿字节**
+
+    ```shell
+    1024个G就是1T
+    ```
+
+…其他更大单位 PB/EB/ZB/YB/BB/NB/DB 不再赘述。
+
+
+
+### 常见数值运算
+
+```go
+func main() {
+	fmt.Println(math.Abs(-19))						// 取绝对值
+	fmt.Println(math.Floor(3.14))					// 向下取整
+	fmt.Println(math.Ceil(3.14))					// 向上取整
+	fmt.Println(math.Round(3.35))					// 就近取整
+	fmt.Println(math.Round(3.3478 * 100 / 100))		// 保留小数点后两位
+	fmt.Println(math.Mod(11, 3))					// 取余数
+	fmt.Println(math.Pow(2, 5))						// 计算次方， 如 2 的 5 次方
+	fmt.Println(math.Pow10(2))						// 计算10次方， 如 2 的 10 次方
+	fmt.Println(math.Max(1, 2))						// 两个数取较大值
+	fmt.Println(math.Min(1, 2))						// 两个数取较小值
+}
+```
 
 
 
@@ -1330,303 +1876,550 @@ SVIP:
 
 
 
-## 运算符与进制
+## 指针
 
-### 运算符
+&emsp;&emsp;任何程序数据载入内存后，在内存都有他们的地址，这就是指针。而为了保存一个数据在内存中的地址，我们就需要指针变量。Go语言中的指针不能进行偏移和运算，因此Go语言中的指针操作非常简单，我们只需要记住两个符号：`&`( 取地址 )和`*`( 根据地址取值 )。
 
-> 运算符用于在程序运行时执行数学或逻辑运算。
+> - 指针默认值 nil
+> - 通过 `&` (取地值符)取变量地址
+> - 通过 `*` (取值符)透过指针访问目标值
 
-#### 算数运算符
+**区别于 C/C++ 中的指针，Go语言中的指针不能进行偏移和运算，是安全指针。**
 
-| 运算符 | 描述 |
-| :----: | :--: |
-|   +    | 相加 |
-|   -    | 相减 |
-|   *    | 相乘 |
-|   /    | 相除 |
-|   %    | 求余 |
 
-**注意：** `++`（自增）和`--`（自减）在Go语言中是单独的语句，并不是运算符。
 
-#### 关系运算符
+### 指针地址和指针类型
 
-| 运算符 |                             描述                             |
-| :----: | :----------------------------------------------------------: |
-|   ==   |    检查两个值是否相等，如果相等返回 True 否则返回 False。    |
-|   !=   |  检查两个值是否不相等，如果不相等返回 True 否则返回 False。  |
-|   >    |  检查左边值是否大于右边值，如果是返回 True 否则返回 False。  |
-|   >=   | 检查左边值是否大于等于右边值，如果是返回 True 否则返回 False。 |
-|   <    |  检查左边值是否小于右边值，如果是返回 True 否则返回 False。  |
-|   <=   | 检查左边值是否小于等于右边值，如果是返回 True 否则返回 False。 |
-
-#### 逻辑运算符
-
-| 运算符 |                             描述                             |
-| :----: | :----------------------------------------------------------: |
-|   &&   | 逻辑 AND 运算符。 如果两边的操作数都是 True，则为 True，否则为 False。 |
-|  \|\|  | 逻辑 OR 运算符。 如果两边的操作数有一个 True，则为 True，否则为 False。 |
-|   !    | 逻辑 NOT 运算符。 如果条件为 True，则为 False，否则为 True。 |
-
-#### 位运算符
-
-位运算符对整数在内存中的二进制位进行操作。
-
-| 运算符 |                             描述                             |
-| :----: | :----------------------------------------------------------: |
-|   &    |    参与运算的两数各对应的二进位相与。 （两位均为1才为1）     |
-|   \|   |  参与运算的两数各对应的二进位相或。 （两位有一个为1就为1）   |
-|   ^    | 参与运算的两数各对应的二进位相异或，当两对应的二进位相异时，结果为1。 （两位不一样则为1） |
-|   <<   | 左移n位就是乘以2的n次方。 “a<<b”是把a的各二进位全部左移b位，高位丢弃，低位补0。 |
-|   >>   | 右移n位就是除以2的n次方。 “a>>b”是把a的各二进位全部右移b位。 |
-
-#### 赋值运算符
-
-| 运算符 |                      描述                      |
-| :----: | :--------------------------------------------: |
-|   =    | 简单的赋值运算符，将一个表达式的值赋给一个左值 |
-|   +=   |                  相加后再赋值                  |
-|   -=   |                  相减后再赋值                  |
-|   *=   |                  相乘后再赋值                  |
-|   /=   |                  相除后再赋值                  |
-|   %=   |                  求余后再赋值                  |
-|  <<=   |                   左移后赋值                   |
-|  >>=   |                   右移后赋值                   |
-|   &=   |                  按位与后赋值                  |
-|  \|=   |                  按位或后赋值                  |
-|   ^=   |                 按位异或后赋值                 |
-
-
-
-
-
-### 进制
-
-
-
-### 单位
-
-&emsp;&emsp;由于计算机中本质上所有的东西以为二进制存储和操作的，为了方便对于二进制值大小的表示，所以就搞了一些单位，例如：流量还有多少M、硬盘容量有1T、计算机8G内存等、宽带是200M、千兆网络等。计算机中表示对于二进制大小的常见单位有：
-
-- **b（bit），位**
-
-    > 表示二进制有多少位，例如：
-
-    ```shell
-    01101     		# 就是 5位 = 5b      
-    011011010 		# 就是 9位 = 9b
-    ```
-
-- **B（byte），字节**
-
-    > 8 位就是 1 个字节，例如:
-
-    ```shell
-    10100101                # 就是 8位 = 8b = 1B= 1个字节  
-    1010010110100101        # 就是 16位 = 16b = 2B= 2个字节
-    ```
-
-- **KB（Kilobyte），千字节**
-
-    > 1024个字节就是1千字节（1KB），即： 
-
-    ```shell
-    1 KB = 1024 B = 1024*8 b
-    ```
-
-- **M（Megabyte），兆**
-
-    > 1024个千字节就是1兆（1M)，即：
-
-    ```shell
-    1M = 1024 KB = 1024 * 1024 B = 1024 * 1024 * 8 b
-    ```
-
-- **G（Gigabyte），千兆**
-
-    > 1024个兆就是1千兆（1G)  ,即：
-
-    ```shell
-    1G = 1024 M = 1024 * 1024 KB = 1024 * 1024 * 1024 B = 1024 * 1024 * 1024 * 8 b
-    ```
-
-- **T（Terabyte），万亿字节**
-
-    ```shell
-    1024个G就是1T
-    ```
-
-…其他更大单位 PB/EB/ZB/YB/BB/NB/DB 不再赘述。
-
-
-
-
-
-
-## 数据类型
-在 Go 编程语言中，数据类型用于声明函数和变量。
-数据类型的出现是为了把数据分成所需内存大小不同的数据，编程的时候需要用大数据的时候才需要申请大内存，就可以充分利用内存。
-Go 语言按类别有以下几种数据类型：
-
-- **数字类型**：
-
-    > 整型 int 和浮点型 float32、float64，Go 语言支持整型和浮点型数字，并且支持复数，其中位的运算采用补码。
-
-- **字符串类型**：
-    > 字符串就是一串固定长度的字符连接起来的字符序列。Go 的字符串是由单个字节连接起来的。
-    > Go 语言的字符串的字节使用 UTF-8 编码标识 Unicode 文本。
-
-- **布尔类型**：
-    > 布尔型的值只可以是常量 true 或者 false。一个简单的例子：`var b bool = true`
-    > 在 Go 中，布尔值的类型为 bool，值是 true 或 false，默认为 false。
-    > ```go
-    > //示例代码
-    > var isActive bool  // 全局变量声明
-    > var enabled, disabled = true, false  // 忽略类型的声明
-    > func test() {
-    >     var available bool  // 一般声明
-    >     valid := false      // 简短声明
-    >     available = true    // 赋值操作
-    > }
-    > ```
-
-- **派生类型**：
-    ```go
-    指针类型（Pointer）
-    数组类型
-    结构化类型(struct)
-    Channel 类型
-    函数类型
-    切片类型
-    接口类型(interface)
-    Map 类型
-    ```
-
-
-
-### 数字类型
-
-> Go 也有基于架构的类型，例如：int、uint 和 uintptr。
-
-|  类型  |                             描述                             |
-| :----: | :----------------------------------------------------------: |
-| uint8  |                  无符号 8 位整型 (0 到 255)                  |
-| uint16 |                无符号 16 位整型 (0 到 65535)                 |
-| uint32 |              无符号 32 位整型 (0 到 4294967295)              |
-| uint64 |         无符号 64 位整型 (0 到 18446744073709551615)         |
-|  int8  |                有符号 8 位整型 (-128 到 127)                 |
-| int16  |              有符号 16 位整型 (-32768 到 32767)              |
-| int32  |         有符号 32 位整型 (-2147483648 到 2147483647)         |
-| int64  | 有符号 64 位整型 (-9223372036854775808 到 9223372036854775807) |
-
-
-
-### 浮点类型
-
-|   类型    |         描述          |
-| :-------: | :-------------------: |
-|  float32  | IEEE-754 32位浮点型数 |
-|  float64  | IEEE-754 64位浮点型数 |
-| complex64 |    32 位实数和虚数    |
-| complex64 |    64 位实数和虚数    |
-
-
-
-### 其他数字类型
-|  类型   |             描述             |
-| :-----: | :--------------------------: |
-|  byte   |          类似 uint8          |
-|  rune   |          类似 int32          |
-|  uint   |         32 或 64 位          |
-|   int   |       与 uint 一样大小       |
-| uintptr | 无符号整型，用于存放一个指针 |
-
-
-
-### 注意：
-
-- go 1.9版本对于数字类型，无需定义 int 及 float32、float64，系统会自动识别。
-    ```go
-    package main
-    import "fmt"
-    
-    func main() {
-       var a = 1.5
-       var b =2
-       fmt.Println(a,b)
-    }
-    // 1.5 2
-    ```
-
-
-
-## 变量与常量
-
-### 变量
-
-
+&emsp;&emsp;每个变量在运行时都拥有一个地址，这个地址代表变量在内存中的位置。Go 语言中使用 `&` 字符放在变量前面对变量进行“取地址”操作。 Go语言中的值类型( int、float、bool、string、array、struct )都有对应的指针类型，如：`*int`、`*int64`、`*string`等。取变量指针的语法如下：
 
 ```go
-var identifier type
-// 可以一次声明多个变量：
-var identifier1, identifier2 type
+ptr := &v    // v的类型为T
+// v:		代表被取地址的变量，类型为T
+// ptr:		用于接收地址的变量，ptr的类型就为*T，称做T的指针类型。*代表指针。
 ```
 
 
 
-#### 变量声明
-
-第一种，指定变量类型，如果没有初始化，则变量默认为零值。
-
-
-
-
-
-## 字符串连接
-
-Go 语言的字符串可以通过 **+** 实现：
+### 指针的取值和取址
 
 ```go
-package main
-import "fmt"
 func main() {
-    fmt.Println("Google" + "Runoob")
+	a := 18
+	b := &a
+	fmt.Println(a, &a)				// 18 0xc0000180a0
+	fmt.Println(*b, b, &b)			// 18 0xc0000180a0 0xc000006028
+	fmt.Println(reflect.TypeOf(a) == reflect.TypeOf(b))		// false
+	fmt.Println(reflect.TypeOf(a), reflect.TypeOf(b))		// int 
+    8int
 }
-// GoogleRunoob
 ```
 
+<img src=".assets/ptr.png" alt="取变量地址图示" style="zoom:50%;" />
 
-
-
-
-字符串去除空格和换行符
+go 语言中的函数传参都是值拷贝，当我们想要修改某个变量时，可以创建一个指向该变量地址的指针变量，传递数据使用指针，无需拷贝数据。
 
 ```go
-package main  
-  
-import (  
-    "fmt"  
-    "strings"  
-)  
-  
-func main() {  
-    str := "这里是 www\n.runoob\n.com"  
-    fmt.Println("-------- 原字符串 ----------")  
-    fmt.Println(str)  
-    // 去除空格  
-    str = strings.Replace(str, " ", "", -1)  
-    // 去除换行符  
-    str = strings.Replace(str, "\n", "", -1)  
-    fmt.Println("-------- 去除空格与换行后 ----------")  
-    fmt.Println(str)  
+func modify1(num1 int){
+	num1 = 100
 }
 
-// -------- 原字符串 ----------
-// 这里是 www
-// .runoob
-// .com
-// -------- 去除空格与换行后 ----------
-// 这里是www.runoob.com
+func modify2(num2 *int){
+	*num2 = 100
+}
+
+func main() {
+	num := 18
+	modify1(num)
+	fmt.Println(num)				// 18
+	modify2(&num)
+	fmt.Println(num)				// 100
+}
 ```
+
+
+
+
+
+
+
+### nil
+
+> 指向 go 语言中的空值
+
+
+
+### new 和 make
+
+&emsp;&emsp;在Go语言中对于引用类型的变量，我们在使用的时候不仅要声明它，还要为它分配内存空间，否则我们的值就没办法存储。而对于值类型的声明不需要分配内存空间，是因为它们在声明的时候已经默认分配好了内存空间。 Go语言中new和make是内建的两个函数，主要用来分配内存。
+
+#### new 关键字
+
+&emsp;&emsp;用于创建内存并进行内部数据的初始化，并返回一个指针类型。使用new函数得到的是一个类型的指针，并且该指针对应的值为该类型的零值。
+
+```go
+func new(Type) *Type
+
+// Type  表示类型，new 函数只接受一个参数，这个参数是一个类型
+// *Type 表示类型指针，new 函数返回一个指向该类型内存地址的指针。
+```
+
+示例：
+
+```go
+func main() {
+	var a *int						// nil
+	//*a = 100						// nil = 100, 会报错
+	a = new(int)					// 开辟地址
+	*a = 100
+	fmt.Println(*a)
+}
+```
+
+
+
+
+
+#### make 关键字
+
+&emsp;&emsp;make 也是用于内存分配的，区别于 new，它只用于 slice、map 以及 chan 的内存创建，而且它返回的类型就是这三个类型本身，而不是他们的指针类型，因为这三种类型就是引用类型，所以就没有必要返回他们的指针了。
+
+```go
+func make(t Type, size ...IntegerType) Type
+```
+
+> make函数是无可替代的，我们在使用 slice、map 以及 channel 的时候，都需要使用 make 进行初始化，然后才可以对它们进行操作。
+
+示例：
+
+```go
+func main() {
+    var map1 map[string]int			// nil
+	//map1["key"] = 100				// 报错
+	map1 = make(map[string]int, 10)
+	map1["key"] = 100
+	fmt.Println(map1)				// map[key:100]
+}
+```
+
+
+
+
+
+
+
+#### new 与 make 的区别
+- 二者都是用来做内存分配的。
+- make 只用于 slice、map 以及 channel 的初始化，返回的还是这三个引用类型本身；
+- 而 new 用于类型的内存分配，并且内存对应的值为类型零值，返回的是指向类型的指针。
+
+
+
+
+
+### 详解
+#### 指针的声明
+```go
+var v1 *int				// 默认值为 nil，此时取值赋值会报错，如 *v1 = 100
+v2 := new(int)			//开辟空间，默认值为 0
+```
+
+![image-20200729222843332](.assets/image-20200729222843332.png)
+
+
+
+
+
+## 函数
+> 引用并参考：
+> [李文周的博客 - Go语言基础之函数](https://www.liwenzhou.com/posts/Go/09_function/)
+
+&emsp;&emsp;函数是组织好的、可重复使用的、用于执行指定任务的代码块。Go语言中支持函数、匿名函数和闭包，
+
+
+
+### 函数定义
+
+Go语言中定义函数使用`func`关键字，具体格式如下：
+
+```go
+func 函数名(参数)(返回值){
+    函数体
+}
+
+// 函数名：由字母、数字、下划线组成。但函数名的第一个字母不能是数字。在同一个包内，函数名也称不能重名
+// 参数：	参数由参数变量和参数变量的类型组成，多个参数之间使用,分隔。
+// 返回值：返回值由返回值变量和其变量类型组成，也能只写返回值类型，多个返回值必须用()包裹，并用,分隔。
+// 函数体：实现指定功能的代码块。
+```
+
+示例：
+
+```go
+// 定义一个接收 string 类型的函数
+func SayHello(str string)  {
+	fmt.Println("Hello ", str)
+}
+
+func Sum1(num1 int, num2 int) (ret int) {
+	ret = num1 + num2				// 函数已经声明了返回值
+	return 							// 会自动找到并返回 ret
+}
+
+func Sum2(num1 int, num2 int) int {
+	ret := num1 + num2				// 函数未声明返回值
+	return ret						// 必须手动返回 ret
+}
+
+// 接收可变参数
+func GetManyInt(int_list ...int) (ret int) {
+    // int_list 是个切片
+	for _, num := range int_list{
+		ret += num
+	}
+	return
+}
+
+// 接收固定参数和可变参数 ，可变参数要放最后
+func GetManyInt2(str string, int_list ...int) (ret int) {
+	fmt.Println(str)
+	// int_list 是个切片
+	for _, num := range int_list{
+		ret += num
+	}
+	return
+}
+
+func main() {
+	SayHello("World!")
+	num1 := Sum1(1, 2)
+	num2 := Sum2(1, 2)
+	fmt.Println(num1, num2)
+
+	num3 := GetManyInt(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+	fmt.Println(num3)
+    
+    num4 := GetManyInt2("five", 1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+	fmt.Println(num4)
+}
+```
+
+
+
+
+
+
+
+## 结构体
+
+&emsp;&emsp;Go 语言中没有直接的“类”的概念，也不直接支持“类”的继承等面向对象的概念。Go语言中通过结构体的内嵌再配合接口比面向对象具有更高的扩展性和灵活性。
+
+
+
+### 类型别名和自定义类型
+
+#### 自定义类型
+
+&emsp; Go语言中可以使用`type`关键字来定义自定义类型。自定义类型是定义了一个全新的类型。我们可以基于内置的基本类型定义，也可以通过struct定义。例如：
+
+```go
+//将MyInt定义为int类型
+type MyInt int
+```
+
+通过`type`关键字的定义，`MyInt`就是一种新的类型，它具有`int`的特性。
+
+
+
+#### 类型别名
+
+类型别名是`Go1.9`版本添加的新功能。
+
+类型别名规定：TypeAlias 只是 Type 的别名，本质上TypeAlias 与 Typ e是同一个类型。就像一个孩子小时候有小名、乳名，上学后用学名，英语老师又会给他起英文名，但这些名字都指的是他本人。
+
+```go
+type TypeAlias = Type
+```
+
+我们之前见过的`rune`和`byte`就是类型别名，他们的定义如下：
+
+```go
+type byte = uint8
+type rune = int32
+```
+
+
+
+#### 类型定义和类型别名的区别
+
+类型别名与类型定义表面上看只有一个等号的差异，我们通过下面的这段代码来理解它们之间的区别。
+
+```go
+//类型定义
+type NewInt int
+//类型别名
+type MyInt = int
+
+func main() {
+	var a NewInt
+	var b MyInt
+
+	fmt.Printf("type of a:%T\n", a) 		//type of a:main.NewInt
+	fmt.Printf("type of b:%T\n", b) 		//type of b:int
+}
+```
+
+&emsp;&emsp;结果显示 a 的类型是 `main.NewInt`，表示 main 包下定义的 `NewInt` 类型。b的类型是 `int`。`MyInt` 类型只会在代码中存在，编译完成时并不会有 `MyInt` 类型。
+
+
+
+### 结构体
+
+&emsp;&emsp;Go 语言中不直接支持面向对象，但可以通过 `struct` 来实现面向对象。
+&emsp;&emsp;Go 语言中的基础数据类型可以表示一些事物的基本属性，而结构体是用来描述一组值的。比如一个人有名字、年龄和居住城市等，本质上是一种聚合型的数据类型，Go 语言提供了一种自定义数据类型，可以封装多个基本数据类型，这种数据类型叫结构体，英文名称 `struct`。 
+
+
+
+#### 结构的声明与使用
+
+```go
+type 类型名 struct {
+    字段名 字段类型
+    字段名 字段类型
+    …
+}
+// 类型名：标识自定义结构体的名称，在同一个包内不能重复。
+// 字段名：表示结构体字段名。结构体中的字段名必须唯一。
+// 字段类型：表示结构体字段的具体类型。
+```
+
+举个例子，我们定义一个`Person` 结构体，代码如下：
+
+```go
+type person1 struct {
+	name string
+	city string
+	age  int8
+}
+
+// 同样类型的字段也可以写在一行，
+type person2 struct {
+	name, city string
+	age        int8
+}
+```
+
+【进阶知识点】关于Go语言中的内存对齐推荐阅读:[在 Go 中恰到好处的内存对齐](https://segmentfault.com/a/1190000017527311?utm_campaign=studygolang.com&utm_medium=studygolang.com&utm_source=studygolang.com)
+
+```go
+func main() {
+	var person person1
+	person.name = "lin"
+	person.city = "addr"
+	person.age = 18
+	fmt.Println(person)
+	fmt.Println(person.name, person.city, person.age)
+}
+```
+
+
+
+#### 结构体的初始化
+
+没有初始化的结构体，其成员变量都是对应其类型的零值。
+
+```go
+type person struct {
+	name string
+	city string
+	age  int8
+}
+
+func main() {
+	var p4 person
+	fmt.Printf("p4=%#v\n", p4) //p4=main.person{name:"", city:"", age:0}
+}
+```
+
+
+
+##### 使用键值对初始化
+
+使用键值对对结构体进行初始化时，键对应结构体的字段，值对应该字段的初始值。
+
+当某些字段没有初始值的时候，该字段可以不写。此时，没有指定初始值的字段的值就是该字段类型的零值。
+
+```go
+type person1 struct {
+	name string
+	city string
+	age  int8
+}
+
+func main() {
+	var p1 = person1{
+		name: "lin",
+		city: "addr",
+		age: 18,						// 要记得加 ,
+	}
+	fmt.Println(p1)						// {lin addr 18}
+	
+    // 对结构体指针进行键值对初始化，
+	var p2 = &person1{
+		name: "lin",
+		city: "addr",
+        // 当某些字段没有初始值的时候，该字段可以不写。
+	}
+	fmt.Println(p2)						// &{lin addr 0}
+}
+```
+
+
+
+##### 使用值的列表初始化
+
+初始化结构体的时候可以简写，也就是初始化的时候不写键，直接写值：
+
+```go
+func main() {
+    var p1 = person1{
+        "lin",
+        "addr",
+        18,						// 要记得加 ,
+    }
+	fmt.Println(p1)
+	//var p2 = person1{
+	//	"lin",
+	//	"addr",
+	//	// 必须初始化结构体的所有字段。否则会报错
+	//}
+	//fmt.Println(p2)
+}
+```
+
+使用这种格式初始化时，需要注意：
+
+- 必须初始化结构体的所有字段。
+
+- 初始值的填充顺序必须与字段在结构体中的声明顺序一致。
+
+- 该方式不能和键值初始化方式混用。
+
+
+
+
+
+#### 特殊结构体
+
+##### 空结构体
+
+空结构体是不占用空间的。
+
+```go
+var v struct{}
+fmt.Println(unsafe.Sizeof(v))  // 0
+```
+
+
+
+##### 匿名结构体
+
+在定义一些临时数据结构等场景下,如只使用一次的，还可以使用匿名结构体。
+
+```go
+func main() {
+	var tmp_person struct{name string; age int}
+	tmp_person.name = "小王子"
+	tmp_person.age = 18
+	fmt.Println(tmp_person)
+}
+```
+
+
+
+##### 指针类型结构体
+
+我们还可以通过使用`new`关键字对结构体进行实例化，得到的是结构体的地址。 需要注意的是在Go语言中支持对结构体指针直接使用`.`来访问结构体的成员。
+
+```go
+type person1 struct {
+	name string
+	city string
+	age  int8
+}
+
+func main() {
+	var person = new(person1)		// &{  0}
+    fmt.Printf("%T\n", person)     		// *main.person
+	fmt.Printf("%#v\n", person)			// &main.person1{name:"", city:"", age:0}
+    
+	//(*person).name = "lin"
+	//(*person).city = "addr"
+	//(*person).age = 18
+	// 指针类型的结构体也能通过 . 调用
+	person.name = "lin"
+	person.city = "addr"
+	person.age = 18
+	fmt.Println(person)				// &{lin addr 18}
+
+}
+```
+
+注意：**使用`&`对结构体进行取地址操作相当于对该结构体类型进行了一次`new`实例化操作。**
+
+```go
+    // 使用 `&` 对结构体进行取地址操作相当于对该结构体类型进行了一次 `new` 实例化操作。
+    var p = &person1{}					// &{  0}
+    fmt.Printf("%T\n", p)     			// *main.person
+    fmt.Printf("%#v\n", p)				// &main.person1{name:"", city:"", age:0}
+```
+
+
+
+
+
+## 面向对象
+
+### 构造函数
+
+&emsp;&emsp;Go 语言的结构体没有构造函数，我们可以自己实现。 例如，下方的代码就实现了一个 `person` 的构造函数。 因为 `struct` 是值类型，如果结构体比较复杂的话，值拷贝性能开销会比较大，所以该构造函数返回的是结构体指针类型。
+
+```go
+func newPerson(name, city string, age int8) *person {
+    // 节省开销，返回指针
+	return &person{
+		name: name,
+		city: city,
+		age:  age,
+	}
+}
+```
+
+调用构造函数:
+
+```go
+p9 := newPerson("张三", "沙河", 90)
+fmt.Printf("%#v\n", p9) //&main.person{name:"张三", city:"沙河", age:90}
+```
+
+
+
+### 方法和接收者
+
+&emsp;&emsp;Go语言中的 `方法( Method )` 是一种作用于特定类型变量的函数。这种特定类型变量叫做 `接收者( Receiver )`。接收者的概念就类似于其他语言中的 `this` 或者  `self`。方法的定义格式如下：
+
+```go
+func (接收者变量 接收者类型) 方法名(参数列表) (返回参数) {
+    函数体
+}
+// 接收者变量：
+//		接收者中的参数变量名在命名时，官方建议使用接收者类型名称首字母的小写，而不是self、this之类的命名。例如，Person类型的接收者变量应该命名为 p，Connector类型的接收者变量应该命名为c等。
+// 接收者类型：
+//		接收者类型和参数类似，可以是指针类型和非指针类型。
+// 方法名、参数列表、返回参数：
+//		具体格式与函数定义相同。
+```
+
+> 方法与函数的区别是，函数不属于任何类型，方法属于特定的类型。
 
 
 
