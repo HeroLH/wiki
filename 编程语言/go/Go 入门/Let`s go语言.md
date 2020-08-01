@@ -20,10 +20,20 @@
 
 # 初识Go语言
 
+> [Go语言圣经（中文版）](https://docs.hacknode.org/gopl-zh/)
+>
+> https://github.com/gopl-zh/gopl-zh.github.com
+>
+> http://shouce.jb51.net/gopl-zh/ch1/ch1-01.html
+
+
+
 ## 什么是Go语言？
 
 &emsp;&emsp;Go 是一个开源的编程语言，它能让构造简单、可靠且高效的软件变得容易。
 &emsp;&emsp;Go 是从 2007 年末由 Robert Griesemer, Rob Pike, Ken Thompson 主持开发，后来还加入了 Ian Lance Taylor, Russ Cox 等人，并最终于 2009 年 11 月开源，在 2012 年早些时候发布了 Go 1 稳定版本。现在 Go 的开发已经是完全开放的，并且拥有一个活跃的社区。
+
+[GO 可在线运行教程](https://tour.go-zh.org/welcome/1)
 
 
 
