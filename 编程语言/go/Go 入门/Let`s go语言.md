@@ -1217,7 +1217,7 @@ fmt.Println(str2)
 
 
 
-#### 作用域
+#### 变量作用域
 
 > 如果我们定义了一个大括号，大括号内定义的变量：
 > - 不能被括号外的使用。
@@ -2070,16 +2070,32 @@ func SayHello(str string)  {
 	fmt.Println("Hello ", str)
 }
 
-func Sum1(num1 int, num2 int) (ret int) {
-	ret = num1 + num2				// 函数已经声明了返回值
-	return 							// 会自动找到并返回 ret
+func main() {
+	SayHello("World!")
 }
+```
 
-func Sum2(num1 int, num2 int) int {
-	ret := num1 + num2				// 函数未声明返回值
-	return ret						// 必须手动返回 ret
+
+
+### 参数
+
+#### 类型简写
+
+函数的参数中如果相邻变量的类型相同，则可以省略类型，例如：
+
+```go
+func intSum(num1, num2 int) int {
+	return num2 + num1
 }
+```
 
+
+
+#### 可变参数
+
+可变参数是指函数的参数数量不固定。Go语言中的可变参数通过在参数名后加`...`来标识。注意：**可变参数通常要作为函数的最后一个参数。**
+
+```go
 // 接收可变参数
 func GetManyInt(int_list ...int) (ret int) {
     // int_list 是个切片
@@ -2092,7 +2108,7 @@ func GetManyInt(int_list ...int) (ret int) {
 // 接收固定参数和可变参数 ，可变参数要放最后
 func GetManyInt2(str string, int_list ...int) (ret int) {
 	fmt.Println(str)
-	// int_list 是个切片
+	// int_list 是个 slice 切片
 	for _, num := range int_list{
 		ret += num
 	}
@@ -2100,11 +2116,6 @@ func GetManyInt2(str string, int_list ...int) (ret int) {
 }
 
 func main() {
-	SayHello("World!")
-	num1 := Sum1(1, 2)
-	num2 := Sum2(1, 2)
-	fmt.Println(num1, num2)
-
 	num3 := GetManyInt(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
 	fmt.Println(num3)
     
@@ -2113,9 +2124,411 @@ func main() {
 }
 ```
 
+> 本质上，函数的可变参数是通过切片来实现的。
 
 
 
+### 返回值
+
+Go语言中通过 `return` 关键字向外输出返回值。
+
+#### 多返回值
+
+Go语言中函数支持多返回值，函数如果有多个返回值时必须用`()`将所有返回值包裹起来。
+
+```go
+func Sum1(num1 int, num2 int) (ret int) {
+	ret = num1 + num2				// 函数已经声明了返回值
+	return 							// 会自动找到并返回 ret
+}
+
+//接收2个参数 num1 和 num1 都是 int 类型
+func Sum2(num1 int, num2 int) int {
+	ret := num1 + num2				// 函数未声明返回值
+	return ret						// 必须手动返回 ret
+}
+
+func calc(num1, num2 int) (int, int) {
+	sum := num1 + num2
+	sub := num1 - num2
+	return sum, sub
+}
+
+func main() {
+	num1 := Sum1(1, 2)
+	num2 := Sum2(1, 2)
+	fmt.Println(num1, num2)
+
+	// 多返回值
+	fmt.Println(calc(1, 2))
+}
+```
+
+
+
+#### 返回值补充
+
+&emsp;&emsp;当我们的一个函数返回值类型为 slice 时，nil 可以看做是一个有效的 slice，没必要显示返回一个长度为 0 的切片。
+
+```go
+// nil可以看做是一个有效的slice
+func returnNil(x string) []int {
+	if x == "" {
+		return nil // 没必要返回[]int{}
+	}
+	return []int{}
+}
+
+func main() {
+    // nil可以看做是一个有效的slice
+	ret1 := returnNil("")
+	ret2 := returnNil("123")
+	fmt.Println(ret1, reflect.TypeOf(ret1))		// [] []int
+	fmt.Println(ret2, reflect.TypeOf(ret2))		// [] []int
+}
+```
+
+
+
+
+
+
+
+### defer 语句
+
+&emsp;&emsp;Go 语言中的 `defer` 语句会将其后面跟随的语句进行延迟处理。在 `defer` 归属的函数即将返回时，将延迟处理的语句按 `defer` 定义的逆序进行执行，也就是说，先被 `defer` 的语句最后被执行，最后被 `defer` 的语句，最先被执行。
+
+```go
+func main() {
+	fmt.Println("start")
+	defer fmt.Println(1)
+	defer fmt.Println(2)
+	defer fmt.Println(3)
+	fmt.Println("end")
+}
+
+// 输出结果：
+// start
+// end
+// 3
+// 2
+// 1
+```
+
+> 由于 `defer` 语句延迟调用的特性，所以 `defer` 语句能非常方便的处理资源释放问题。比如：资源清理、文件关闭、解锁及记录时间等。
+
+
+
+##### defer执行时机
+
+&emsp;&emsp;在Go语言的函数中 `return` 语句在底层并不是原子操作，它分为给返回值赋值和 RET 指令两步。而 `defer` 语句执行的时机就在返回值赋值操作后，RET 指令执行前。具体如下图所示：
+
+![defer执行时机](.assets/defer.png)
+
+
+
+##### defer经典案例
+
+```go
+func f1() int {
+	x := 5
+	defer func() {
+		x++
+	}()
+	return x
+}
+
+func f2() (x int) {
+	defer func() {
+		x++
+	}()
+	return 5
+}
+
+func f3() (y int) {
+	x := 5
+	defer func() {
+		x++
+	}()
+	return x
+}
+
+func f4() (x int) {
+	defer func(x int) {
+		x++
+	}(x)
+	return 5
+}
+
+func main() {
+	fmt.Println(f1())
+	fmt.Println(f2())
+	fmt.Println(f3())
+	fmt.Println(f4())
+}
+```
+
+
+
+
+
+### 高阶函数
+
+#### 函数作为变量
+
+```go
+func func1()  {
+	fmt.Println("Hello world!")
+}
+
+func main() {
+	func1 := func1
+	fmt.Println(reflect.TypeOf(func1))
+	func1()
+}
+```
+
+
+
+#### 函数作为参数
+
+```go
+func sum(x, y int) int {
+	return x + y
+}
+
+func Sum(x, y int, function func(int, int) int) int {
+	return function(x, y)
+}
+
+func main() {
+	num := Sum(1, 2, sum)
+	fmt.Println(num)				// 3
+}
+```
+
+
+
+#### 函数作为返回值
+
+```go
+func sum(x, y int) int {
+	return x + y
+}
+
+func subt(x, y int) int {
+	return x - y
+}
+
+func Calc(sign string) (func(int, int) int, error) {
+	switch sign {
+	case "+":
+		return sum, nil
+	case "-":
+		return subt, nil
+	default:
+		err := errors.New("无法识别的操作符")
+		return nil, err
+	}
+}
+
+func main() {
+	function, err := Calc("-")
+	if err != nil {
+		fmt.Println(err)
+	}else {
+		num := function(1, 2)
+		fmt.Println(num)
+	}
+}
+```
+
+
+
+
+
+### 匿名函数和闭包
+
+#### 匿名函数
+
+&emsp;&emsp;在 Go 语言中函数内部不能再像之前那样定义函数了，只能定义匿名函数。匿名函数就是没有函数名的函数，匿名函数的定义格式如下：
+
+```go
+func(参数)(返回值){
+    函数体
+}
+```
+
+&emsp;&emsp;匿名函数因为没有函数名，所以没办法像普通函数那样调用，所以匿名函数需要保存到某个变量或者作为立即执行函数:
+
+```go
+func main() {
+    // 立即执行匿名函数
+	func() {
+		fmt.Println("Hello World!")
+	}()
+
+	// 将匿名函数赋值给变量，延后执行
+	function := func(str string) {
+		fmt.Println(str)
+	}
+	function("Say Hi!")
+}
+```
+
+匿名函数多用于实现回调函数和闭包。
+
+
+
+#### 闭包
+
+闭包指的是一个函数和与其相关的引用环境组合而成的实体。简单来说，`闭包=函数+引用环境`。 
+
+```go
+func function1() func() {
+	return func() {
+		fmt.Println("Hello World!")
+	}
+}
+
+func adder(num1 int) func(int) int {
+	return func(y int) int {
+		num1 += y
+		return num1
+	}
+}
+
+func main() {
+	function1 := function1()
+	function1()
+
+	function2 := adder(1)
+	num1 := function2(2)
+	fmt.Println(num1)				// 3
+	num2 := function2(2)
+	fmt.Println(num2)				// 5
+}
+```
+
+> 变量 `function2` 是一个函数并且它引用了其外部作用域中的 `num` 变量，此时 `function2` 就是一个闭包。 在 `function2` 的生命周期内，变量 `function2` 也一直有效。
+
+
+
+##### 其他示例：
+
+```go
+func Calc1(base int) (func(int) int, func(int) int) {
+	add := func(i int) int {
+		base += i
+		return base
+	}
+
+	sub := func(i int) int {
+		base -= i
+		return base
+	}
+	return add, sub
+}
+
+func main() {
+	f1, f2 := Calc1(10)
+	fmt.Println(f1(1), f2(2)) //11 9
+	fmt.Println(f1(3), f2(4)) //12 8
+	fmt.Println(f1(5), f2(6)) //13 7
+}
+```
+
+```go
+func makeSuffixFunc(suffix string) func(string) string {
+	return func(name string) string {
+		if !strings.HasSuffix(name, suffix) {
+			return name + suffix
+		}
+		return name
+	}
+}
+
+func main() {
+	jpgFunc := makeSuffixFunc(".jpg")
+	txtFunc := makeSuffixFunc(".txt")
+	fmt.Println(jpgFunc("test")) //test.jpg
+	fmt.Println(txtFunc("test")) //test.txt
+}
+```
+
+
+
+
+
+### 内置函数
+
+|    内置函数    |                             介绍                             |
+| :------------: | :----------------------------------------------------------: |
+|     close      |                     主要用来关闭channel                      |
+|      len       |      用来求长度，比如string、array、slice、map、channel      |
+|      new       | 用来分配内存，主要用来分配值类型，比如int、struct。返回的是指针 |
+|      make      |   用来分配内存，主要用来分配引用类型，比如chan、map、slice   |
+|     append     |                 用来追加元素到数组、slice中                  |
+| panic和recover |                        用来做错误处理                        |
+
+
+
+#### panic/recover
+
+&emsp;&emsp;Go语言中在 1.12 前是没有异常机制，但是使用 `panic/recover` 模式来处理错误。 `panic`可以在任何地方引发，但`recover`只有在`defer`调用的函数中有效。
+
+```go
+func funcA() {
+	fmt.Println("func A")
+}
+
+func funcB() {
+	panic("panic in B")
+}
+
+func funcC() {
+	fmt.Println("func C")
+}
+
+func main() {
+	funcA()			// 执行
+	funcB()			// 抛出错误
+	funcC()			// 不执行
+}
+```
+
+程序运行期间`funcB`中引发了`panic`导致程序崩溃，异常退出了。这个时候我们就可以通过`recover`将程序恢复回来，继续往后执行。
+
+```go
+func funcD() {
+	defer func() {
+		err := recover()
+		if err != nil {
+			fmt.Println(err)
+		}
+	}()
+	panic("panic in B")
+}
+
+func main() {
+	funcA()
+	funcD()
+	funcC()
+}
+
+// 输出结果：
+// func A
+// panic in B
+// func C
+```
+
+
+
+###### 注意：
+
+- `recover()`必须搭配`defer`使用。
+
+- `defer`一定要在可能引发`panic`的语句之前定义。
 
 
 
@@ -2182,7 +2595,7 @@ func main() {
 
 
 
-### 结构体
+### 初识结构体
 
 &emsp;&emsp;Go 语言中不直接支持面向对象，但可以通过 `struct` 来实现面向对象。
 &emsp;&emsp;Go 语言中的基础数据类型可以表示一些事物的基本属性，而结构体是用来描述一组值的。比如一个人有名字、年龄和居住城市等，本质上是一种聚合型的数据类型，Go 语言提供了一种自定义数据类型，可以封装多个基本数据类型，这种数据类型叫结构体，英文名称 `struct`。 
@@ -2230,6 +2643,14 @@ func main() {
 	fmt.Println(person.name, person.city, person.age)
 }
 ```
+
+
+
+##### 结构体字段的可见性
+
+结构体中字段大写开头表示可公开访问，小写表示私有（仅在定义当前结构体的包中可访问）。
+
+
 
 
 
@@ -2385,6 +2806,115 @@ func main() {
 
 
 
+### 结构体的匿名字段
+
+结构体允许其成员字段在声明时没有字段名而只有类型，这种没有名字的字段就称为匿名字段。
+
+```go
+//Person 结构体Person类型
+type Person struct {
+	string
+	int
+}
+
+func main() {
+	p1 := Person{
+		"小王子",
+		18,
+	}
+	fmt.Printf("%#v\n", p1)        //main.Person{string:"北京", int:18}
+	fmt.Println(p1.string, p1.int) //北京 18
+}
+```
+
+**注意：**这里匿名字段的说法并不代表没有字段名，而是默认会采用类型名作为字段名，结构体要求字段名称必须唯一，因此**一个结构体中同种类型的匿名字段只能有一个。**
+
+
+
+### 嵌套结构体
+
+一个结构体中可以嵌套包含另一个结构体或结构体指针
+
+```go
+//Address 地址结构体
+type Address struct {
+	Province string
+	City     string
+}
+
+//User 用户结构体
+type User struct {
+	Name    string
+	Gender  string
+	Address Address
+}
+
+func main() {
+	user1 := User{
+		Name:   "lin",
+		Gender: "man",
+		Address: Address{
+			Province: "北京",
+			City:     "朝阳",
+		},
+	}
+	fmt.Println(user1)
+	fmt.Println(user1.Name)
+	fmt.Println(user1.Address)
+	fmt.Println(user1.Address.City)
+}
+```
+
+
+
+#### 嵌套匿名字段
+
+上面user结构体中嵌套的 `Address` 结构体也可以采用匿名字段的方式
+
+```go
+//Address 地址结构体
+type address struct {
+	Province 	string
+	City     	string
+	UpdateTime 	string
+}
+
+type email struct {
+	Addr 		string
+	UpdateTime 	string
+}
+
+//User 用户结构体
+type User1 struct {
+	Name    string
+	Gender  string
+	address 				//匿名字段
+	email
+}
+
+func main() {
+	var user1 User1
+	user1.Name = "lin"
+	user1.Gender = "男"
+	user1.address.Province = "北京"    	// 匿名字段默认使用类型名作为字段名
+	user1.City = "朝阳"                	// 匿名字段可以省略
+    user1.address.UpdateTime = "2020-11-11"
+	user1.email.UpdateTime = "2021-11-11"
+    
+	fmt.Println(user1)				     // {lin 男 {北京 朝阳}} 
+	fmt.Println(user1.address)			// {北京 朝阳}
+	fmt.Println(user1.address.City)		// 朝阳
+	fmt.Println(user1.City)				// 朝阳
+    //fmt.Println(user1.UpdateTime)		// 嵌套结构体中包含多个同名字段，不能这样调用，会报错
+    fmt.Println(user1.email.UpdateTime)
+	fmt.Println(user1.address.UpdateTime)
+}
+```
+
+嵌套结构体内部可能存在相同的字段名。在这种情况下为了避免歧义需要通过指定具体的内嵌结构体字段名。
+
+
+
 
 
 ## 面向对象
@@ -2415,6 +2945,9 @@ fmt.Printf("%#v\n", p9) //&main.person{name:"张三", city:"沙河", age:90}
 
 ### 方法和接收者
 
+> 引用并参考：
+> [李文周的博客 - Go语言基础之结构体](https://www.liwenzhou.com/posts/Go/10_struct/#autoid-2-6-0)
+
 &emsp;&emsp;Go语言中的 `方法( Method )` 是一种作用于特定类型变量的函数。这种特定类型变量叫做 `接收者( Receiver )`。接收者的概念就类似于其他语言中的 `this` 或者  `self`。方法的定义格式如下：
 
 ```go
@@ -2422,7 +2955,7 @@ func (接收者变量 接收者类型) 方法名(参数列表) (返回参数) {
     函数体
 }
 // 接收者变量：
-//		接收者中的参数变量名在命名时，官方建议使用接收者类型名称首字母的小写，而不是self、this之类的命名。例如，Person类型的接收者变量应该命名为 p，Connector类型的接收者变量应该命名为c等。
+//		接收者中的参数变量名在命名时，官方建议使用接收者类型名称首字母的小写，而不是 self、this 之类的命名。例如，Person 类型的接收者变量应该命名为 p，Connector 类型的接收者变量应该命名为 c 等。
 // 接收者类型：
 //		接收者类型和参数类似，可以是指针类型和非指针类型。
 // 方法名、参数列表、返回参数：
@@ -2430,6 +2963,150 @@ func (接收者变量 接收者类型) 方法名(参数列表) (返回参数) {
 ```
 
 > 方法与函数的区别是，函数不属于任何类型，方法属于特定的类型。
+
+```go
+//Person 结构体
+type Person struct {
+	name string
+	age  int8
+}
+
+//NewPerson 构造函数
+func NewPerson(name string, age int8) *Person {
+	return &Person{
+		name: name,
+		age:  age,
+	}
+}
+
+//Dream Person做梦的方法
+func (p Person) Dream() {
+	fmt.Printf("%s的梦想是学好Go语言！\n", p.name)
+}
+
+
+func main() {
+	p1 := NewPerson("小王子", 25)
+	// (*p1).Dream()
+	p1.Dream()
+}
+```
+
+
+
+#### 值类型的接收者
+
+&emsp;&emsp;当方法作用于值类型接收者时，Go 语言会在代码运行时将接收者的值复制一份。在值类型接收者的方法中可以获取接收者的成员值，但修改操作只是针对副本，无法修改接收者变量本身。
+
+```go
+// SetAge2 设置p的年龄
+// 使用值接收者
+func (p Person) SetAge2(newAge int8) {
+	p.age = newAge
+}
+
+func main() {
+	p1 := NewPerson("小王子", 25)
+	p1.Dream()
+	fmt.Println(p1.age) 		// 25
+	p1.SetAge2(30) 				// (*p1).SetAge2(30)
+	fmt.Println(p1.age) 		// 25
+}
+```
+
+
+
+#### 指针类型的接收者
+
+&emsp;&emsp;指针类型的接收者由一个结构体的指针组成，由于指针的特性，调用方法时修改接收者指针的任意成员变量，**在方法结束后，修改都是有效的**。这种方式就十分接近于其他语言中面向对象中的 `this` 或者 `self`。 例如我们为 `Person` 添加一个 `SetAge` 方法，来修改实例变量的年龄。
+
+```go
+// SetAge 设置p的年龄
+// 使用指针接收者
+func (p *Person) SetAge(newAge int8) {
+	p.age = newAge
+}
+
+func main() {
+	p1 := NewPerson("小王子", 25)
+	fmt.Println(p1.age) 		// 25
+	p1.SetAge(30)
+	fmt.Println(p1.age) 		// 30
+}
+```
+
+
+
+ **什么时候应该使用指针类型接收者**:
+- 需要修改接收者中的值
+- 接收者是拷贝代价比较大的大对象
+- 保证一致性，如果有某个方法使用了指针接收者，那么其他的方法也应该使用指针接收者。
+
+
+
+
+
+#### 任意类型添加方法
+
+> **注意事项：** 非本地类型不能定义方法，也就是说我们不能给别的包的类型定义方法。
+
+&emsp;&emsp;在 Go 语言中，接收者的类型可以是任何类型，不仅仅是结构体，任何类型都可以拥有方法。 举个例子，我们基于内置的 `int` 类型使用 type 关键字可以定义新的自定义类型，然后为我们的自定义类型添加方法。
+
+```go
+//MyInt 将int定义为自定义MyInt类型
+type MyInt int
+
+//SayHello 为MyInt添加一个SayHello的方法
+func (m MyInt) SayHello() {
+	fmt.Println("Hello, 我是一个int。")
+}
+func main() {
+	var m1 MyInt
+	m1.SayHello() //Hello, 我是一个int。
+	m1 = 100
+	fmt.Printf("%#v  %T\n", m1, m1) //100  main.MyInt
+}
+```
+
+
+
+
+
+### 结构体的“继承”
+
+Go语言中使用结构体也可以实现其他编程语言中面向对象的继承。
+
+```go
+//Animal 动物
+type Animal struct {
+	name string
+}
+
+func (a *Animal) move() {
+	fmt.Printf("%s会动！\n", a.name)
+}
+
+//Dog 狗
+type Dog struct {
+	Feet    int8
+	*Animal //通过嵌套匿名结构体实现继承
+}
+
+func (d *Dog) wang() {
+	fmt.Printf("%s会汪汪汪~\n", d.name)
+}
+
+func main() {
+	d1 := &Dog{
+		Feet: 4,
+		Animal: &Animal{ //注意嵌套的是结构体指针
+			name: "乐乐",
+		},
+	}
+	d1.wang() //乐乐会汪汪汪~
+	d1.move() //乐乐会动！
+}
+```
 
 
 
