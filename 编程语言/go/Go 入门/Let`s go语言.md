@@ -2650,6 +2650,22 @@ func main() {
 
 结构体中字段大写开头表示可公开访问，小写表示私有（仅在定义当前结构体的包中可访问）。
 
+```go
+// 对外无法访问
+type student struct {
+	Id int
+	Name string
+}
+
+对外支持访问
+type Class struct {
+	title string			// 对外不支持访问
+	Student []student		// 对外支持访问
+}
+```
+
+
+
 
 
 
@@ -2914,6 +2930,185 @@ func main() {
 嵌套结构体内部可能存在相同的字段名。在这种情况下为了避免歧义需要通过指定具体的内嵌结构体字段名。
 
 
+
+
+
+### 结构体与 JSON 序列化
+
+&emsp;&emsp;JSON(JavaScript Object Notation) 是一种轻量级的数据交换格式。易于人阅读和编写。同时也易于机器解析和生成。JSON键值对是用来保存 JS 对象的一种方式，键/值对组合中的键名写在前面并用双引号 `""` 包裹，使用冒号 `:` 分隔，然后紧接着值 ；多个键值之间使用英文`,`分隔。
+
+```go
+// 序列化
+func Marshal(v interface{}) ([]byte, error)
+
+// 反序列化
+func Unmarshal(data []byte, v interface{}) error
+```
+
+```GO
+type student struct {
+	Id int
+	Name string
+}
+
+type Class struct {
+	Title string
+	Student []student
+}
+
+// student 的构造函数
+func newStudent(id int, name string) student {
+	return student{
+		Id: id,
+		Name: name,
+	}
+}
+
+func main() {
+	c1 := Class{
+		Title: "class1",
+		Student: make([]student, 0, 20),
+	}
+	for i := 0; i < 10; i++ {
+		tmpStu := newStudent(i, fmt.Sprintf("stu%02d", i))
+		c1.Student = append(c1.Student, tmpStu)
+	}
+	fmt.Println(c1)
+
+	//JSON序列化：结构体-->JSON格式的字符串
+	data, err := json.Marshal(c1)
+	if err != nil {
+		fmt.Println("json marshal failed")
+		return
+	}
+	fmt.Printf("json:%s\n", data)
+
+	//JSON反序列化：JSON格式的字符串-->结构体
+	str := `{"Title":"class1","Student":[{"Id":0,"Name":"stu00"},{"Id":1,"Name":"stu01"
+},{"Id":2,"Name":"stu02"},{"Id":3,"Name":"stu03"},{"Id":4,"Name":"stu04"},{"Id":
+5,"Name":"stu05"},{"Id":6,"Name":"stu06"},{"Id":7,"Name":"stu07"},{"Id":8,"Name"
+:"stu08"},{"Id":9,"Name":"stu09"}]}
+`
+	c2 := &Class{}
+	err = json.Unmarshal([]byte(str), c2)
+	if err != nil {
+		fmt.Println("json unmarshal failed!")
+		return
+	}
+	fmt.Println(c2)
+}
+```
+
+特殊：
+
+```go
+type student struct {
+	Id int
+	Name string
+}
+
+type Class2 struct {
+	title string
+	Student []student
+}
+
+// student 的构造函数
+func newStudent(id int, name string) student {
+	return student{
+		Id: id,
+		Name: name,
+	}
+}
+
+func main() {
+	c1 := Class2{
+		title: "class1",
+		Student: make([]student, 0, 20),
+	}
+	for i := 0; i < 10; i++ {
+		tmpStu := newStudent(i, fmt.Sprintf("stu%02d", i))
+		c1.Student = append(c1.Student, tmpStu)
+	}
+	fmt.Println(c1)
+
+	//JSON序列化：结构体-->JSON格式的字符串
+	data, err := json.Marshal(c1)
+	if err != nil {
+		fmt.Println("json marshal failed")
+		return
+	}
+	fmt.Printf("json:%s\n", data)		// 访问不到 title
+
+	// JSON反序列化：JSON格式的字符串-->结构体
+	str := `{"title":"class1","Student":[{"Id":0,"Name":"stu00"},{"Id":1,"Name":"stu01"
+	},{"Id":2,"Name":"stu02"},{"Id":3,"Name":"stu03"},{"Id":4,"Name":"stu04"},{"Id":
+	5,"Name":"stu05"},{"Id":6,"Name":"stu06"},{"Id":7,"Name":"stu07"},{"Id":8,"Name"
+	:"stu08"},{"Id":9,"Name":"stu09"}]}
+	`
+	c2 := &Class2{}
+	err = json.Unmarshal([]byte(str), c2)
+	if err != nil {
+		fmt.Println("json unmarshal failed!")
+		return
+	}
+	fmt.Printf("%#v\n", c2)
+}
+```
+
+```go
+// 输出结果：
+
+// title 为私有字段，所以序列化时不存在 json 中
+json:{"Student":[{"Id":0,"Name":"stu00"},{"Id":1,"Name":"stu01"},{"Id":2,"Name":
+"stu02"},{"Id":3,"Name":"stu03"},{"Id":4,"Name":"stu04"},{"Id":5,"Name":"stu05"}
+,{"Id":6,"Name":"stu06"},{"Id":7,"Name":"stu07"},{"Id":8,"Name":"stu08"},{"Id":9
+,"Name":"stu09"}]}
+
+// title 为私有字段所以反序列化为空
+&main.Class2{title:"", Student:[]main.student{main.student{Id:0, Name:"stu00"},
+main.student{Id:1, Name:"stu01"}, main.student{Id:2, Name:"stu02"}, main.student
+{Id:3, Name:"stu03"}, main.student{Id:4, Name:"stu04"}, main.student{Id:5, Name:
+"stu05"}, main.student{Id:6, Name:"stu06"}, main.student{Id:7, Name:"stu07"}, ma
+in.student{Id:8, Name:"stu08"}, main.student{Id:9, Name:"stu09"}}}
+```
+
+
+
+
+
+### 结构体标签（Tag）
+
+&emsp;&emsp;`Tag` 是结构体的元信息，可以在运行的时候通过反射的机制读取出来。 `Tag` 在结构体字段的后方定义，由一对**反引号** 包裹起来，具体的格式如下：
+
+```go
+`key1:"value1" key2:"value2"`
+```
+
+结构体tag由一个或多个键值对组成。键与值使用冒号分隔，值用双引号括起来。同一个结构体字段可以设置多个键值对 tag，不同的键值对之间使用空格分隔。
+
+```go
+//Student 学生
+type Student struct {
+	ID     int    `json:"id"` 	//通过指定tag实现json序列化该字段时的key
+	Gender string 				//json序列化是默认使用字段名作为key
+	name   string 				//私有不能被json包访问
+    Status int 	`json:"status" db:"stu_status" xml:"ss"`
+}
+```
+
+**注意事项：** 为结构体编写`Tag`时，必须严格遵守键值对的规则。结构体标签的解析代码的容错能力很差，一旦格式写错，编译和运行时都不会提示任何错误，通过反射也无法正确取值。例如不要在key和value之间添加空格。
+
+
+
+## 接口
+
+[李文周的博客 - Go语言基础之接口](https://www.liwenzhou.com/posts/Go/12_interface/)
+
+> 接口（interface）定义了一个对象的行为规范，只定义规范不实现，由具体的对象来实现规范的细节。
+
+在Go语言中接口（interface）是一种类型，一种抽象的类型。
+
+`interface` 是一组 `method` 的集合，是 `duck-type programming` 的一种体现。接口做的事情就像是定义一个协议（规则），只要一台机器有洗衣服和甩干的功能，我就称它为洗衣机。不关心属性（数据），只关心行为（方法）。
 
 
 
