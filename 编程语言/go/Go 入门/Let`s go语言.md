@@ -3112,6 +3112,239 @@ type Student struct {
 
 
 
+### 接口的定义
+
+Go语言提倡面向接口编程。每个接口由数个方法组成，接口的定义格式如下：
+
+```go
+type 接口类型名 interface{
+    方法名1( 参数列表1 ) 返回值列表1
+    方法名2( 参数列表2 ) 返回值列表2
+    …
+}	
+```
+
+- **接口名:**
+
+    > 使用 type 将接口定义为自定义的类型名。Go 语言的接口在命名时，一般会在单词后面添加 er
+    > 如有写操作的接口叫 Writer，有字符串功能的叫 Stringer 等。接口名最好要能突出该接口的类型含义。
+
+- **方法名:**
+
+    > 当方法名首字母是大写且这个接口类型名首字母也是大写时，这个方法可以被接口所在的包（package）之外的代码访问。
+
+- **参数列表、返回值列表：**
+
+    参数列表和返回值列表中的参数变量名可以省略。
+
+
+
+
+
+### 为什么要使用接口
+
+```go
+type Cat struct{}
+
+func (c Cat) Say() string { return "喵喵喵" }
+
+type Dog struct{}
+
+func (d Dog) Say() string { return "汪汪汪" }
+
+func main() {
+	c := Cat{}
+	fmt.Println("猫:", c.Say())
+	d := Dog{}
+	fmt.Println("狗:", d.Say())
+}
+```
+
+&emsp;&emsp;上面的代码中定义了猫和狗，然后它们都会叫，你会发现main函数中明显有重复的代码，如果我们后续再加上猪、青蛙等动物的话，我们的代码还会一直重复下去。那我们能不能把它们当成“能叫的动物”来处理呢？像类似的例子在我们编程过程中会经常遇到：
+
+比如一个网上商城可能使用支付宝、微信、银联等方式去在线支付，我们能不能把它们当成“支付方式”来处理呢？
+比如三角形，四边形，圆形都能计算周长和面积，我们能不能把它们当成“图形”来处理呢？
+比如销售、行政、程序员都能计算月薪，我们能不能把他们当成“员工”来处理呢？
+
+&emsp;&emsp;Go语言中为了解决类似上面的问题，就设计了接口这个概念。接口区别于我们之前所有的具体类型，接口是一种抽象的类型。当你看到一个接口类型的值时，你不知道它是什么，唯一知道的是通过它的方法能做什么。
+
+```go
+type cat struct {}
+type dog struct {}
+type person struct {}
+
+func (c cat) say() {
+	fmt.Println("喵喵喵...")
+}
+
+func (d dog) say() {
+	fmt.Println("汪汪汪...")
+}
+
+// 接口不管你是什么类型，只管你实现了什么方法
+type sayer interface {
+	say()
+	// 只要你实现了 say() 方法的类型都可以称为 sayer 类型
+}
+
+func say(arg sayer){
+	arg.say()
+}
+
+func main() {
+	cat1 := cat{}
+	dog1 := dog{}
+	say(cat1)
+	say(dog1)
+
+	//person1 := person{}
+	//say(person1)				// 会报错，因为 person 并没有实现 say() 方法
+}
+
+```
+
+
+
+
+
+### 接口类型变量
+
+接口类型变量能够存储所有实现了该接口的实例：
+
+```go
+type cat struct {}
+type dog struct {}
+type person struct {}
+
+func (c cat) say() {
+	fmt.Println("喵喵喵...")
+}
+
+func (d dog) say() {
+	fmt.Println("汪汪汪...")
+}
+
+// 接口不管你是什么类型，只管你实现了什么方法
+type sayer interface {
+	say()
+	// 只要你实现了 say() 方法的类型都可以称为 sayer 类型
+}
+
+func say(arg sayer){
+	arg.say()
+}
+
+func main() {
+	var x sayer 			// 声明一个Sayer类型的变量x
+	a := cat{}  			// 实例化一个cat
+	b := dog{}  			// 实例化一个dog
+	x = a       // 可以把cat实例直接赋值给x
+	x.say()     // 喵喵喵
+	x = b       // 可以把dog实例直接赋值给x
+	x.say()     // 汪汪汪
+}
+```
+
+
+
+
+
+### 值接收者和指针接收者
+
+使用值接收者实现接口和使用指针接收者实现接口有什么区别呢？接下来我们通过一个例子看一下其中的区别。我们有一个`Mover`接口和一个`dog`结构体。
+
+```go
+type Mover interface {
+	move()
+}
+
+type dog struct {}
+```
+
+
+
+#### 值接收者实现接口
+
+> &emsp;&emsp;**使用值接收者实现接口，不管是结构体值类型还是结构体指针类型的变量都可以赋值给该接口变量。**因为 Go 语言中有对指针类型变量求值的语法糖，dog 指针 `fugui` 内部会自动求值 `*fugui`。
+
+```go
+func (d dog) move() {
+	fmt.Println("狗会动")
+}
+```
+
+此时实现接口的是`dog`类型：
+
+```go
+func main() {
+	var x Mover
+	var wangcai = dog{} 		// 旺财是dog类型
+	x = wangcai         		// x可以接收dog类型
+	var fugui = &dog{}  		// 富贵是*dog类型
+	x = fugui           		// x可以接收*dog类型
+	x.move()
+}
+```
+
+
+
+
+
+#### 指针接收者实现接口
+
+> 只有类型指针能够赋值给该接口变量
+
+```go
+func (d *dog) move() {
+	fmt.Println("狗会动")
+}
+func main() {
+	//var x Mover
+	//var wangcai = Dog{} 		
+	//x = wangcai         		// 无法赋值，应该该值类型没有实现 mover 接口
+
+	var fugui = &dog{}  		// 富贵是 *dog 类型
+	x = fugui           		// x 可以接收 *dog 类型
+}
+
+// 报错信息：
+// cannot use wangcai (type Dog) as type Mover in assignment:
+//	Dog does not implement Mover (move method has pointer receiver)
+```
+
+此时实现 `Mover` 接口的是 `*dog` 类型，所以不能给 `x` 传入 `dog` 类型的 wangcai，此时 x 只能存储 `*dog` 类型的值。
+
+
+
+
+
+### 类型与接口的关系
+
+#### 一个类型实现多个接口
+
+一个类型可以同时实现多个接口，而接口间彼此独立，不知道对方的实现。 例如，狗( dog类型 )可以叫( Sayer接口 )，也可以动( Mover接口 )。 
+
+
+
+#### 多个类型实现同一接口
+
+
+
+
+
+
+
+### 总结
+
+- 接口就是一个**需要实现的方法列表**。
+
+    > 接口不管你是什么类型，只管你实现了什么方法， 一个对象只要全部实现了接口中的方法，那么就实现了这个接口。
+
+
+
+
+
+
 ## 面向对象
 
 ### 构造函数
