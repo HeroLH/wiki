@@ -524,6 +524,7 @@ https://www.webpagefx.com/tools/emoji-cheat-sheet/
 - 当然现在很多markdown工具或者网站都不支持。  
 
 #### 平台支持性
+
 工具或网站      |是否支持emoji表情符号
 :--------------:|:---------------------:
 简书	        | 否
@@ -532,7 +533,8 @@ MarkDownPad     | 否（不知道付费版是否支持）
 zybuluo.com	    | 否
 github	        | 是  
 
-#### 示例
+#### 示例:smile:
+
 ![图片引用自互联网](https://img-blog.csdn.net/20180802164508437?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTQwNjE2MzA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70)  
 
 <br />
