@@ -20,7 +20,7 @@
 
 # 初识Go语言
 
-> [Go语言圣经（中文版）](https://docs.hacknode.org/gopl-zh/)
+> [Go语言圣经( 中文版)](https://docs.hacknode.org/gopl-zh/)
 >
 > https://github.com/gopl-zh/gopl-zh.github.com
 >
@@ -2648,7 +2648,7 @@ func main() {
 
 ##### 结构体字段的可见性
 
-结构体中字段大写开头表示可公开访问，小写表示私有（仅在定义当前结构体的包中可访问）。
+结构体中字段大写开头表示可公开访问，小写表示私有( 仅在定义当前结构体的包中可访问)。
 
 ```go
 // 对外无法访问
@@ -3076,7 +3076,7 @@ in.student{Id:8, Name:"stu08"}, main.student{Id:9, Name:"stu09"}}}
 
 
 
-### 结构体标签（Tag）
+### 结构体标签( Tag)
 
 &emsp;&emsp;`Tag` 是结构体的元信息，可以在运行的时候通过反射的机制读取出来。 `Tag` 在结构体字段的后方定义，由一对**反引号** 包裹起来，具体的格式如下：
 
@@ -3104,11 +3104,11 @@ type Student struct {
 
 [李文周的博客 - Go语言基础之接口](https://www.liwenzhou.com/posts/Go/12_interface/)
 
-> 接口（interface）定义了一个对象的行为规范，只定义规范不实现，由具体的对象来实现规范的细节。
+> 接口( interface)定义了一个对象的行为规范，只定义规范不实现，由具体的对象来实现规范的细节。
 
-在Go语言中接口（interface）是一种类型，一种抽象的类型。
+在Go语言中接口( interface)是一种类型，一种抽象的类型。
 
-`interface` 是一组 `method` 的集合，是 `duck-type programming` 的一种体现。接口做的事情就像是定义一个协议（规则），只要一台机器有洗衣服和甩干的功能，我就称它为洗衣机。不关心属性（数据），只关心行为（方法）。
+`interface` 是一组 `method` 的集合，是 `duck-type programming` 的一种体现。接口做的事情就像是定义一个协议( 规则)，只要一台机器有洗衣服和甩干的功能，我就称它为洗衣机。不关心属性( 数据)，只关心行为( 方法)。
 
 
 
@@ -3131,7 +3131,7 @@ type 接口类型名 interface{
 
 - **方法名:**
 
-    > 当方法名首字母是大写且这个接口类型名首字母也是大写时，这个方法可以被接口所在的包（package）之外的代码访问。
+    > 当方法名首字母是大写且这个接口类型名首字母也是大写时，这个方法可以被接口所在的包( package)之外的代码访问。
 
 - **参数列表、返回值列表：**
 
@@ -3583,6 +3583,607 @@ func main() {
     fmt.Println("如果程序没退出，就走我这里")
 }
 ```
+
+
+
+
+
+## 并发编程
+
+&emsp;&emsp;Go语言在语言层面天生支持并发，这也是Go语言流行的一个很重要的原因。
+
+&emsp;&emsp;Go语言的并发通过 `goroutine` 实现。`goroutine` 类似于线程，属于用户态的线程，我们可以根据需要创建成千上万个 `goroutine` 并发工作。`goroutine`     是由Go语言的运行时( runtime)调度完成，而线程是由操作系统调度完成。
+
+&emsp;&emsp;Go语言还提供 `channel`   在多个 `goroutine` 间进行通信。`goroutine` 和 `channel` 是 Go 语言秉承的 CSP ( Communicating Sequential Process) 并发模式的重要实现基础。
+
+
+
+### 并发与并行
+
+并发：同一时间段内执行多个任务(你在用微信和两个女朋友聊天)。
+
+并行：同一时刻执行多个任务( 你和你朋友都在用微信和女朋友聊天)。
+
+
+
+
+
+### goroutine
+
+&emsp;&emsp;`goroutine` 的概念类似于线程，但  `goroutine` 是由 Go 的运行时( runtime) 调度和管理的。Go 程序会智能地将 goroutine 中的任务合理地分配给每个 CPU。Go 语言之所以被称为现代化的编程语言，就是因为它在语言层面已经内置了调度和上下文切换的机制。
+
+&emsp;&emsp;在 Go 语言编程中你不需要去自己写进程、线程、协程，你的技能包里只有一个技能 `goroutine`，当你需要让某个任务并发执行的时候，你只需要把这个任务包装成一个函数，开启一个 `goroutine` 去执行这个函数就可以了，就是这么简单粗暴。
+
+
+
+#### goroutine 的使用
+
+&emsp;&emsp;Go 语言中使用 `goroutine` 非常简单，只需要在调用函数的时候在前面加上 `go` 关键字，就可以为一个函数创建一个 `goroutine`。
+
+&emsp;&emsp;一个 `goroutine` 必定对应一个函数，可以创建多个 `goroutine` 去执行相同的函数。
+
+**示例一：主进程不等待goroutine**
+
+```go
+func hello() {
+	fmt.Println("Hello Goroutine!")
+}
+
+func main() {
+	go hello() 							// 启动另外一个goroutine去执行hello函数
+	fmt.Println("main goroutine done!")
+}
+// 输出结果:
+// main goroutine done!
+```
+
+&emsp;&emsp;因为我们在创建新的 goroutine 的时候需要花费一些时间，而此时 main 函数所在的 `goroutine` 是继续执行的。所以这一次的执行结果只打印了 `main goroutine done!`，并没有打印 `Hello Goroutine!`。
+
+
+
+**示例二：主进程等待goroutine**
+
+```go
+var wg sync.WaitGroup			// 使用全局 sync.WaitGroup 来实现 goroutine 的同步
+
+func hello2(i int) {
+	defer wg.Done() 			// goroutine 结束就登记-1
+	fmt.Println("Hello Goroutine!", i)
+}
+func main() {
+
+	for i := 0; i < 10; i++ {
+		wg.Add(1) 				// 启动一个 goroutine 就登记+1
+		go hello2(i)
+	}
+	fmt.Println("go run!")
+	wg.Wait() 					// 阻塞，等待所有登记的 goroutine 都结束
+	fmt.Println("main goroutine done!")
+}
+```
+
+&emsp;&emsp;多次执行上面的代码，会发现每次打印的数字的顺序都不一致。这是因为10个 `goroutine` 是并发执行的，而 `goroutine` 的调度是随机的。
+
+
+
+**示例三：运行匿名函数**
+
+```GO
+var wg sync.WaitGroup			
+
+func main() {
+
+	for i := 0; i < 10; i++ {
+		wg.Add(1) 		
+		go func() {							// 闭包函数，取得是外面的 i
+			defer wg.Done()
+			fmt.Println("hello", i)
+		}()
+	}
+	fmt.Println("go run!")
+	wg.Wait() 					
+	fmt.Println("main goroutine done!")
+}
+
+// 输出结果:
+//hello 7
+//hello 10
+//hello 10
+//hello 10
+//hello 10
+//hello 10
+//hello 10
+//hello 10
+//go run!
+//hello 9
+//hello 10
+//main goroutine done!
+```
+
+正确意图：
+
+```go
+var wg sync.WaitGroup
+
+func main() {
+
+	for i := 0; i < 10; i++ {
+		wg.Add(1)
+		go func(i int) {
+			defer wg.Done()
+			fmt.Println("hello", i)
+		}(i)
+	}
+	fmt.Println("go run!")
+	wg.Wait()
+	fmt.Println("main goroutine done!")
+}
+
+// 输出结果:
+//hello 3
+//hello 7
+//hello 6
+//hello 8
+//hello 4
+//hello 5
+//hello 2
+//hello 0
+//go run!
+//hello 1
+//hello 9
+//main goroutine done!
+```
+
+
+
+
+
+
+
+#### goroutine 与线程
+
+##### 可增长的栈
+
+&emsp;&emsp;OS 线程（操作系统线程）一般都有固定的栈内存（通常为2MB）, **一个`goroutine`的栈在其生命周期开始时只有很小的栈（典型情况下2KB）**，`goroutine`的栈不是固定的，他可以按需增大和缩小，`goroutine`的栈大小限制可以达到1GB，虽然极少会用到这么大。所以在Go语言中一次创建十万左右的`goroutine`也是可以的。
+
+
+
+##### goroutine调度
+
+​	`GPM`是Go语言运行时（runtime）层面的实现，是go语言自己实现的一套调度系统。区别于操作系统调度OS线程。
+
+- `G` 很好理解，就是 个goroutine 的，里面除了存放本 goroutine 信息外 还有与所在 P 的绑定等信息。
+- `P` 管理着一组 goroutine 队列，P里面会存储当前 goroutine 运行的上下文环境（函数指针，堆栈地址及地址边界），P会对自己管理的 goroutine 队列做一些调度（比如把占用 CPU 时间较长的 goroutine 暂停、运行后续的 goroutine 等等）当自己的队列消费完了就去全局队列里取，如果全局队列里也消费完了会去其他 P 的队列里抢任务。
+- `M（machine）` 是 Go 运行时（runtime）对操作系统内核线程的虚拟， M 与内核线程一般是一一映射的关系， 一个 groutine 最终是要放到 M 上执行的；
+
+P 与 M 一般也是一一对应的。他们关系是： P管理着一组G挂载在M上运行。当一个G长久阻塞在一个M上时，runtime会新建一个M，阻塞G所在的P会把其他的G 挂载在新建的M上。当旧的G阻塞完成或者认为其已经死掉时 回收旧的M。
+
+P的个数是通过`runtime.GOMAXPROCS`设定（最大256），Go1.5版本之后默认为物理线程数。 在并发量大的时候会增加一些P和M，但不会太多，切换太频繁的话得不偿失。
+
+单从线程调度讲，Go 语言相比起其他语言的优势在于 OS 线程是由 OS 内核来调度的，`goroutine` 则是由 Go 运行时（runtime）自己的调度器调度的，这个调度器使用一个称为 m:n 调度的技术（复用/调度 m 个 goroutine 到 n 个 OS 线程）。 其一大特点是 goroutine 的调度是在用户态下完成的， 不涉及内核态与用户态之间的频繁切换，包括内存的分配与释放，都是在用户态维护着一块大的内存池， 不直接调用系统的 malloc 函数（除非内存池需要改变），成本比调度 OS 线程低很多。 另一方面充分利用了多核的硬件资源，近似的把若干 goroutine 均分在物理线程上， 再加上本身 goroutine 的超轻量，以上种种保证了 go 调度方面的性能。
+
+[了解更多 - 深入Golang调度器之GMP模型](https://www.cnblogs.com/sunsky303/p/9705727.html)
+
+
+
+
+
+##### GOMAXPROCS
+
+&emsp;&emsp;Go 运行时的调度器使用 `GOMAXPROCS` 参数来确定需要使用多少个 OS 线程来同时执行 Go 代码。默认值是机器上的 CPU 核心数。例如在一个 8 核心的机器上，调度器会把 Go 代码同时调度到 8 个 OS 线程上（GOMAXPROCS 是 m:n 调度中的 n ）。
+
+Go 语言中可以通过`runtime.GOMAXPROCS()`函数设置当前程序并发时占用的CPU逻辑核心数。
+
+Go1.5版本之前，默认使用的是单核心执行。Go1.5版本之后，默认使用全部的CPU逻辑核心数。
+
+我们可以通过将任务分配到不同的CPU逻辑核心上实现并行的效果，这里举个例子：单核心：
+
+```go
+// 两个任务只有一个逻辑核心，此时是做完一个任务再做另一个任务。
+func a() {
+	for i := 1; i < 10; i++ {
+		fmt.Println("A:", i)
+	}
+}
+
+func b() {
+	for i := 1; i < 10; i++ {
+		fmt.Println("B:", i)
+	}
+}
+
+func main() {
+	runtime.GOMAXPROCS(1)
+	go a()
+	go b()
+	time.Sleep(time.Second)
+}
+```
+
+将逻辑核心数设为2，此时两个任务并行执行，代码如下:
+
+```go
+func a() {
+	for i := 1; i < 10; i++ {
+		fmt.Println("A:", i)
+	}
+}
+
+func b() {
+	for i := 1; i < 10; i++ {
+		fmt.Println("B:", i)
+	}
+}
+
+func main() {
+	runtime.GOMAXPROCS(2)
+	go a()
+	go b()
+	time.Sleep(time.Second)
+}
+```
+
+Go 语言中的操作系统线程和 goroutine 的关系：
+
+1. 一个操作系统线程对应用户态多个 goroutine。
+2. go程序可以同时使用多个操作系统线程。
+3. goroutine和OS线程是多对多的关系，即m:n。
+
+
+
+
+
+### channel
+
+&emsp;&emsp;单纯地将函数并发执行是没有意义的。函数与函数间需要交换数据才能体现并发执行函数的意义。虽然可以使用共享内存进行数据交换，但是<u>共享内存在不同的 `goroutine` 中容易发生竞态问题</u><u>。为了保证数据交换的正确性，必须使用互斥量对内存进行加锁，这种做法势必造成性能问题。</u>
+
+Go语言的并发模型是`CSP（Communicating Sequential Processes）`，提倡**通过通信共享内存**而不是**通过共享内存而实现通信**。
+
+如果说`goroutine`是Go程序并发的执行体，`channel`就是它们之间的连接。`channel`是可以让一个`goroutine`发送特定值到另一个`goroutine`的通信机制。
+
+Go 语言中的通道（channel）是一种特殊的类型。通道像一个传送带或者队列，总是遵循先入先出（First In First Out）的规则，保证收发数据的顺序。每一个通道都是一个具体类型的导管，也就是声明channel的时候需要为其指定元素类型。
+
+
+
+#### channel类型
+
+`channel`是一种类型，一种引用类型。声明通道类型的格式如下：
+
+```go
+var 变量 chan 元素类型
+```
+
+示例：
+
+```go
+var ch1 chan int   				// 声明一个传递整型的通道
+var ch2 chan bool  				// 声明一个传递布尔型的通道
+var ch3 chan []int 				// 声明一个传递int切片的通道
+```
+
+
+
+##### 创建channel
+
+通道是引用类型，通道类型的空值是 `nil`。声明的通道后需要使用 `make` 函数初始化之后才能使用。创建channel的格式如下：
+
+```go
+make(chan 元素类型, [缓冲大小])
+// channel的缓冲大小是可选的。
+```
+
+**示例：**
+
+```go
+var ch chan int
+fmt.Println(ch) // <nil>
+
+ch4 := make(chan int)
+ch5 := make(chan bool)
+ch6 := make(chan []int)
+```
+
+
+
+#### channel 操作
+&emsp;&emsp;通道有发送（send）、接收(receive）和关闭（close）三种操作。发送和接收都使用`<-`符号。现在我们先使用以下语句定义一个通道：
+```go
+ch := make(chan int)
+```
+
+
+
+##### 发送
+将一个值发送到通道中。
+```go
+ch <- 10 // 把10发送到ch中
+```
+
+
+
+##### 接收
+从一个通道中接收值。
+```go
+x := <- ch // 从ch中接收值并赋值给变量x
+<-ch       // 从ch中接收值，忽略结果
+```
+
+
+
+##### 关闭
+我们通过调用内置的`close`函数来关闭通道。
+```go
+close(ch)
+```
+
+​	关于关闭通道需要注意的事情是，只有在通知接收方 goroutine 所有的数据都发送完毕的时候才需要关闭通道。通道是可以被垃圾回收机制回收的，它和关闭文件是不一样的，**在结束操作之后关闭文件是必须要做的，但关闭通道不是必须的。**
+
+关闭后的通道有以下特点：
+1. 对一个关闭的通道再发送值就会导致panic。
+2. 对一个关闭的通道进行接收会一直获取值直到通道为空。
+3. 对一个关闭的并且没有值的通道执行接收操作会得到对应类型的零值。
+4. 关闭一个已经关闭的通道会导致panic。
+
+
+
+#### channel 的缓存
+
+##### 无缓冲的通道
+
+无缓冲的通道又称为阻塞的通道。我们来看一下下面的代码：
+
+```go
+func main() {
+	ch := make(chan int)
+	ch <- 10
+	fmt.Println("发送成功")
+}
+```
+
+上面这段代码能够通过编译，但是执行的时候会出现以下错误：
+
+```bash
+fatal error: all goroutines are asleep - deadlock!
+
+goroutine 1 [chan send]:
+main.main()
+        .../src/github.com/Q1mi/studygo/day06/channel02/main.go:8 +0x54
+```
+
+为什么会出现`deadlock`错误呢？
+
+因为我们使用`ch := make(chan int)`创建的是无缓冲的通道，无缓冲的通道只有在有人接收值的时候才能发送值。就像你住的小区没有快递柜和代收点，快递员给你打电话必须要把这个物品送到你的手中，简单来说就是无缓冲的通道必须有接收才能发送。
+
+上面的代码会阻塞在`ch <- 10`这一行代码形成死锁，那如何解决这个问题呢？
+
+一种方法是启用一个`goroutine`去接收值，例如：
+
+```go
+func recv(c chan int) {
+	ret := <-c
+	fmt.Println("接收成功", ret)
+}
+func main() {
+	ch := make(chan int)
+	go recv(ch) // 启用goroutine从通道接收值
+	ch <- 10
+	fmt.Println("发送成功")
+}
+```
+
+无缓冲通道上的发送操作会阻塞，直到另一个`goroutine`在该通道上执行接收操作，这时值才能发送成功，两个`goroutine`将继续执行。相反，如果接收操作先执行，接收方的goroutine将阻塞，直到另一个`goroutine`在该通道上发送一个值。
+
+使用无缓冲通道进行通信将导致发送和接收的`goroutine`同步化。因此，无缓冲通道也被称为同步通道。
+
+
+
+##### 有缓冲的通道
+
+&emsp;&emsp;解决上面问题的方法还有一种就是使用有缓冲区的通道。我们可以在使用make函数初始化通道的时候为其指定通道的容量，例如：2
+
+```go
+func main() {
+	ch := make(chan int, 1) // 创建一个容量为1的有缓冲区通道
+	ch <- 10
+    len(ch1)						// 取通道中元素的数量
+    cap(ch1)						// 通道的容量
+	fmt.Println("发送成功")
+}
+```
+
+只要通道的容量大于零，那么该通道就是有缓冲的通道，通道的容量表示通道中能存放元素的数量。就像你小区的快递柜只有那么个多格子，格子满了就装不下了，就阻塞了，等到别人取走一个快递员就能往里面放一个。
+
+我们可以使用内置的`len`函数获取通道内元素的数量，使用 `cap` 函数获取通道的容量，虽然我们很少会这么做。
+
+
+
+#### 从通道循环取值
+
+当向通道中发送完数据时，我们可以通过 `close ` 函数来关闭通道。
+
+当通道被关闭时，再往该通道发送值会引发 `panic`，从该通道取值的操作会先取完通道中的值，再然后取到的值一直都是对应类型的零值。那如何判断一个通道是否被关闭了呢？
+
+```go
+// channel 练习
+func main() {
+	ch1 := make(chan int)
+	ch2 := make(chan int)
+	// 开启goroutine将0~100的数发送到ch1中
+	go func() {
+		for i := 0; i < 100; i++ {
+			ch1 <- i
+		}
+		close(ch1)
+	}()
+	// 开启goroutine从ch1中接收值，并将该值的平方发送到ch2中
+	go func() {
+		for {
+			i, ok := <-ch1 // 通道关闭后再取值ok=false
+			if !ok {
+				break
+			}
+			ch2 <- i * i
+		}
+		close(ch2)
+	}()
+	// 在主goroutine中从ch2中接收值打印
+	for i := range ch2 { // 通道关闭后会退出for range循环
+		fmt.Println(i)
+	}
+}
+```
+
+从上面的例子中我们看到有两种方式在接收值的时候判断该通道是否被关闭，不过我们通常使用的是`for range`的方式。使用`for range`遍历通道，当通道被关闭的时候就会退出`for range`。
+
+
+
+
+
+#### 单向通道
+
+&emsp;&emsp;有的时候我们会将通道作为参数在多个任务函数间传递，很多时候我们在不同的任务函数中使用通道都会对其进行限制，比如限制通道在函数中只能发送或只能接收。Go语言中提供了**单向通道**来处理这种情况。例如，我们把上面的例子改造如下：
+
+```go
+func counter(out chan<- int) {
+	for i := 0; i < 100; i++ {
+		out <- i
+	}
+	close(out)
+}
+
+func squarer(out chan<- int, in <-chan int) {
+	for i := range in {
+		out <- i * i
+	}
+	close(out)
+}
+func printer(in <-chan int) {
+	for i := range in {
+		fmt.Println(i)
+	}
+}
+
+func main() {
+	ch1 := make(chan int)
+	ch2 := make(chan int)
+	go counter(ch1)
+	go squarer(ch2, ch1)
+	printer(ch2)
+}
+```
+
+- `chan<- int`是一个只写单向通道（只能对其写入int类型值），可以对其执行发送操作但是不能执行接收操作；
+- `<-chan int`是一个只读单向通道（只能从其读取int类型值），可以对其执行接收操作但是不能执行发送操作。
+
+在函数传参及任何赋值操作中可以将双向通道转换为单向通道，但反过来是不可以的。
+
+
+
+#### 通道总结
+
+![channel异常总结](.assets/channel01.png)
+
+关闭已经关闭的`channel`也会引发`panic`。
+
+
+
+
+
+### worker pool（goroutine池）
+
+&emsp;&emsp;在工作中我们通常会使用可以指定启动的goroutine数量——`worker pool`模式，控制 `goroutine` 的数量，防止 `goroutine` 泄漏和暴涨。一个简易的`work pool`示例代码如下：
+
+```go
+func worker(id int, jobs <-chan int, results chan<- int) {
+	for j := range jobs {
+		fmt.Printf("worker:%d start job:%d\n", id, j)
+		time.Sleep(time.Second)
+		fmt.Printf("worker:%d end job:%d\n", id, j)
+		results <- j * 2
+	}
+}
+
+
+func main() {
+	jobs := make(chan int, 100)
+	results := make(chan int, 100)
+	// 开启3个goroutine
+	for w := 1; w <= 3; w++ {
+		go worker(w, jobs, results)
+	}
+	// 5个任务
+	for j := 1; j <= 5; j++ {
+		jobs <- j
+	}
+	close(jobs)
+	// 输出结果
+	for a := 1; a <= 5; a++ {
+		<-results
+	}
+}
+```
+
+
+
+
+
+### select多路复用
+
+在某些场景下我们需要同时从多个通道接收数据。通道在接收数据时，如果没有数据可以接收将会发生阻塞。你也许会写出如下代码使用遍历的方式来实现：
+
+```go
+for{
+    // 尝试从ch1接收值
+    data, ok := <-ch1
+    // 尝试从ch2接收值
+    data, ok := <-ch2
+    …
+}
+```
+
+这种方式虽然可以实现从多个通道接收值的需求，但是运行性能会差很多。为了应对这种场景，Go内置了`select`关键字，可以同时响应多个通道的操作。
+
+
+
+`&emsp;&emsp;select`的使用类似于 switch 语句，它有一系列 case 分支和一个默认的分支。每个 case 会对应一个通道的通信（接收或发送）过程。`select` 会一直等待，直到某个 `case` 的通信操作完成时，就会执行`case`分支对应的语句。具体格式如下：
+
+```go
+select{
+    case <-ch1:
+        ...
+    case data := <-ch2:
+        ...
+    case ch3<-data:
+        ...
+    default:
+        默认操作
+}
+```
+
+示例：
+
+```go
+func main() {
+	ch := make(chan int, 1)
+	for i := 0; i < 10; i++ {
+		select {
+		case x := <-ch:
+			fmt.Println(x)
+		case ch <- i:
+		}
+	}
+}
+```
+
+使用`select`语句能提高代码的可读性。
+
+- 可处理一个或多个channel的发送/接收操作。
+- 如果多个`case`同时满足，`select`会随机选择一个。
+- 对于没有`case`的`select{}`会一直等待，可用于阻塞main函数。
+
+
+
+
 
 
 
