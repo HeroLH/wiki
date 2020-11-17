@@ -1268,6 +1268,9 @@ git remote add origin 远程仓库地址
 # 2. 克隆远程仓库代码
 git clone 远程仓库地址 (内部已实现 git remote add origin 远程仓库地址)
 
+# 拉取指定分支：使用branch参数，后面加上tag标签，最后是git仓库的地址
+git clone --branch [tags标签] [git地址]
+
 # 3. 向远程推送代码， -u 表示以后默认 push 到分支1
 git push -u origin 分支1
 
@@ -1319,7 +1322,9 @@ git push origin --delete 分支名
 
     ```shell
     # 1. 本地生成公钥和私钥( 默认存放在用户目录的 ~/.ssh目录下， id_rsa.pub公钥、id_rsa私钥 )
-    ssh-keygen -t rsa
+    ssh-keygen -t rsa -C “youremail@example.com”
+    # 注意，上述 youremail@example.com 是指 GitHub 的账户的注册邮箱
+    ssh -v git@github.com
     # 2. 拷贝公钥的内容, 并拷贝设置到 github 中
     # 3. 在 git 本地中配置项目 ssh 地址
     git remote add origin git@github.com:user/project.git
@@ -1327,7 +1332,7 @@ git push origin --delete 分支名
 
 - **git 自动管理凭证**
 
-
+ 
 
 
 
