@@ -1,7 +1,5 @@
 ----------------------------------------------
 
-----------------------------------------------
-
 > *Made By Herolh， 忠告：语言只是工具*
 ----------------------------------------------
 
@@ -713,7 +711,7 @@ fmt.Println(6 % 6)		// 余数
 
 #### 整数类型
 
-Go语言的整数类型分为有符号和无符号两大类，有符号的包括负数，五福好的不包含负数。
+Go语言的整数类型分为有符号和无符号两大类，有符号的包括负数，无符号的不包含负数。
 
 - **无符号整型**
 
@@ -750,9 +748,72 @@ func main() {
 
 
 
+##### 超大整型
+
+```go
+import "math/big"
+```
+
+创建超大整型的对象：
+
+```go
+var v1 big.Int				// {false []}
+var v2 *big.Int				// nil
+v3 := new(big.Int)			// 0
+fmt.Println(v1, v2, v3)
+//v4 := big.NewInt(111)	// 声明加赋值
+
+// 在超大整型对象中写入值
+v1.SetInt64(2000)		// 不常用，写入的值超过int64 仍然报错
+v1.SetString("1234123123123123123123123", 10)		// 以十进制的形式写
+fmt.Println(v1)
+fmt.Println(v1.String())
+
+// 以二进制的格式读，存的时候按十进制存,
+v1.SetString("9234123123123123123123123", 2)
+// 如果格式不对会根据第一位来变成0或1
+fmt.Println(v1)				// {false [1]}
+fmt.Println(v1.String())	// 1
+v1.SetString("1234123123123123123123123", 2)
+fmt.Println(v1)				// {false [0]}
+fmt.Println(v1.String())	// 
+```
+
+基本的加减乘除
+
+```go
+result := new(big.Int)
+v1.SetString("111", 10)
+v3.SetString("222", 10)
+// 加
+result.Add(&v1, v3)
+fmt.Println(result)				// 333
+// 减
+result.Sub(只能得到商)(v3, &v1)
+fmt.Println(result)				// 111
+// 乘
+result.Mul(v3, &v1)
+fmt.Println(result)				// 24642
+// 除(只能得到商)
+result.Div(v3, &v1)
+fmt.Println(result)				// 2
+// 除，得到商和余数
+mid := new(big.Int)
+result.DivMod(v3, &v1, mid)
+fmt.Println(result, mid)		// 2 0
+```
+
+
+
+
+
+
+
 #### 浮点型
 
-> Go 语言提供了两种精度的浮点数，float32 和 float64，编译器默认声明为 float64
+##### float
+
+> Go 语言提供了两种精度的浮点数(非精确)，float32 和 float64，编译器默认声明为 float64
 
 |      类型      | 占用存储空间 |        表数范围        |
 | :------------: | :----------: | :--------------------: |
@@ -778,6 +839,121 @@ func main() {
 	//num3= -123.111115 num4= -123.11111111105
 }
 ```
+
+注意，float 的数值都是非精确的
+
+```go
+v2 := 0.1
+v3 := 0.2
+fmt.Println(v3 + v1)		// 0.30000000000000004
+```
+
+
+
+###### float 底层存储原理
+
+```go
+var price float32 = 39.29
+```
+
+- **浮点数转化为二进制**
+
+    - 整数部分，直接转化为二进制, 即：`100111`
+
+    - 小数部分让小数部分乘以2，结果小于1则继续乘以2，结果大于1则-1继续乘2，结果等1则结束
+
+        ```shell
+        0.29 * 2 = 0.58 		// 小于1，继续乘以2
+        0.58 * 2 = 1.16 		// 大于1，减1继续乘以2
+        0.16 * 2 = 0.32 		// 小于1，继续乘以2
+        0.32 * 2 = 0.64 		// 小于1，继续乘以2
+        0.64 * 2 = 1.28 		// 大于1，减1继续乘以2
+        0.28 * 2 = 0.56 		// 小于1，继续乘以2
+        0.56 * 2 = 1.12 		// 大于1，减1继续乘以2
+        0.12 * 2 = 0.24 		// 小于1，继续乘以2
+        0.24 * 2 = 0.48 		// 小于1，继续乘以2
+        0.48 * 2 = 0.96 		// 小于1，继续乘以2
+        0.96 * 2 = 1.92 		// 大于1，减1继续乘以2
+        0.92 * 2 = 1.84 		// 大于1，减1继续乘以2
+        0.84 * 2 = 1.68 		// 大于1，减1继续乘以2
+        0.68 * 2 = 1.36 		// 大于1，减1继续乘以2
+        0.36 * 2 = 0.72 		// 小于1，继续乘以2
+        0.72 * 2 = 1.44 		// 大于1，减1继续乘以2
+        0.44 * 2 = 0.88 		// 小于1，继续乘以2
+        0.88 * 2 = 1.76 		// 大于1，减1继续乘以2
+        0.76 * 2 = 1.52 		// 大于1，减1继续乘以2
+        0.52 * 2 = 1.04 		// 大于1，减1继续乘以2
+        0.04 * 2 = 0.08 		// 小于1，继续乘以2
+        0.08 * 2 = 0.16 		// 小于1，继续乘以2
+        0.16 * 2 = 0.32 		// 小于1，继续乘以2
+        (与第三行相同，这样会一直循环执行下去)
+        
+        将现成后的结果的整数部分拼接起来就是 0.29 的二进制:
+        0100101000111101011000...
+        ```
+
+    - 所以 `39.29` 的二进制表示为：
+
+        ```shell
+        100111.0100101000111101011000...
+        ```
+
+- **用科学计数法表示**
+
+    100111.0100101000111101011000...
+    $$
+    1.001110100101000111101011000... * 2^5
+    $$
+
+- **存储**
+
+    以 float32 为例来进行存储，用32位来存储浮点数
+
+    ![image-20201128221932027](.assets/image-20201128221932027.png)
+
+    - **sign**： 用 1 位来表示浮点数正负数， 0表示正数，1表示负数
+
+    - **exponent**: 指数，用8位来表示的话有256种(0~255), 含有正负值(-127~128)
+
+        > 例如 5 想要存储到 exponent 的话，就需要让 5 + 127 = 132，再将 132 转换成二进制存储到 exponent，（123的二进制是 `01000010`）
+        >
+        > 加 127 的原因是要支持正负值(127+127=0)
+
+    - **fraction**：存储小数点后的所有数据，超过 23 位自动丢弃
+
+
+
+##### decimal
+
+> Go 语言内部没有 decimal
+
+第三方库： https://github.com/shopspring/decimal
+
+- 安装
+
+    ```shell
+    go get github.com/shopspring/decimal
+    ```
+
+- 使用
+
+    ```go
+    v1 := decimal.NewFromFloat(0.1)
+    v2 := decimal.NewFromFloat(0.2)
+    
+    // v1 + v2
+    fmt.Println(v1.Add(v2))			// 0.3
+    // v1 - v2
+    fmt.Println(v1.Sub(v2))			// -0.1
+    // v1 * v2
+    fmt.Println(v1.Mul(v2))			// 0.02
+    // v1 / v2
+    fmt.Println(v1.Div(v2))			// 0.5
+    
+    v3 := decimal.NewFromFloat(3.1415926)
+    fmt.Println(v3.Round(3))			// 保留小数点后3位(四舍五入)
+    fmt.Println(v3.Truncate(3))		// 保留小数点后3位
+    ```
 
 
 
@@ -808,10 +984,25 @@ func main() {
 
 
 
+
+
+### 布尔类型
+
+布尔型的值只可以是常量 true 或者 false。在 Go 中，布尔值的类型为 bool，值是 true 或 false，默认为 false。
+
+```go
+fmt.Println(1 > 2)		// false	假
+fmt.Println(1 < 2)		// ture		真
+```
+
+
+
+
+
 ### 字符串
 
 字符串就是一串固定长度的字符连接起来的字符序列。Go 的字符串是由单个字节连接起来的。
-Go 语言的字符串的字节使用 UTF-8 编码标识 Unicode 文本。
+Go 语言的字符串的字节使用 UTF-8 编码标识 Unicode 文本。**Go 字符串的本质是utf8编码的序列。**
 
 > 字符串默认值为 ""
 
@@ -837,28 +1028,38 @@ fmt.Println(result)
 
 #### 字符串常用方法
 
-|                    方法                     | 说明                                                   |
-| :-----------------------------------------: | ------------------------------------------------------ |
-|      strings.HasPrefix(str, begin_str)      | 判断是不是以某个字符串开头，返回布尔值                 |
-|       strings.HasSuffix(str, end_str)       | 判断是不是以某个字符串结尾，返回布尔值                 |
-|        strings.Index(str, find_str)         | 判断字符在字符串中首次出现的索引位置，没有返回-1       |
-|      strings.LastIndex(str, find_str)       | 返回字符最后一次出现的索引位置，没有返回-1             |
-|       strings.Contains(str, find_str)       | 返回字符串是否包含字符，返回 bool                      |
-|          strings.Count(str, a_str)          | 求字符在字符串中出现的次数，不存在返回0次              |
-|          strings.Repeat(str, num)           | 字符串的重复叠加("原字符串", 重复次数)                 |
-|            strings.ToUpper(str)             | 字符串改大写                                           |
-|            strings.ToLower(str)             | 字符串改小写                                           |
-|           strings.TrimSpace(str)            | 去除首尾的空格                                         |
-|       strings.TrimLeft(str, find_str)       | 去除开头指定的字符                                     |
-|      strings.TrimRight(str, find_str)       | 去除结尾指定的字符                                     |
-|         strings.Trim(str,find_str)          | 去除首尾指定的字符,遍历然后去除                        |
-|          strings.Join(str1, a_str)          | 用指定的字符串将string类型的切片元素结合               |
-|        strings.Split(str, find_str)         | 根据字符2进行切割，返回一个切片                        |
-| strings.Replace(str, old_str, new_str, num) | 字符串替换("原字符串", "被替换的", "替换的", 替换次数) |
+|                    方法                     | 说明                                                         |
+| :-----------------------------------------: | ------------------------------------------------------------ |
+|                 len()(int)                  | 获取字节长度                                                 |
+|      utf8.RuneCountInString(str)(int)       | 获取字符长度                                                 |
+|   strings.HasPrefix(str, begin_str)(bool)   | 判断是不是以某个字符串开头，返回布尔值                       |
+|    strings.HasSuffix(str, end_str)(bool)    | 判断是不是以某个字符串结尾，返回布尔值                       |
+|      strings.Index(str, find_str)(int)      | 判断字符在字符串中首次出现的索引位置，没有返回-1             |
+|    strings.LastIndex(str, find_str)(int)    | 返回字符最后一次出现的索引位置，没有返回-1                   |
+|       strings.Contains(str, find_str)       | 返回字符串是否包含字符，返回 bool                            |
+|          strings.Count(str, a_str)          | 求字符在字符串中出现的次数，不存在返回0次                    |
+|          strings.Repeat(str, num)           | 字符串的重复叠加("原字符串", 重复次数)                       |
+|            strings.ToUpper(str)             | 字符串改大写                                                 |
+|            strings.ToLower(str)             | 字符串改小写                                                 |
+|           strings.TrimSpace(str)            | 去除首尾的空格                                               |
+|       strings.TrimLeft(str, find_str)       | 去除开头指定的字符                                           |
+|      strings.TrimRight(str, find_str)       | 去除结尾指定的字符                                           |
+|         strings.Trim(str,find_str)          | 去除首尾指定的字符,遍历然后去除                              |
+|          strings.Join(str1, a_str)          | 用指定的字符串将string类型的切片元素结合                     |
+|        strings.Split(str, find_str)         | 根据字符2进行切割，返回一个切片                              |
+| strings.Replace(str, old_str, new_str, num) | 字符串替换("原字符串", "被替换", "替换的", 替换次数)<br />替换次数为-1，则替换所有 |
 
 ```go
 func main() {
     str := "hello world"
+    str2 := "你好世界"
+	str3 := "hello世界"
+
+	fmt.Println(len(str), len(str2), len(str3))		// 11 12 11
+	fmt.Println(utf8.RuneCountInString(str))		// 11
+	fmt.Println(utf8.RuneCountInString(str2))		// 4
+	fmt.Println(utf8.RuneCountInString(str3))		// 7
+    
     //判断是不是以某个字符串开头，返回布尔值
     res0 := strings.HasPrefix(str, "http://")
     res1 := strings.HasPrefix(str, "hello")
@@ -949,6 +1150,30 @@ fmt.Println(name2[3], name2[4], name2[5])
 // 表示 三
 fmt.Println(name2[6], name2[7], name2[8])
 //fmt.Println(name2[9])								// 会报错
+
+// 获取字符串的长度(字节长度)
+fmt.Println(len(name2))								// 9
+
+// 字符串转换成一个字节集合
+byteSet := []byte(name2)
+fmt.Println(byteSet)
+
+// 字节集合转化成字符串
+name2 = string(byteSet)
+fmt.Println(name2)
+
+// 转化成 unicode 字符集码点的集合
+unicode10Set := []rune(name2)
+strconv.FormatInt(int64(unicode10Set[0]), 16)	// 转化为16进制，就是 unicode 的码点了
+fmt.Println(unicode10Set)						// 10 进制
+
+// rune 集合转化为字符串
+name2 = string(unicode10Set)
+
+// 长度处理
+//长度处理
+runeLength := utf8.RuneCountInString(name2)
+fmt.Println(runeLength)							// 3
 ```
 
 
@@ -964,7 +1189,19 @@ fmt.Println(name2[6], name2[7], name2[8])
         // 不建议
         fmt.Println("Google" + "Runoob")
         
-        // 效率更更更高一些
+        // 建议, 效率高一些
+        stringList := []string["hello", "world"]
+        result := strings.Join(stringList， " ")
+        fmt.Println(result)
+        
+        // 效率更高一些(go 1.10 之前)
+        var buffer bytes.Buffer
+        buffer.writeString("hello")
+        buffer.writeString(" world")
+        data := buffer.String()
+        fmt.Println(data)
+        
+        // 建议,效率更更更高一些(go 1.10 之后)
         var builder string.Builder
         builder.WriteString("str1")
         builder.WriteString("str2")
@@ -1006,24 +1243,42 @@ fmt.Println(name2[6], name2[7], name2[8])
     // 这里是www.runoob.com
     ```
 
-    
 
 
 
 
 
-
-
-
-
-### 布尔类型
-
-布尔型的值只可以是常量 true 或者 false。在 Go 中，布尔值的类型为 bool，值是 true 或 false，默认为 false。
+#### 索引切片和循环
 
 ```go
-fmt.Println(1 > 2)		// false	假
-fmt.Println(1 < 2)		// ture		真
+str := "你好世界"
+//索引获取字节
+fmt.Println(str[0])					// 228
+
+//切片获取字节区间
+fmt.Println(str[0:3])				// 你
+
+//循环获取所有字节
+for i:=0; i < len(str); i++ {
+	fmt.Println(str[i])				// 228
+}
+
+// 循环获取所有字符
+for index, item := range str {
+	fmt.Println(index, item)		// 0 20320
+	fmt.Println(string(item))		// 你
+}
+
+//转化成 rune 集合, 遇到 "A你"这种类型会这么存放 [65, 20320]
+dataList := []rune(str)
+fmt.Println(dataList[0], string(dataList[0]))		// 20320 你
 ```
+
+
+
+
+
+
 
 
 
@@ -1066,7 +1321,7 @@ func main() {
 #### 整型与字符串转换
 
 ```go
-strconv.Itoa.Itoa(int)(string)
+strconv.Itoa(int)(string)
 ```
 
 ```go
@@ -1081,6 +1336,11 @@ func main() {
 	result = strconv.Itoa(int(v2))
 	fmt.Println(result, reflect.TypeOf(result))
 }
+```
+
+```shell
+v1 := string(65)
+fmt.Println(v1)					// A
 ```
 
 
@@ -1108,6 +1368,51 @@ func main() {
         fmt.Println("转换失败: ", err)
 		fmt.Println(result2, reflect.TypeOf(result1))
 	}
+}
+```
+
+> `strconv.ParseInt` 和 `strconv.FormatInt` 可用处理进制转换
+
+```go
+v1, size := utf8.DecodeRuneInstring("A")		// 65 1
+```
+
+
+
+
+
+#### 字符串与布尔转换
+
+```go
+// string ==> bool
+result1, err := strconv.ParseBool("true")
+fmt.Println(result1, err)					// true nil
+
+// bool ==> string
+result2 := strconv.FormatBool(false) 		// false
+fmt.Println(result2)
+```
+
+
+
+##### 原理
+
+```go
+func ParseBool(str string) (bool, error) {
+	switch str {
+	case "1", "t", "T", "true", "TRUE", "True":
+		return true, nil
+	case "0", "f", "F", "false", "FALSE", "False":
+		return false, nil
+	}
+	return false, syntaxError("ParseBool", str)
+}
+
+func FormatBool(b bool) string {
+	if b {
+		return "true"
+	}
+	return "false"
 }
 ```
 
@@ -1264,7 +1569,7 @@ func main() {
 
 #### 赋值与内存相关
 
-使用值类型 int、string、bool 这三种数据类型时，如果遇到变量的赋值会拷贝一份
+使用值类型 int、string、bool，数组 这些数据类型时，如果遇到变量的赋值会拷贝一份数据，重新开辟一块空间
 
 - **赋值给另一个变量的时候，会重新开辟一块内存用来存放数据，而不是建立指针引用**
 
@@ -1290,13 +1595,34 @@ func main() {
 
     <img src=".assets/image-20200726191936074.png" alt="image-20200726191936074" style="zoom: 67%;" />
 
+ 切片的赋值，两个变量地址不同，但存的值的地址相同：
 
+<img src=".assets/image-20201129165622241.png" alt="image-20201129165622241" style="zoom:67%;" />
+
+```go
+func main() {
+	v1 := []int{1,2}
+	v2 := v1
+	fmt.Printf("%p %v\n", &v1, v1)		// 0xc0000044c0 [1 2]
+	fmt.Printf("%p %v\n", &v2, v2)		// 0xc0000044e0 [1 2]
+
+	v1[0] = 2
+	fmt.Printf("%p %v\n", &v1, v1)		// 0xc0000044c0 [2 2]
+	fmt.Printf("%p %v\n", &v2, v2)		// 0xc0000044e0 [2 2]
+
+	v1 = append(v1, 3)
+	fmt.Printf("%p %v\n", &v1, v1)		// 0xc0000044c0 [2 2 3]
+	fmt.Printf("%p %v\n", &v2, v2)		// 0xc0000044e0 [2 2]
+}
+```
 
 
 
 
 
 ### 常量
+
+####  const 常量声明
 
 &emsp;&emsp;相对于变量，常量是恒定不变的值，多用于定义程序运行期间不会改变的那些值，一般情况下，常量都会定义在全局。 常量的声明和变量声明非常类似，只是把`var`换成了`const`，**常量在定义的时候必须赋值, 常量可以不被使用**。
 
@@ -1479,6 +1805,8 @@ a+b				// 运算符是不允许的
 
 **注意：** `++`( 自增 )和`--`( 自减 )在Go语言中是单独的语句，并不是运算符。
 
+
+
 #### 关系运算符
 
 | 运算符 |                             描述                             |
@@ -1490,6 +1818,8 @@ a+b				// 运算符是不允许的
 |   <    |  检查左边值是否小于右边值，如果是返回 True 否则返回 False。  |
 |   <=   | 检查左边值是否小于等于右边值，如果是返回 True 否则返回 False。 |
 
+
+
 #### 逻辑运算符
 
 | 运算符 |                             描述                             |
@@ -1497,6 +1827,8 @@ a+b				// 运算符是不允许的
 |   &&   | 逻辑 AND 运算符。 如果两边的操作数都是 True，则为 True，否则为 False。 |
 |  \|\|  | 逻辑 OR 运算符。 如果两边的操作数有一个 True，则为 True，否则为 False。 |
 |   !    | 逻辑 NOT 运算符。 如果条件为 True，则为 False，否则为 True。 |
+
+
 
 #### 位运算符
 
@@ -1509,6 +1841,8 @@ a+b				// 运算符是不允许的
 |   ^    | 参与运算的两数各对应的二进位相异或，当两对应的二进位相异时，结果为1。 ( 两位不一样则为1 ) |
 |   <<   | 左移n位就是乘以2的n次方。 “a<<b”是把a的各二进位全部左移b位，高位丢弃，低位补0。 |
 |   >>   | 右移n位就是除以2的n次方。 “a>>b”是把a的各二进位全部右移b位。 |
+
+
 
 #### 赋值运算符
 
@@ -1727,7 +2061,7 @@ switch finger {
 
 Go语言规定每个`switch`只能有一个`default`分支。
 
-一个分支可以有多个值，多个case值中间使用英文逗号分隔。
+一个分支可以有多个值，多个case值中间使用英文逗号 `:` 分隔。
 
 ```go
 switch n := 7; n {
@@ -1868,6 +2202,8 @@ BREAKDEMO1:
 
 ### goto 语句
 
+> Go 语言的 goto 语句可以无条件的跳转到指定的代码行执行。goto 语句一般与条件语句结合，实现条件转义，跳出循环体等。
+
 跳跃到指定的行，然后向下执行代码：
 
 ```go
@@ -1889,15 +2225,394 @@ SVIP:
 
 
 
+## 结构数据类型
+
+### 数组 array
+
+数组是固定长度的特定类型元素组成的序列。一个数组由零或多个元素组成。
+
+数组的长度是固定，因此Go更常用Slice（切片，动态增长或收缩序列）。
+
+数组是值类型，用`索引`下标访问每个元素，范围是`0~len(数组)-1`，访问越界会panic异常。
+
+
+
+#### 声明与赋值
+
+````go
+func main() {
+	//方式一：先声明，再赋值，（声明时内存已开辟空间，int的默认值为0
+	var v1 [3]int
+	fmt.Println(v1[0])			// 0
+
+	//声明指针类型的数组，不会开辟内存初始化数据中的值， v2 = nil
+	var v2 *[3]int
+	fmt.Println(v2)				// nil
+
+	//声明指针类型的数组并初始化，返回的是指针类型的数组(指针类型)
+	v3 := new([3]int)
+	fmt.Println(v3)				// &[0,0,0]
+
+	//方式二: 声明+赋值
+	var v4 = [2]string{"hello", "world"}
+	fmt.Println(v4)				// [hello world]
+
+	// 方式三: 声明 + 赋值 + 指定位置
+	var v5 = [3]int{0:3, 2:1}
+	fmt.Println(v5)				// [3 0 1]
+
+	//方式四: 省略声明个数
+	var v6 = [...]int{1, 2, 3}
+	var v7 = [...]int{0:3, 2:1}
+	fmt.Println(v6)				// [1 2 3]
+	fmt.Print(v7)				// [3 0 1]
+
+}
+````
+
+
+
+#### 可变和拷贝
+
+- 可变，数组的元素可以被改变(长度和类型都不可以修改)
+
+    ```go
+    v1 := [2]string{"hello", "world"}
+    v1[1] := " world"
+    ```
+
+    注意：字符串可以被修改
+
+- 拷贝：变量赋值的时候是重新拷贝一份
+
+    ```go
+    v1 := [2]string{"hello", "world"}
+    v2 := v1
+    
+    v2[1] := " world"
+    fmt.Println(v1)				// "helloworld"
+    fmt.Println(v2) 			// "hello world"
+    ```
+
+
+
+#### 长度索引切片与循环
+
+```go
+func main() {
+	//长度
+	v1 := [2]string{"hello", "world"}
+	fmt.Println(len(v1))					// 2
+
+	//索引
+	fmt.Println(v1[0])						// hello
+	v1[0] = "你好"
+	fmt.Println(v1)							// [你好 world]
+
+	//切片
+	v2 := [4]string{"hello", "world", "!"}
+	fmt.Println(v2[0:2])					// [hello world]
+
+	//循环
+	for i:=0; i<len(v1); i++{
+		fmt.Println(v1[i])					// 你好
+	}
+
+	//for range 循环
+	for index, value := range v1 {
+		fmt.Println(index, value)			// 0 你好
+	}
+}
+```
+
+
+
+
+
+#### 数组的内存管理
+
+- 数组的内存是连续的。
+- 数组的内存地址实际上是数组的第一个元素的内存地址。
+
+- 每个字符串的内部存储是 `str` + `len`
+
+    ```go
+    type stringStruct struct {
+        str unsafe.Pointer
+        len int
+    }
+    ```
+
+```shell
+func main() {
+	v1 := []int{1,2,4}
+
+	fmt.Printf("数组的内存地址%p\n", v1)			// 0xc00000c380
+	fmt.Printf("数组的内存地址%p \n", &v1[0])		// 0xc00000c380
+	fmt.Printf("数组的内存地址%p \n", &v1[1])		// 差8个字节, 如果是 int64 又会不一样
+
+	v2 := []string{"hello", "world"}
+	fmt.Printf("数组的内存地址%p\n", v2)			// 0xc000004500
+	fmt.Printf("数组的内存地址%p \n", &v2[0])		// 0xc000004500
+	fmt.Printf("数组的内存地址%p \n", &v2[1])		// 0xc000004510
+	// 两个索引之间相差16字节
+}
+```
+
+
+
+### 切片 slice
+
+> &emsp;&emsp;切片是可动态变化的序列，是对数组的引用，引用类型，遵循引用传递的机制。slice类型写作 `[]T`，T是slice元素类型，`var s1 []int`，s1就是切片变量
+
+```go
+type slice struct {
+    array unsafe.Pointer		// 指针
+    len int						// 长度
+    cap int						// 容量
+}
+```
+
+在向切片中追加的数据个数大于容量时，内部会自动扩容，并且每次扩容的容量都相当于当前容量的两倍。当容量超过 1024 的时候，每次扩容只增加 1/4 的容量。
+
+
+
+#### 初始化与声明
+
+```go
+func main() {
+	var v1 []int					// 容量等于0，长度等于0，指针指向的数据也为0, 返回切片
+	var v2 = []int{1, 2, 3}
+	var v3 = make([]int, 1, 3)		// 容量等于3，长度等于1，相当于第一个位置有数据
+	var v4 = make([]int, 3)			// 容量等于3，长度等于3, 全部初始化
+	var v5 = new([]int) 			// 容量等于0，长度等于0，指针指向的数据也为0，返回指针
+	var v6 *[]int
+
+	fmt.Println(v1) // []
+	fmt.Println(v2) // [1, 2, 3]
+	fmt.Println(v3) // [0]
+	fmt.Println(v4)	// [0 0 0]
+	fmt.Println(v5) // &[]
+	fmt.Println(v6) // nil
+}
+```
+
+
+
+#### 自动扩容
+
+没有扩容的情况下：
+
+<img src=".assets/image-20201129124707059.png" alt="image-20201129124707059" style="zoom:67%;" />
+
+```go
+func main() {
+	v1 := make([]int, 1, 3)
+	fmt.Println(len(v1), cap(v1))			// 1 3
+
+	v2 := append(v1, 1)
+	fmt.Printf("%p %p \n", v1, v2)			// 0xc00000c380 0xc00000c380
+	fmt.Println(v1)							// [0]
+	fmt.Println(v2)							// [0, 1]
+}
+```
+
+
+
+存在扩容的情况：
+
+<img src=".assets/image-20201129124812789.png" alt="image-20201129124812789" style="zoom: 50%;" />
+
+```go
+func main() {
+	v1 := []int{1,2,3}
+	// 0xc000104100 3 3
+	fmt.Printf("%p %d %d\n", v1, len(v1), cap(v1))
+
+	v2 := append(v1, 4)
+	// 0xc000104100 3 3
+	fmt.Printf("%p %d %d\n", v1, len(v1), cap(v1))
+	// 0xc000130060 4 6
+	fmt.Printf("%p %d %d\n", v2, len(v2), cap(v2))
+}
+```
+
+注意：
+
+通过切片切出来的数据与原切片内部存储的数据地址相同，但是可能因为第一个元素不同，切片的地址会不一样。
+
+
+
+#### 常见操作方法
+
+|                    方法                    | 说明                 |
+| :----------------------------------------: | :------------------- |
+|              len(v Type)(int)              | 切片的长度           |
+|              cap(v Type)(int)              | 切片的容量           |
+| append(slice []Type, elems ...Type) []Type | 原切片，要追加的内容 |
+
+默认是没有删除、插入方法
+
+```go
+func main() {
+	//添加
+	v1 := []int{1}
+	v1 = append(v1, 2)
+	v1 = append(v1, 3,4,5)
+	v1 = append(v1, []int{6,7,8,9}...)
+	fmt.Println(v1)
+
+	//删除，(使用切片的时候不太会使用删除，更多的会去用链表)
+	v2 := []int{1,2,3,4,4,5}
+	deleteIndex := 3
+	result := append(v2[:deleteIndex], v2[deleteIndex+1:]...)
+	fmt.Println(result)					// [1 2 3 4 5]
+	fmt.Println(v2)						// [1 2 3 4 5 5]
+	// 原理
+	// 切片获取: {1,2,3}
+	// 又获取到 {4, 5}
+	// 将 {4, 5} 追加到 {1,2,3} 后面， 相当于 {1,2,3,4,5,5}
+	// result 的容量让他只获取到 [1 2 3 4 5]
+
+
+	//插入， (效率低下，建议用链表)
+	v3 := []int{1,2,4,5}
+	insertIndex := 2
+	// 不能在原有的切片的基础上插入，否则值会变成 [1,2,3,3,5]
+	result3 := make([]int, 0, len(v3)+1)
+	result3 = append(result3, v3[:insertIndex]...)
+	result3 = append(result3,3)
+	result3 = append(result3, v3[insertIndex:]...)
+	fmt.Println(result3)				// [1 2 3 4 5]
+}
+```
+
+
+
+### 字典 map
+
+>  map 是 key-value 类型数据结构，读作（哈希表、字典），是一堆未排序的键值对集合。
+
+map的key必须是支持相等运算符`==`、`!=`的类型，如int、bool、channel、string、pointer、array、sruct、interface。通常map的key是int、string
+
+map的value可以是任意类型，没有限制，通常是int、float、string、struct
+
+
+
+#### 声明与初始化
+
+```go
+// map声明语法, nil
+var 变量名  map[keytype]valuetype
+var m1 map[string]string
+var m2 map[int]string
+var m3 map[int]map[string]string			//map的value又是map
+// 注意map声明不会分配内存，即无法往里面写值，必须make初始化才可以使用
+
+// 初始化
+v1 := map[string]string{}
+v2 := make(map[int]int, 10)
+```
+
+
+
+#### 变量的赋值
+无论是否存在扩容都指向同一地址，一个变量改编值，其余值也会改变
+
+```go
+func main() {
+	var v1 = map[int]int{1:1, 2:2}
+	v2 := v1
+	v1[1] = 0
+	fmt.Println(v1)					// map[1:0 2:2]
+	fmt.Println(v2)					// map[1:0 2:2]
+}
+```
+
+
+
+#### 常用操作方法
+
+|                    方法                    | 说明                 |
+| :----------------------------------------: | :------------------- |
+|              len(v Type)(int)              | 字典的长度           |
+| append(slice []Type, elems ...Type) []Type | 原切片，要追加的内容 |
+
+```go
+func main() {
+	v1 := map[int]int{1:1, 2:2}
+	fmt.Println(v1)					// map[1:1 2:2]
+
+	// 添加
+	v1[3] = 4
+	fmt.Println(v1)					// map[1:1 2:2 3:4]
+
+	// 修改
+	v1[3] = 3
+	fmt.Println(v1)					// map[1:1 2:2 3:3]
+
+	// 删除
+	delete(v1, 3)
+	fmt.Println(v1)					// map[1:1 2:2]
+
+	//查看
+	fmt.Println(v1[0])				// 0
+	for key, value := range v1 {
+		fmt.Println(key, value)		// 1 1
+	}
+}
+```
+
+
+
+#### 底层存储原理
+
+![image-20201129174303398](.assets/image-20201129174303398.png)
+
+##### 初始化
+
+```go
+//初始化一个可容纳10个元素的 map
+v1 = make(map[int]int, 10)
+```
+
+- 创建一个 hmap 结构体对象
+
+- 生成一个哈希因子 hash0 并赋值到 hmap 对象中( 用于后续为 key 创建哈希值 )
+
+- 根据 hint=10， 并根据算法规则来创建B， 当前 B 应该为 1.
+
+    ```shell
+    hint 			B
+    0~8				0
+    9~13 			1
+    14~26			2
+    ...
+    ```
+
+- 根据B去创建桶(bmap对象) 并存放在 buckets 数组中， 当前的 bmap 的数量应该为2
+
+    - 但 B<4时，根据B创建的桶个数的规则为：$2^B$(标准桶)
+    - 当B>=4时， 根据 B 创建桶的个数的规则为 $2^B + 2^{B-4}$(标准桶+溢出桶)
+
+    每个 bmap 中可以存储 8 个键值对，当不够存储时需要使用溢出桶，并将当前 bmap 中的 overflow 字段指向溢出桶的位置
+
+
+
+##### 源码
+
+> runtime/map.go
+
+
+
 ## 指针
+> &emsp;&emsp;任何程序数据载入内存后，在内存都有他们的地址，这就是指针。而为了保存一个数据在内存中的地址，我们就需要指针变量。
 
-&emsp;&emsp;任何程序数据载入内存后，在内存都有他们的地址，这就是指针。而为了保存一个数据在内存中的地址，我们就需要指针变量。Go语言中的指针不能进行偏移和运算，因此Go语言中的指针操作非常简单，我们只需要记住两个符号：`&`( 取地址 )和`*`( 根据地址取值 )。
+- 指针默认值 nil
+- 通过 `&` (取地值符)取变量地址
+- 通过 `*` (取值符)透过指针访问目标值
 
-> - 指针默认值 nil
-> - 通过 `&` (取地值符)取变量地址
-> - 通过 `*` (取值符)透过指针访问目标值
-
-**区别于 C/C++ 中的指针，Go语言中的指针不能进行偏移和运算，是安全指针。**
+&emsp;&emsp;**区别于 C/C++ 中的指针，Go语言中的指针不能进行偏移和运算，是安全指针。**我们只需要记住两个符号：`&`( 取地址 )和`*`( 根据地址取值 )。
 
 
 
@@ -1910,6 +2625,25 @@ ptr := &v    // v的类型为T
 // v:		代表被取地址的变量，类型为T
 // ptr:		用于接收地址的变量，ptr的类型就为*T，称做T的指针类型。*代表指针。
 ```
+
+
+
+#### nil
+
+> 指向 go 语言中的空值， 地址固定为 `0x0`
+
+
+
+### 指针的声明与实例化
+
+```shell
+var v1 *int
+var v2 := new(int)
+```
+
+![image-20201128201852323](.assets/image-20201128201852323.png)
+
+
 
 
 
@@ -1952,12 +2686,6 @@ func main() {
 
 
 
-
-
-
-### nil
-
-> 指向 go 语言中的空值
 
 
 

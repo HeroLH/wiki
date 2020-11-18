@@ -64,8 +64,20 @@ source /etc/profile
 
 ```shell
  curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-
 ```
+
+如果报错：
+
+> Failed connect to raw.githubusercontent.com:443; Connection refused
+
+```  shell
+sudo vim /etc/hosts
+
+# 加上一行
+199.232.28.133 raw.githubusercontent.com
+```
+
+
 
 
 
