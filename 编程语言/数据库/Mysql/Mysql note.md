@@ -1244,7 +1244,7 @@ slow_query_log_file = D:/....
 
 
 
-
+[公司内部mysql使用规范分享](https://www.studytime.xin/article/mysql-internal-specifications.html?hmsr=toutiao.io&utm_medium=toutiao.io&utm_source=toutiao.io)
 
 
 

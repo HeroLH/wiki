@@ -2382,6 +2382,13 @@ os.getppid()				# 获取父进程id
 
 
 
+在Python中有多种方式可以实现协程，例如：
+
+- greenlet，是一个第三方模块，用于实现协程代码（Gevent协程就是基于greenlet实现）
+- yield，生成器，借助生成器的特点也可以实现协程代码。
+- asyncio，在Python3.4中引入的模块用于编写协程代码。
+- async & awiat，在Python3.5中引入的两个关键字，结合asyncio模块可以更方便的编写协程代码。
+
 
 
 

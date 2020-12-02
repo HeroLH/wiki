@@ -32,7 +32,7 @@
 
 
 
-## 创建型模式( creational pattern ) 5 种
+## 创建型模式 5 种
 
 &emsp;&emsp;对类的实例化过程进行了抽象，能够使软件模块做到与对象创建和组织的无关性。为了使体系结构更加清晰，一些软件在设计上要求当创建类的具体实例时，能够根据具体的语境来动态地决定怎样创建对象，创建哪些对象，以及怎样组织和表示这些对象，而创建型模式所要描述的就是该如何来解决这些问题。
 
@@ -40,7 +40,8 @@
 
 ### 工厂模式
 
-参考：
+> 引用：
+>
 > [简书 - shaqsnake - 用Python实现设计模式——工厂模式](https://www.jianshu.com/p/a81f3e6ec1dc)
 > [博客园 - 风行影者 - python实践设计模式（一）概述和工厂模式](https://www.cnblogs.com/wly923/archive/2013/05/10/3068313.html)
 
@@ -48,13 +49,13 @@
 
 **工厂模式的定义如下：**
 
-&emsp;&emsp;定义一个用于创建对象的接口，让子类决定实例化哪个类。工厂方法使一个类的实例化延迟到其子类。其通用类图如下。其产品类定义产品的公共属性和接口，工厂类定义产品实例化的“方式”。
+> &emsp;&emsp;工厂模式，顾名思义就是我们可以通过一个指定的“工厂”获得需要的“产品”，在设计模式中主要用于抽象对象的创建过程，让用户可以指定自己想要的对象而不必关心对象的实例化过程。这样做的好处是用户只需通过固定的接口而不是直接去调用类的实例化方法来获得一个对象的实例，隐藏了实例创建过程的复杂度，解耦了生产实例和使用实例的代码，降低了维护的复杂性。
+>
+> &emsp;&emsp;定义一个用于创建对象的接口，让子类决定实例化哪个类。工厂方法使一个类的实例化延迟到其子类。其通用类图如下。其产品类定义产品的公共属性和接口，工厂类定义产品实例化的“方式”。
 
 ![img](.assets/4de13625bf85daa0d3a60e710770044c.png)
 
 ![img](.assets/d5eea7768ab2be7321a841958560650a.png)
-
-&emsp;&emsp;工厂模式，顾名思义就是我们可以通过一个指定的“工厂”获得需要的“产品”，在设计模式中主要用于抽象对象的创建过程，让用户可以指定自己想要的对象而不必关心对象的实例化过程。这样做的好处是用户只需通过固定的接口而不是直接去调用类的实例化方法来获得一个对象的实例，隐藏了实例创建过程的复杂度，解耦了生产实例和使用实例的代码，降低了维护的复杂性。
 
 
 
@@ -81,14 +82,15 @@
 
 
 #### 实现
+
 ##### 简单工厂模式( Simple Factory )
 
-专门定义一个类来负责创建其它类的实例，被创建的实例通常都具有共同的父类。
+&emsp;&emsp;专门定义一个类来负责创建其它类的实例，被创建的实例通常都具有共同的父类。
 
 ![img](.assets/UML.png)
 
 > &emsp;&emsp;简单工厂模式适用于需创建的对象较少，不会造成工厂方法中的业务逻辑太过复杂的情况下，而且用户只关心那种类型的实例被创建，并不关心其初始化过程时，比如多种数据库(MySQL/MongoDB)的实例，多种格式文件的解析器(XML/JSON)等。
-> &emsp;&emsp;Simple Factory 模式不是独立的设计模式，他是 Factory Method 模式的一种简单的、特殊的实现。他也被称为静态工厂模式，通常创建者的创建方法被设计为 static 方便调用，但是 python 没有 static 一说。所以可以把创建者也就是工厂设计为一个普通 class 或全局函数即可。如果是 class 还需要实例化才能调用工厂方法，而全局函数比较简单，比较接近静态工厂的简便特性。
+> &emsp;<u>&emsp;Simple Factory 模式不是独立的设计模式，他是 Factory Method 模式的一种简单的、特殊的实现。</u>他也被称为静态工厂模式，通常创建者的创建方法被设计为 static 方便调用，但是 python 没有 static 一说。所以可以把创建者也就是工厂设计为一个普通 class 或全局函数即可。如果是 class 还需要实例化才能调用工厂方法，而全局函数比较简单，比较接近静态工厂的简便特性。
 
 ```python
 class car:
@@ -140,9 +142,14 @@ class driver:
 
 
 ##### 工厂模式( Factory Method )
+
+> 和简单工厂有区别，简单工厂模式只有一个工厂，工厂方法模式对每一个产品都有相应的工厂
+
 &emsp;&emsp;将对象的创建交由父类中定义的一个标准方法来完成，而不是其构造函数，究竟应该创建何种对象由具体的子类负责决定。
 
 ![img](.assets/09174352-f58d2e961e5e45a6bf70d3cadfc5ca86.jpg)
+
+<img src="https://images2015.cnblogs.com/blog/720333/201608/720333-20160811145555949-34524331.png" alt="img" style="zoom: 67%;" />
 
 > &emsp;&emsp;工厂方法模式继承了简单工厂模式的优点又有所改进，其不再通过一个工厂类来负责所有产品的创建，而是将具体创建工作交给相应的子类去做，这使得工厂方法模式可以允许系统能够更高效的扩展。实际应用中可以用来实现系统的日志系统等，比如具体的程序运行日志，网络日志，数据库日志等都可以用具体的工厂类来创建。
 > &emsp;&emsp;工厂方法模式去掉了简单工厂模式中工厂方法的静态属性，使得它可以被子类继承。对于 python 来说，就是工厂类被具体工厂继承。这样在简单工厂模式里集中在工厂方法上的压力可以由工厂方法模式里不同的工厂子类来分担。也就是工厂外面再封装一层。
@@ -388,12 +395,11 @@ print(c2, s2)
 > `__new__`：创建实例对象时调用的构造方法
 > `__init__` ：实例初始化方法，用于设置实例的相关属性
 
+###### 原理：
 &emsp;&emsp;当实例化一个对象时，先调用 `__new__` 方法（未定义时调用 `object.__new__`）实例化对象，然后调用 `__init__` 方法进行对象初始化。
-
 &emsp;&emsp;所以，可以声明一个私有类变量 `__instance`。当 `__instance` 不为 None 时，表示系统中已有实例，直接返回该实例；若 `__instance` 为 None 时，表示系统中还没有该类的实例，则创建新实例并返回。
 
 ```python
-# python 3.x
 class Singleton(object):
     __instance = None
 
@@ -403,7 +409,6 @@ class Singleton(object):
         return cls.__instance
 
 
-# python 2.x
 class Singleton(object):  # 抽象单例
     def __new__(cls, *args, **kw):
         if not hasattr(cls, "_instance"):
@@ -415,6 +420,15 @@ class Singleton(object):  # 抽象单例
 # 如果不存在，那么继承并返回原始的__new__方法给_instance属性
 # 如果存在则直接返回_instance属性所指的对象
 ```
+
+&emsp;&emsp;要实现单例模式，即为了让一个类只能实例化一个实例，那么我们可以去想：既然限制创建实例，那么我们可以修改其创建实例的根源即可，那就是父类 `__new__` 方法。
+
+**注意：**
+
+> &emsp;&emsp;不能使用自身的 `__new__()` 方法，应为自身这个类去进行实例化，是调用父类的 `__new__` 方法，若调用自身的` __new__` 方法，那不就死循环了么，可以参考：[python类的__new__()](https://www.cnblogs.com/littlefivebolg/p/9688740.html)。
+
+
+
 
 ```python
 # 总线
@@ -754,12 +768,475 @@ for i in range(10):
 
 
 
+### 建造者模式
+
+[博客园 - Little_five - 浅谈Python设计模式 - 建造者模式](https://www.cnblogs.com/littlefivebolg/p/9929016.html)
+
+> 当我们想要创建一个由多个部分构成的对象，而且他们的构建需要一步接一步的地完成，只有当各个部分都创建好，这个对象才算完整。这正是 建造者设计模式的用武之地。建造者模式通常用于补充工厂模式的不足，尤其是在如下场景中：
+> 1. 要求一个对象有不同的表现，并且希望将对象的构造与表现解耦。
+> 2. 要求在某个时间点创建对象，但在稍后的时间点再访问。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## 结构型模式 7 种
 
 &emsp;&emsp;其主要用来处理一个系统中不同实体( 比如类和对象 )之间关系，关注的是提供一种简单的对象组合方式来创造新的功能。
 
-### 适配器模式
 
+
+
+
+### 外观模式
+
+[博客园 - Little_five - 浅谈Python设计模式 - 外观模式](https://www.cnblogs.com/littlefivebolg/p/9929877.html)
+
+&emsp;&emsp;外观设计模式有助于隐藏系统的内部复杂性，并且通过一个简化的接口向客户端暴露必要的部分。本质上，外观是在已有复杂系统之上实现的一个抽象层。外观模式的核心在于**将复杂的内部实现包装起来，只向外界提供简单的调用接口**。类似现实世界中的电脑，开机按钮可以说就是一个简单的调用接口，帮用户屏蔽了复杂的内部电路。
+
+![f1.png](.assets/221aa109519a4c393784f72155f49101.png)
+
+外观模式也叫门面模式，定义如下：
+
+> &emsp;&emsp;要求一个子系统的外部与其内部的通信必须通过一个统一的对象进行。门面模式提供一个高层次的接口，使得子系统更易于使用。门面模式注重 “统一的对象”，也就是提供一个访问子系统的接口。门面模式与之前说过的模板模式有类似的地方，都是对一些需要重复方法的封装。但从本质上来说，是不同的。**模板模式是对类本身的方法的封装，其被封装的方法也可以单独使用；而门面模式，是对子系统的封装，其被封装的接口理论上是不会被单独提出来用的。**
+
+
+
+#### 优缺点与应用
+##### 优点：
+
+1. 客户端屏蔽了子系统组件，减少了客户端所需处理的对象数目，并使得子系统使用起来更加容易。
+2. 实现了子系统与客户端之间的松耦合关系，减少了系统之间的相互依赖，提高了系统的灵活；
+3. 提高了整体系统的安全性：封装起的系统对外的接口才可以用，隐藏了很多内部接口细节，若方法不允许使用，则在门面中可以进行灵活控制。
+
+##### 缺点：
+
+1. 门面模式的缺点在于，不符合开闭原则，一旦系统成形后需要修改，几乎只能重写门面代码，这比继承或者覆写等方式，或者其它一些符合开闭原则的模式风险都会大一些。
+
+##### 使用场景：
+1. 设计初期阶段，应该有意识的将不同层分离，层与层之间建立外观模式。开发阶段，子系统越来越复杂，增加外观模式提供一个简单的调用接口。
+
+2. 为一个复杂的子系统提供一个外界访问的接口。这类例子是生活还是蛮常见的，例如电视遥控器的抽象模型，电信运营商的用户交互设备等；
+
+    > 维护一个大型遗留系统的时候，可能这个系统已经非常难以维护和扩展，但又包含非常重要的功能，为其开发一个外观类，以便新系统与其交互。
+
+3. 需要简化操作界面时。例如常见的扁平化系统操作界面等，在生活中和工业中都很常见。
+
+
+
+#### 理解实例
+
+##### 原始代码
+
+- 假设有一组火警报警系统，由三个子元件构成：一个警报器，一个喷水器，一个自动拨打电话的装置。其抽象如下：
+
+    ```python
+    class AlarmSensor:
+        def run(self):
+            print("Alarm Ring...")
+    
+    
+    class WaterSprinker:
+        def run(self):
+            print("Spray Water...")
+    
+    
+    class EmergencyDialer:
+        def run(self):
+            print("Dial 119...")
+    ```
+
+- 在业务中如果需要将三个部件启动，例如，如果有一个烟雾传感器，检测到了烟雾。在业务环境中需要做如下操作：
+
+    ```python
+    if __name__=="__main__":
+        alarm_sensor=AlarmSensor()
+        water_sprinker=WaterSprinker()
+        emergency_dialer=EmergencyDialer()
+        alarm_sensor.run()
+        water_sprinker.run()
+        emergency_dialer.run()
+    ```
+
+
+
+##### 模式实现
+
+- 但如果在多个业务场景中需要启动三个部件，怎么办？`Ctrl+C` 加上 `Ctrl+V` 么？当然可以这样，但作为码农的基本修养之一，减少重复代码是应该会被很轻易想到的方法。这样，需要将其进行封装，在设计模式中，被封装成的新对象，叫做门面。门面构建如下：
+
+    ```python
+    class AlarmSensor:
+        def run(self):
+            print("Alarm Ring...")
+    
+    
+    class WaterSprinker:
+        def run(self):
+            print("Spray Water...")
+    
+    
+    class EmergencyDialer:
+        def run(self):
+            print("Dial 119...")
+    
+    
+    class EmergencyFacade:
+        def __init__(self):
+            self.alarm_sensor = AlarmSensor()
+            self.water_sprinker = WaterSprinker()
+            self.emergency_dialer = EmergencyDialer()
+    
+        def runAll(self):
+            self.alarm_sensor.run()
+            self.water_sprinker.run()
+            self.emergency_dialer.run()
+    ```
+
+- 这样，业务场景中这样写就可以了：
+
+    ```python
+    if __name__ == "__main__":
+        emergency_facade = EmergencyFacade()
+        emergency_facade.runAll()
+    
+    # 打印如下：
+    # Alarm Ring...
+    # Spray Water...
+    # Dial 119...
+    ```
+
+
+
+
+
+### 享元模式
+
+> 引用：
+> [博客园 - Little_five - 浅谈Python设计模式 - 享元模式](https://www.cnblogs.com/littlefivebolg/p/9930388.html)
+> [云栖社区 - 途索 - Python与设计模式--享元模式](https://developer.aliyun.com/article/70529)
+
+&emsp;&emsp;享元模式是一种用于解决资源和性能压力时会使用到的设计模式，它的核心思想是**通过引入数据共享来提升性能**。
+
+
+
+
+#### 享元模式定义如下：
+> &emsp;&emsp;使用共享对象支持大量细粒度对象。大量细粒度的对象的支持共享，可能会涉及这些对象的两类信息：内部状态信息和外部状态信息。内部状态信息就是可共享出来的信息，它们存储在享元对象内部，不会随着特定环境的改变而改变；外部状态信息就不可共享的信息了。
+>
+> **内蕴状态**：存储在享元内部，不会随环境的改变而有所不同，是可以共享的。
+> **外蕴状态**：是不可以共享的，它随环境的改变而改变的，因此外蕴状态是由客户端来保持（因为环境的变化是由客户端引起的）。
+
+&emsp;&emsp;**享元模式中只包含内部状态信息，而不应该包含外部状态信息。这点在设计业务架构时，应该有所考虑。**
+
+![享元模式](.assets/20200625161023925.png)
+
+
+
+#### 优缺点和使用场景
+
+##### 优点
+
+- 减少重复对象，大大节约了系统资源。
+
+##### 缺点
+
+- 享元模式虽然节约了系统资源，但同时也提高了系统的复杂性，尤其当遇到外部状态和内部状态混在一起时，需要先将其进行分离，才可以使用享元模式。否则，会引起逻辑混乱或业务风险；
+- 享元模式中需要额外注意线程安全问题
+
+##### 应用场景
+
+- **系统中存在大量的相似对象时，可以选择享元模式提高资源利用率**。
+
+    > 假设一个电商平台，每个买家和卖家建立起买卖关系后，买家对象和卖家对象都是占用资源的。如果一个卖家同时与多个买家建立起买卖关系呢？此时享元模式的优势就体现出来了；
+
+- **需要缓冲池的场景中，可以使用享元模式**。
+
+    > 如进程池，线程池等技术，就可以使用享元模式；事实上，很多的池技术中已经使得了享元模式。
+
+
+
+
+
+#### 理解实例
+
+> &emsp;&emsp;在开发 3D 游戏时，例如有成千上万的士兵或者有成千上万棵树，如果一个 3D 地带的每个对象都单独创建，不使用数据共享，那么性能是无法接受的。
+
+&emsp;&emsp;故享元设计模式就是通过为相似对象映入数据共享来最小化内存的使用，提升性能。
+&emsp;&emsp;既然要创建成千上万个士兵，那么若他们的数据属性行为都是一样的，那岂不是黏一块去了。这时候就会有：**可变数据和不可变数据的概念**。即**重点在于将不可变（可共享）的属性与可变的属性区分开。**相同类型的对象共享不可变（可共享）的数据，而每个对象又有其独立的数据，这部分数据即为：可变的属性（不可共享数据）。
+
+
+
+##### 实现
+
+&emsp;&emsp;其实享元模式的实现与单例模式的实现方式十分相似，比如：单例模式实现的是一个类对象只允许有一个实例对象，而享元模式则是一个类对象只允许创建不同类型的对象，这样保证同一类型的对象共享不可变数据。
+
+```python
+from enum import Enum
+
+TreeType = Enum('TreeType','apple_tree cherry_tree peach_tree')
+
+class Tree:
+    pool = dict()
+
+    def __new__(cls, tree_type, *args,**kwargs):
+        # 即通过其中的__new__魔法方法来限制类的实例化，只允许实例化不同类型的对象。
+        obj = cls.pool.get(tree_type,None)
+        if not obj:
+            obj = super().__new__(cls,*args, **kwargs)
+            cls.pool[tree_type] = obj
+            obj.tree_type = tree_type
+        return obj
+
+    def __init(self,size ):
+        # 在__init__方法中实现了可变数据的独立，即不共享。
+        self.size = size
+    
+    def render(self,age,x,y):
+        print('render a tree of type {} and age {} at ({},{})'.format(self.tree_type,age,x,y))
+```
+
+&emsp;&emsp;通过一个类型池，若需要实例化的类型在该类型池中，则直接返回该类型池中的对象，由于返回的是同一对象，故其共享不可变的属性（tree_type），而在执行完成 `__new__()` 方法之后，变化执行 `__init__` 魔法方法，则这时候该对象的属性便会发生改变，故不共享可变的属性（size）。
+
+
+
+##### 使用
+
+&emsp;&emsp;在 `main()` 中去创建 10 棵 apple_tree，并且 为每个对象随机给不同的年龄、位置等，这样就可以在游戏中的不同的位置中渲染。
+
+```python
+import random
+from enum import Enum
+
+def main():
+    rnd = random.Random()
+    age_min, age_max = 1, 30
+    min_piont, max_point = 0, 100
+    tree_counter = 0
+
+    for _ in range(10):
+        t1 = Tree(TreeType.apple_tree)
+        t1.render(rnd.randint(age_min, age_max),
+                rnd.randint(min_piont, max_point),
+                rnd.randint(min_piont, max_point)
+        )
+        tree_counter += 1
+    
+    for _ in range(3):
+        t1 = Tree(TreeType.cherry_tree)
+        t1.render(rnd.randint(age_min, age_max),
+                rnd.randint(min_piont, max_point),
+                rnd.randint(min_piont, max_point)
+        )
+        tree_counter += 1
+    
+    for _ in range(5):
+        t1 = Tree(TreeType.peach_tree)
+        t1.render(rnd.randint(age_min, age_max),
+                rnd.randint(min_piont, max_point),
+                rnd.randint(min_piont, max_point)
+        )
+        tree_counter += 1
+    
+    print(Tree.pool)
+
+if __name__ == '__main__':
+    main()
+```
+
+&emsp;&emsp;可以发现同一类型的树对象，其 ID 均一样，而其 size 属性却不一样，这是由于在执行` __init__` 方法时，返回类型池中的对象后，在进行初始化会 size 属性会覆盖前面返回的对象的 size 属性值。
+
+
+
+#### 真实业务环境遇见
+
+- **select_manage**
+
+    ```python
+    from abc import ABCMeta, abstractmethod
+    from typing import Union
+    
+    
+    class SelectDataSource(metaclass=ABCMeta):
+        @abstractmethod
+        def get_data(self, code: str, params: dict = None) -> list:
+            # 用以获取数据源数据
+            pass
+    
+        @abstractmethod
+        def get_code(self) -> Union[str, list]:
+            # 唯一标识数据源
+            pass
+    
+        @abstractmethod
+        def get_name(self) -> Union[str, list]:
+            # 唯一标识数据源姓名
+            pass
+    
+    
+    # 以类方法的形式， 无法拥有内蕴数据源
+    class SelectDataSourceManager:
+        # 将数据源类通过 reg 实例化后注册在 data_sources_dict 中， 再次调用数据 get_data 的时候直接从 data_sources_dict 中取，不用再实例化
+        data_sources_dict = {}				#关键！核心
+    
+        default_data_source: SelectDataSource = None
+    
+        @classmethod
+        def get_data(cls, code: str, params: dict = None):
+            data_source = cls.data_sources_dict.get(code)
+            if not data_source:
+                data_source = cls.default_data_source
+            else:
+                data_source = data_source.get("data_source")
+            if data_source:
+                if not params:
+                    params = {}
+                return data_source.get_data(code, params)
+            return []
+    
+        @classmethod
+        def reg(cls, data_source: type(SelectDataSource)):
+            if data_source:
+                data_source_instance = data_source()
+                names = data_source_instance.get_name()
+                codes = data_source_instance.get_code()
+                if isinstance(names, list) and isinstance(codes, list):
+                    if len(codes) != len(names):
+                        raise Exception(
+                            "select data source {}: name and code is not match".format(
+                                data_source.__name__
+                            )
+                        )
+                    for name, code in zip(names, codes):
+                        if code in cls.data_sources_dict:
+                            raise Exception("select data source {} existed!".format(code))
+                        cls.data_sources_dict[code] = {
+                            "code": code,
+                            "name": name,
+                            "data_source": data_source_instance,
+                        }
+                else:
+                    if codes in cls.data_sources_dict:
+                        raise Exception("select data source {} existed!".format(codes))
+                    cls.data_sources_dict[codes] = {
+                        "code": codes,
+                        "name": names,
+                        "data_source": data_source_instance,
+                    }
+    
+    ```
+
+- **DataSource**
+
+    ```python
+    from typing import Union
+    
+    from select_manager import SelectDataSource, SelectDataSourceManager
+    
+    
+    class DBSelect:
+        # 模拟数据库数据
+        def get_all_dict(self):
+            return [
+                {"code": "default1", "name": "默认数据源1"},
+                {"code": "default2", "name": "默认数据源2"},
+                {"code": "default3", "name": "默认数据源3"},
+                {"code": "default4", "name": "默认数据源4"},
+            ]
+    
+        def get_dict_item_by_code(self, code: str):
+            data = {
+                "default1": "1111111",
+                "default2": "2222222",
+                "default3": "3333333",
+                "default4": "4444444",
+            }
+            return data.get(code)
+    
+    
+    class TestDataSource(SelectDataSource):
+        def get_data(self, code: str, params: dict = None) -> []:
+            data = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+            return data
+    
+        def get_code(self) -> Union[str, list]:
+            return "test1"
+    
+        def get_name(self) -> Union[str, list]:
+            return "测试用例1"
+    
+    
+    class DefaultDataSource(SelectDataSource):
+        def __init__(self):
+            self.dict_repo = DBSelect()
+    
+        def get_all_dict(self):
+            return self.dict_repo.get_all_dict()
+    
+        def get_data(self, code: str, params: dict = None):
+            items = self.dict_repo.get_dict_item_by_code(code)
+            if items:
+                return items
+            return []
+    
+        def get_code(self) -> Union[str, list]:
+            return [data.get("code") for data in self.get_all_dict()]
+    
+        def get_name(self) -> Union[str, list]:
+            return [data.get("name") for data in self.get_all_dict()]
+    
+    
+    if __name__ == "__main__":
+        SelectDataSourceManager.reg(DefaultDataSource)
+        SelectDataSourceManager.reg(TestDataSource)
+        data = SelectDataSourceManager.get_data("test1")
+        print(data)
+        print(SelectDataSourceManager.get_data("default1"))
+        print(SelectDataSourceManager.get_data("default2"))
+        print(SelectDataSourceManager.get_data("default3"))
+        print(SelectDataSourceManager.get_data("default4"))
+    
+    ```
+
+
+
+
+
+
+### 适配器模式
 参考： [云栖社区 - 途索 - Python与设计模式--适配器模式](https://yq.aliyun.com/articles/70536?utm_content=m_36112)
 
 适配器模式定义如下：
@@ -778,6 +1255,7 @@ for i in range(10):
 
 
 #### 优缺点与应用
+
 ##### 优点：
 - 适配器模式可以让两个接口不同，甚至关系不大的两个类一起运行；
 - 提高了类的复用度，经过“伪装”的类，可以充当新的角色；
@@ -1058,26 +1536,142 @@ for i in range(10):
 
 
 
+### 桥接模式
+
+&emsp;&emsp;桥接模式又叫桥梁模式，定义如下：将抽象与实现解耦（注意此处的抽象和实现，并非抽象类和实现类的那种关系，而是一种角色的关系，这里需要好好区分一下），可以使其独立变化。在形如上例中，Pen只负责画，但没有形状，它终究是不知道要画什么的，所以我们把它叫做抽象化角色；而Shape是具体的形状，我们把它叫做实现化角色。抽象化角色和实现化角色是解耦的，这也就意味着，**所谓的桥，就是抽象化角色的抽象类和实现化角色的抽象类之间的引用关系**。
+
+<img src=".assets/640.webp" alt="img" style="zoom: 80%;" />
+
+
+
+```python
+class Shape:
+    """
+    实现化角色抽象类: Shape是具体的形状
+    """
+
+    name = ""  	# 形状名称
+    param = ""  # 形状参数
+
+    def getName(self):
+        return self.name
+
+    def getParam(self):
+        return self.name, self.param
+
+
+class Rectangle(Shape):
+    def __init__(self, long, width):
+        self.name = "Rectangle"
+        self.param = "Long:%s Width:%s" % (long, width)
+        print("Create a rectangle:%s" % self.param)
+
+
+class Circle(Shape):
+    def __init__(self, radius):
+        self.name = "Circle"
+        self.param = "Radius:%s" % radius
+        print("Create a circle:%s" % self.param)
+
+
+class Pen:
+    """
+    抽象化角色抽象类: Pen只负责画，没有形状
+    """
+
+    shape = ""  # 图画形状
+    type = ""  	# 画笔类型
+
+    def __init__(self, shape):
+        self.shape = shape
+
+    def draw(self):
+        pass
+
+
+class NormalPen(Pen):
+    def __init__(self, shape):
+        Pen.__init__(self, shape)
+        self.type = "Normal Line"
+
+    def draw(self):
+        print(
+            "DRAWING %s:%s----PARAMS:%s"
+            % (self.type, self.shape.getName(), self.shape.getParam())
+        )
+
+
+class BrushPen(Pen):
+    """
+    桥梁: 抽象化角色的抽象类和实现化角色的抽象类之间的引用关系。
+    """
+
+    def __init__(self, shape):
+        Pen.__init__(self, shape)
+        self.type = "Brush Line"
+
+    def draw(self):
+        print(
+            "DRAWING %s:%s----PARAMS:%s"
+            % (self.type, self.shape.getName(), self.shape.getParam())
+        )
+
+
+if __name__ == "__main__":
+    normal_pen = NormalPen(Rectangle("20cm", "10cm"))
+    brush_pen = BrushPen(Circle("15cm"))
+    normal_pen.draw()
+    brush_pen.draw()
+```
 
 
 
 
 
+## 行为型模式11种
 
 
 
 
 
+# 思考
+
+## 享元模式与单例模式的区别
+
+[享元模式与单例模式的区别](https://www.cnblogs.com/ProDoctor/p/7102799.html)
+
+[java享元模式与单例模式感觉怎么好像啊，请前辈指点](http://bbs.itheima.com/thread-25745-1-1.html)
+
+> 享元模式，可以看做是 单例模式+工厂模式+合成模式
+>
+> 单例模式就是全世界只能有一个人, 享元模式可以理解为全世界有那么几种人
+
+&emsp;&emsp;单例模式和享元模式的初衷是一样的。他们都是一个基于空间和性能的模式。他们都是要控制对象的数量，而且实现方式本质上有着一些类似，就是首先查询这个对象是否存在，然后返回这个对象。应该说享元模式是单例模式的一个延伸。享元模式通过享元工厂来控制多个对象的单例化。而单例化解决的只是本身的单例问题！  
+
+&emsp;&emsp;我一直觉得，模式不要乱用，乱用模式是学习的阶段，但是一旦在工作中，我们去乱用 模式，那么可能会造成很惨的后果:
+
+1. 系统中要有大量的对象，这才值得用享元模式。否则你去维护一张对象表 ，就不值得了。
+2.  对象的创建是会消耗大量时间的过程，并且对象占用较大内存。如果不是 ，那就让系统去创建吧。
+3. 在 B/S 的系统中，个人感觉享元的应用相对较少，Web的无状态，加之我们完全在客户端进行一系列的复 杂逻辑，然后将之统一传递给 Web 服务器端，而不需要享元。享元主要应用还是在 C/S 及 Winform 的本地程序上较多
+
+&emsp;&emsp;其余的，比如，关于外蕴状态和内蕴状态究竟何种应该使用享元的问题，如果不满足情 况，您也根本没有办法去使用享元。
 
 
 
+单例模式是类级别的，一个类只能有一个对象实例；
+享元模式是对象级别的，可以有多个对象实例，多个变量引用同一个对象实例；
+
+享元模式可以再次创建对象 也可以取缓存对象
+单例模式则是严格控制单个进程中只有一个实例对象
+
+享元模式可以通过自己实现对外部的单例 也可以在需要的使用创建更多的对象
+单例模式是自身控制 需要增加不属于该对象本身的逻辑
 
 
 
-
-
-
-
+享元模式主要是为了节约内存空间，提高系统性能，而单例模式主要为了可以共享数据；
+享元模式是多个变量公用一个对象实例 大大节约了内存空间 提高了系统性能
+两者都可以实现节省对象创建的时间 ThreadPool 线程池 与数据库连接池 都有使用享元模式
 
 
 
