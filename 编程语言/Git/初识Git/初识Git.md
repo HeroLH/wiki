@@ -1314,7 +1314,7 @@ git push origin --delete 分支名
     https://github.com/user/project.git
     # 修改的地址
     https://用户名:密码@github.com/user/project.git
-    
+    local
     git remote add origin https://用户名:密码@github.com/user/project.git
     ```
 
@@ -1350,7 +1350,12 @@ files/						# 忽略该文件夹下所有文件
 
 更多参考: [各类语言项目推荐的 ignore 文件](https://github.com/github/gitignore)
 
+如果只需要提交目录中的某一个文件，只需要在前加一行星号，表示忽略所有文件，感叹号把需要的留下来。
 
+```shell
+*
+!file
+```
 
 
 

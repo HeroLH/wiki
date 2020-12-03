@@ -1,5 +1,4 @@
 ----------------------------------------------
-
 > *Made By Herolh， 忠告：语言只是工具*
 ----------------------------------------------
 
@@ -20,17 +19,13 @@
 
 
 # 初识Go语言
-
 > [Go语言圣经( 中文版)](https://docs.hacknode.org/gopl-zh/)
->
 > https://github.com/gopl-zh/gopl-zh.github.com
->
 > http://shouce.jb51.net/gopl-zh/ch1/ch1-01.html
 
 
 
 ## 什么是Go语言？
-
 &emsp;&emsp;Go 是一个开源的编程语言，它能让构造简单、可靠且高效的软件变得容易。
 &emsp;&emsp;Go 是从 2007 年末由 Robert Griesemer, Rob Pike, Ken Thompson 主持开发，后来还加入了 Ian Lance Taylor, Russ Cox 等人，并最终于 2009 年 11 月开源，在 2012 年早些时候发布了 Go 1 稳定版本。现在 Go 的开发已经是完全开放的，并且拥有一个活跃的社区。
 
@@ -39,7 +34,6 @@
 
 
 ### 版本更新：
-
 - Go 1.14 (February 2020)
 - Go 1.13 (September 2019)
 - Go 1.12 (February 2019)
@@ -63,13 +57,10 @@
 
 
 ## Go 语言环境安装
-
 >  Go 语言支持以下系统：Linux、FreeBSD、Mac OS X、Windows
 
 Go官网安装包下载地址为：https://golang.org/dl/。
-
 Go官方镜像站( 推荐 )：https://golang.google.cn/dl/。
-
 各个系统对应的包名：
 
 | 操作系统 |              包名              |
@@ -84,11 +75,9 @@ Go官方镜像站( 推荐 )：https://golang.google.cn/dl/。
 
 
 ### Windows 系统下安装
-
 &emsp;&emsp;Windows 下可以使用 `.msi` 后缀的安装包来安装。默认情况下 `.msi` 文件会安装在 `c:\Go` 目录下。你可以将 `c:\Go\bin` 目录添加到 `Path` 环境变量中。添加后你需要重启命令窗口才能生效。
 
 ### 安装测试
-
 - **方法一：**
 
     ```shell
@@ -124,13 +113,12 @@ Go官方镜像站( 推荐 )：https://golang.google.cn/dl/。
 
 
 ### 编译程序
-
 &emsp;&emsp;使用 `go run` 这个命令，会将编译、链接和运行3个步骤合并为一步，运行完后在当前目录下也看不到任何中间文件和最终的可执行文件。如果要只生成编译结果而不自动运行，我们也可以使用 Go 命令行工具的 `build` 命令：
 
 ```shell
 go build hello.go
 ./hello 
-# Hello, World!
+ # Hello, World!
 ```
 
 &emsp;&emsp;从根本上说，Go 命令行工具只是一个源代码管理工具，或者说是一个前端。真正的 Go 编译器和链接器被 Go 命令行工具隐藏在后面，我们可以直接使用它们：
@@ -139,7 +127,7 @@ go build hello.go
 6g helloworld.go 
 6l helloworld.6 
 ./6.out 
-# Hello, World!
+ # Hello, World!
 ```
 
 &emsp;&emsp;6g 和 6l 是 64 位版本的 Go 编译器和链接器，对应的 32 位版本工具为 8g 和 8l。Go 还有另外一个 GCC 版本的编译器，名为 gccgo。
@@ -147,11 +135,8 @@ go build hello.go
 
 
 ### 环境配置
-
 #### 创建一个任意目录
-
 <img src=".assets/w6.png" alt="img" style="zoom: 67%;" />
-
 以后的 go 项目都要按照要求放在这个目录里：
 
 ```shell
@@ -170,11 +155,10 @@ E:\Project\go
 
 
 #### 配置环境变量
-
 ```shell
-# GOROOT，Go解释器安装路径，用于之后去调用go相关源码。
-# GOPATH，Go项目代码相关目录，将你以后写的go代码及其编译生成的文件存放的目录。
-# GOBIN，Go编译代码后自动生成可执行文件的路径，Go是个编译型语言，当使用go install命令对代码进行编译时，可执行文件会生成到这个目录。
+ # GOROOT，Go解释器安装路径，用于之后去调用go相关源码。
+ # GOPATH，Go项目代码相关目录，将你以后写的go代码及其编译生成的文件存放的目录。
+ # GOBIN，Go编译代码后自动生成可执行文件的路径，Go是个编译型语言，当使用go install命令对代码进行编译时，可执行文件会生成到这个目录。
 ```
 
 ![img](.assets/w7.png)
@@ -182,11 +166,9 @@ E:\Project\go
 
 
 #### GOPATH
-
 &emsp;&emsp;`GOROOT` 和 `GOPATH` 都是环境变量，其中`GOROOT`是我们安装 go 开发包的路径，而从 Go 1.8 版本开始，Go 开发包在安装完成后会为`GOPATH`设置一个默认目录，参见下表。
 
 ##### GOPATH在不同操作系统平台上的默认值
-
 |  平台   |   GOPATH默认值   |        举例        |
 | :-----: | :--------------: | :----------------: |
 | Windows | %USERPROFILE%/go | C:\Users\用户名\go |
@@ -201,9 +183,7 @@ E:\Project\go
 
 
 ## 第一个Go程序 Hello World!
-
 ### 目录结构
-
 &emsp;&emsp;在 `GOPATH` 下的 `src` 目录中创建一个 `文件夹( 项目 )`，进入文件夹并创建一个以 `.go` 为后缀名的文件( 如 `first.go` )，并在 `first.go` 文件中写入 go 代码。
 
 ```shell
@@ -219,7 +199,6 @@ E:\Project\go
 
 
 ### 代码示例
-
 ```go
 package main
 
@@ -231,7 +210,6 @@ func main() {		// 程序开始执行的函数。
 ```
 
 - **package main**
-  
     > 每个 Go 源代码文件的开头都是一个 package 声明，表示该 Go 代码所属的包。
 > 必须在源文件中非注释的第一行指明这个文件属于哪个包，包是Go 语言里最基本的分发单位，也是工程管理中依赖关系的体现。
 
@@ -278,7 +256,7 @@ func main() {		// 程序开始执行的函数。
 
 ```shell
 go run learn\day1
-# or
+ # or
 go run helloWorld.go
 ```
 
@@ -305,7 +283,7 @@ go run helloWorld.go
 ```shell
 go build
 day1.exe
-# or
+ # or
 go build -o helloWorld.exe
 helloWorld.exe
 ```
@@ -2577,11 +2555,8 @@ v1 = make(map[int]int, 10)
 ```
 
 - 创建一个 hmap 结构体对象
-
 - 生成一个哈希因子 hash0 并赋值到 hmap 对象中( 用于后续为 key 创建哈希值 )
-
 - 根据 hint=10， 并根据算法规则来创建B， 当前 B 应该为 1.
-
     ```shell
     hint 			B
     0~8				0
@@ -2591,7 +2566,6 @@ v1 = make(map[int]int, 10)
     ```
 
 - 根据B去创建桶(bmap对象) 并存放在 buckets 数组中， 当前的 bmap 的数量应该为2
-
     - 但 B<4时，根据B创建的桶个数的规则为：$2^B$(标准桶)
     - 当B>=4时， 根据 B 创建桶的个数的规则为 $2^B + 2^{B-4}$(标准桶+溢出桶)
 
@@ -2606,6 +2580,7 @@ v1 = make(map[int]int, 10)
 
 
 ## 指针
+> &emsp;&emsp;指针：是一种数据类型，用于表示数据的内存地址。
 > &emsp;&emsp;任何程序数据载入内存后，在内存都有他们的地址，这就是指针。而为了保存一个数据在内存中的地址，我们就需要指针变量。
 
 - 指针默认值 nil
@@ -2779,9 +2754,7 @@ v2 := new(int)			//开辟空间，默认值为 0
 
 
 ### 函数定义
-
 Go语言中定义函数使用`func`关键字，具体格式如下：
-
 ```go
 func 函数名(参数)(返回值){
     函数体
@@ -2794,7 +2767,6 @@ func 函数名(参数)(返回值){
 ```
 
 示例：
-
 ```go
 // 定义一个接收 string 类型的函数
 func SayHello(str string)  {
@@ -2809,11 +2781,8 @@ func main() {
 
 
 ### 参数
-
 #### 类型简写
-
 函数的参数中如果相邻变量的类型相同，则可以省略类型，例如：
-
 ```go
 func intSum(num1, num2 int) int {
 	return num2 + num1
@@ -2823,9 +2792,7 @@ func intSum(num1, num2 int) int {
 
 
 #### 可变参数
-
-可变参数是指函数的参数数量不固定。Go语言中的可变参数通过在参数名后加`...`来标识。注意：**可变参数通常要作为函数的最后一个参数。**
-
+&emsp;&emsp;可变参数是指函数的参数数量不固定。Go语言中的可变参数通过在参数名后加`...`来标识。注意：**可变参数通常要作为函数的最后一个参数。**
 ```go
 // 接收可变参数
 func GetManyInt(int_list ...int) (ret int) {
@@ -2854,17 +2821,16 @@ func main() {
 	fmt.Println(num4)
 }
 ```
-
 > 本质上，函数的可变参数是通过切片来实现的。
 
 
 
 ### 返回值
-
 Go语言中通过 `return` 关键字向外输出返回值。
 
-#### 多返回值
 
+
+#### 多返回值
 Go语言中函数支持多返回值，函数如果有多个返回值时必须用`()`将所有返回值包裹起来。
 
 ```go
@@ -2898,7 +2864,6 @@ func main() {
 
 
 #### 返回值补充
-
 &emsp;&emsp;当我们的一个函数返回值类型为 slice 时，nil 可以看做是一个有效的 slice，没必要显示返回一个长度为 0 的切片。
 
 ```go
@@ -2926,7 +2891,6 @@ func main() {
 
 
 ### defer 语句
-
 &emsp;&emsp;Go 语言中的 `defer` 语句会将其后面跟随的语句进行延迟处理。在 `defer` 归属的函数即将返回时，将延迟处理的语句按 `defer` 定义的逆序进行执行，也就是说，先被 `defer` 的语句最后被执行，最后被 `defer` 的语句，最先被执行。
 
 ```go
@@ -2951,7 +2915,6 @@ func main() {
 
 
 ##### defer执行时机
-
 &emsp;&emsp;在Go语言的函数中 `return` 语句在底层并不是原子操作，它分为给返回值赋值和 RET 指令两步。而 `defer` 语句执行的时机就在返回值赋值操作后，RET 指令执行前。具体如下图所示：
 
 ![defer执行时机](.assets/defer.png)
@@ -2959,7 +2922,6 @@ func main() {
 
 
 ##### defer经典案例
-
 ```go
 func f1() int {
 	x := 5
@@ -3004,9 +2966,7 @@ func main() {
 
 
 ### 高阶函数
-
 #### 函数作为变量
-
 ```go
 func func1()  {
 	fmt.Println("Hello world!")
@@ -3022,7 +2982,6 @@ func main() {
 
 
 #### 函数作为参数
-
 ```go
 func sum(x, y int) int {
 	return x + y
@@ -3041,7 +3000,6 @@ func main() {
 
 
 #### 函数作为返回值
-
 ```go
 func sum(x, y int) int {
 	return x + y
@@ -3079,9 +3037,7 @@ func main() {
 
 
 ### 匿名函数和闭包
-
 #### 匿名函数
-
 &emsp;&emsp;在 Go 语言中函数内部不能再像之前那样定义函数了，只能定义匿名函数。匿名函数就是没有函数名的函数，匿名函数的定义格式如下：
 
 ```go
@@ -3112,7 +3068,6 @@ func main() {
 
 
 #### 闭包
-
 闭包指的是一个函数和与其相关的引用环境组合而成的实体。简单来说，`闭包=函数+引用环境`。 
 
 ```go
@@ -3143,10 +3098,41 @@ func main() {
 
 > 变量 `function2` 是一个函数并且它引用了其外部作用域中的 `num` 变量，此时 `function2` 就是一个闭包。 在 `function2` 的生命周期内，变量 `function2` 也一直有效。
 
+```go
+func main() {
+	// 存储函数
+	var funcList1 []func()
+	var funcList2 []func()
+
+	for i := 0; i < 3; i++ {
+		function1 := func() {
+			fmt.Println(i)
+		}
+		funcList1 = append(funcList1, function1)
+
+		function2 := func(args int) func() {
+			return func() {
+				fmt.Println(args)
+			}
+		}(i)
+		funcList2 = append(funcList2, function2)
+	}
+
+	// 运行函数
+	funcList1[0]() // 3
+	funcList1[1]() // 3
+	funcList1[2]() // 3
+
+	funcList2[0]() // 0
+	funcList2[1]() // 1
+	funcList2[2]() // 2
+}
+```
+
+
 
 
 ##### 其他示例：
-
 ```go
 func Calc1(base int) (func(int) int, func(int) int) {
 	add := func(i int) int {
@@ -3255,25 +3241,20 @@ func main() {
 
 
 
-###### 注意：
-
+##### 注意：
 - `recover()`必须搭配`defer`使用。
-
 - `defer`一定要在可能引发`panic`的语句之前定义。
 
 
 
 ## 结构体
-
 &emsp;&emsp;Go 语言中没有直接的“类”的概念，也不直接支持“类”的继承等面向对象的概念。Go语言中通过结构体的内嵌再配合接口比面向对象具有更高的扩展性和灵活性。
 
 
 
 ### 类型别名和自定义类型
-
 #### 自定义类型
-
-&emsp; Go语言中可以使用`type`关键字来定义自定义类型。自定义类型是定义了一个全新的类型。我们可以基于内置的基本类型定义，也可以通过struct定义。例如：
+&emsp; &emsp; Go语言中可以使用`type`关键字来定义自定义类型。自定义类型是定义了一个全新的类型。我们可以基于内置的基本类型定义，也可以通过struct定义。例如：
 
 ```go
 //将MyInt定义为int类型
@@ -3285,17 +3266,12 @@ type MyInt int
 
 
 #### 类型别名
-
 类型别名是`Go1.9`版本添加的新功能。
-
 类型别名规定：TypeAlias 只是 Type 的别名，本质上TypeAlias 与 Typ e是同一个类型。就像一个孩子小时候有小名、乳名，上学后用学名，英语老师又会给他起英文名，但这些名字都指的是他本人。
-
 ```go
 type TypeAlias = Type
 ```
-
 我们之前见过的`rune`和`byte`就是类型别名，他们的定义如下：
-
 ```go
 type byte = uint8
 type rune = int32
@@ -3304,7 +3280,6 @@ type rune = int32
 
 
 #### 类型定义和类型别名的区别
-
 类型别名与类型定义表面上看只有一个等号的差异，我们通过下面的这段代码来理解它们之间的区别。
 
 ```go
@@ -3326,8 +3301,30 @@ func main() {
 
 
 
-### 初识结构体
 
+#### 类型方法
+&emsp;&emsp;项目开发中可以为 type 声明的类型编写一些方法， 从而实现 `对象.方法` 的操作。
+```go
+type Myint int
+
+// 不使用 i 可以使用 _ 代替
+func (i *Myint) Add(num int) Myint {
+	return Myint(int(*i) + num)
+}
+
+func main() {
+	v1 := Myint(1)
+	v2 := v1.Add(1)
+	print(v2, v1)
+}
+```
+
+
+
+
+
+
+### 初识结构体
 &emsp;&emsp;Go 语言中不直接支持面向对象，但可以通过 `struct` 来实现面向对象。
 &emsp;&emsp;Go 语言中的基础数据类型可以表示一些事物的基本属性，而结构体是用来描述一组值的。比如一个人有名字、年龄和居住城市等，本质上是一种聚合型的数据类型，Go 语言提供了一种自定义数据类型，可以封装多个基本数据类型，这种数据类型叫结构体，英文名称 `struct`。 
 
@@ -3455,7 +3452,7 @@ func main() {
 
 ##### 使用值的列表初始化
 
-初始化结构体的时候可以简写，也就是初始化的时候不写键，直接写值：
+初始化结构体的时候可以简写，也就是初始化的时候不写键，直接写值，会根据先后顺序进行赋值：
 
 ```go
 func main() {
@@ -3553,6 +3550,10 @@ func main() {
 
 
 
+
+
+
+
 ### 结构体的匿名字段
 
 结构体允许其成员字段在声明时没有字段名而只有类型，这种没有名字的字段就称为匿名字段。
@@ -3560,8 +3561,8 @@ func main() {
 ```go
 //Person 结构体Person类型
 type Person struct {
-	string
-	int
+	string			// String string
+	int				// Int int
 }
 
 func main() {
@@ -3661,6 +3662,112 @@ func main() {
 嵌套结构体内部可能存在相同的字段名。在这种情况下为了避免歧义需要通过指定具体的内嵌结构体字段名。
 
 
+
+### 结构体的赋值
+#### 结构体赋值拷贝
+```go
+type Person struct {
+	name string
+	age	int
+}
+
+p1 := Person{name:"lin", age: 18}
+p2 := p1                              // 内部将 p1 重新拷贝了一份
+
+p1.age = 19
+fmt.Println(p1)                       // {lin 19}  
+fmt.Println(p2)                       // {lin 18} 
+
+```
+
+![image-20201206215837015](.assets/image-20201206215837015.png)
+
+
+
+#### 结构体指针赋值拷贝
+```go
+type Person struct {
+	name string
+	age int
+}
+
+p1 := &Person{name:"lin", age: 18}     // 创建结构体指针
+p2 := p1
+
+p1.age = 19
+fmt.Println(p1)                       // &{lin 19}  
+fmt.Println(p2)                       // &{lin 19} 
+
+```
+
+<img src=".assets/image-20201206220553708.png" alt="image-20201206220553708" style="zoom: 67%;" />
+
+
+
+#### 结构体嵌套赋值拷贝
+```go
+type Address struct {
+    city string
+}
+
+type Person struct {
+    name string
+    age int
+    Address
+}
+
+p1 := &Person{"lin", 18, Address{"world"}}     // 创建结构体指针
+p2 := p1
+
+p1.city = "hello"
+fmt.Println(p1)                       // &{lin 18 {hello}}
+fmt.Println(p2)                       // &{lin 18 {hello}}
+```
+
+
+
+#### 谁不拷贝？
+其实本质上都是拷贝了，只不过由于数据存储方式的不同，导致拷贝的有些是数据，有些是内存地址(指针)：
+- 感觉拷贝：		字符串、数组、整型等。
+- 感觉不拷贝：    map，切片。
+
+```go
+func main() {
+    type Person struct {
+        Name   string
+        Age    int
+        Hobby  []string
+        Num    []int
+        Parent map[string]string
+    }
+
+    p1 := Person{
+        Name:   "1",							// p1 不变
+        Age:    1,								// p1 不变
+        Hobby:  []string{"1","1"},				// p1 改变
+        Num:    []int{1,1},						// p1 改变
+        Parent: map[string]string{"value":"1"},	// p1 改变
+    }
+    
+    p2 := p1
+    p2.Name = "2"
+    p2.Age = 2
+    p2.Hobby[0] = "2"
+    p2.Num[0] = 2
+    p2.Parent["value"] = "2"
+
+    fmt.Println(p1)				// {1 1 [2 1] [2 1] map[value:2]}
+    fmt.Println(p2)				// {2 2 [2 1] [2 1] map[value:2]}
+}
+```
+
+对于那些默认拷贝的情况，可以改变为指针类型，让数据实现同步修改。
+
+
+
+#### 注意
+
+- 结构体做参数和返回值时，在执行的时候都会被重新拷贝一份，如果不想被拷贝，则可以通过指针的形式进行处理。
 
 
 
@@ -3807,15 +3914,14 @@ in.student{Id:8, Name:"stu08"}, main.student{Id:9, Name:"stu09"}}}
 
 
 
-### 结构体标签( Tag)
-
+### 结构体标签( Tag )
 &emsp;&emsp;`Tag` 是结构体的元信息，可以在运行的时候通过反射的机制读取出来。 `Tag` 在结构体字段的后方定义，由一对**反引号** 包裹起来，具体的格式如下：
 
 ```go
 `key1:"value1" key2:"value2"`
 ```
 
-结构体tag由一个或多个键值对组成。键与值使用冒号分隔，值用双引号括起来。同一个结构体字段可以设置多个键值对 tag，不同的键值对之间使用空格分隔。
+&emsp;&emsp;结构体 tag 由一个或多个键值对组成。键与值使用冒号分隔，值用双引号括起来。同一个结构体字段可以设置多个键值对 tag，不同的键值对之间使用空格分隔。
 
 ```go
 //Student 学生
@@ -3823,16 +3929,95 @@ type Student struct {
 	ID     int    `json:"id"` 	//通过指定tag实现json序列化该字段时的key
 	Gender string 				//json序列化是默认使用字段名作为key
 	name   string 				//私有不能被json包访问
-    Status int 	`json:"status" db:"stu_status" xml:"ss"`
+    Status int 	  `json:"status" db:"stu_status" xml:"ss"`
 }
 ```
 
 **注意事项：** 为结构体编写`Tag`时，必须严格遵守键值对的规则。结构体标签的解析代码的容错能力很差，一旦格式写错，编译和运行时都不会提示任何错误，通过反射也无法正确取值。例如不要在key和value之间添加空格。
 
 
+#### 取出 tag
+```go
+func main() {
+	type Student1 struct {
+		ID     int    `json:"id"` 	//通过指定tag实现json序列化该字段时的key
+		Gender string 				//json序列化是默认使用字段名作为key
+		name   string 				//私有不能被json包访问
+		Status int 	  `json:"status" db:"stu_status" xml:"ss"`
+	}
+
+	p1 := Student1{1, "1", "1", 1}
+	p1Type := reflect.TypeOf(p1)
+	fmt.Println(p1Type)									// main.Student1
+
+	// 方式1:
+	filed1 := p1Type.Field(0)
+	fmt.Println(filed1.Tag)								// json:"id"
+
+	// 方式二
+	filed2, err := p1Type.FieldByName("Gender")
+	fmt.Println(filed2.Tag)								// None
+	fmt.Println(err)									// true
+
+	// 循环获取
+	filedNum := p1Type.NumField()
+	for index := 0; index < filedNum; index++ {
+		filed := p1Type.Field(index)
+		fmt.Println(filed.Name, filed.Tag)				// ID json:"id"
+	}
+}
+```
+
+
+
+
+### 注意
+#### 结构体赋值拷贝
+```go
+type Person srtuct {
+	name string
+	age	int
+}
+
+p1 := Person{name:"lin", age: 18}
+p2 := p1                              // 内部将 p1 重新拷贝了一份
+
+p1.age = 19
+fmt.Println(p1)                       // {lin 19}  
+fmt.Println(p2)                       // {lin 18} 
+
+```
+
+![image-20201206215837015](.assets/image-20201206215837015.png)
+
+
+
+#### 结构体指针赋值拷贝
+```go
+type Person srtuct {
+	name string
+	age int
+}
+
+p1 := &Person{name:"lin", age: 18}     // 创建结构体指针
+p2 := p1
+
+p1.age = 19
+fmt.Println(p1)                       // &{lin 19}  
+fmt.Println(p2)                       // &{lin 19} 
+
+```
+
+![image-20201206220553708](.assets/image-20201206220553708.png)
+
+
+
+
+
+
+
 
 ## 接口
-
 [李文周的博客 - Go语言基础之接口](https://www.liwenzhou.com/posts/Go/12_interface/)
 
 > 接口( interface)定义了一个对象的行为规范，只定义规范不实现，由具体的对象来实现规范的细节。
@@ -4075,10 +4260,9 @@ func main() {
 
 
 
-
 ## 面向对象
 
-### 构造函数
+### 构造函数(结构体工厂)
 
 &emsp;&emsp;Go 语言的结构体没有构造函数，我们可以自己实现。 例如，下方的代码就实现了一个 `person` 的构造函数。 因为 `struct` 是值类型，如果结构体比较复杂的话，值拷贝性能开销会比较大，所以该构造函数返回的是结构体指针类型。
 
@@ -4099,6 +4283,26 @@ func newPerson(name, city string, age int8) *person {
 p9 := newPerson("张三", "沙河", 90)
 fmt.Printf("%#v\n", p9) //&main.person{name:"张三", city:"沙河", age:90}
 ```
+
+
+
+#### 强制使用工厂方法
+&emsp;&emsp;让结构体变为私有，工厂方法变为公有，这样强制所有代码在实例化结构体的时候都是用的工厂方法。
+```go
+// 私有
+type testStruct struct {
+    ...
+} 
+
+// 公有
+func NewTestStruct(params) *testStruct {
+    m := new(testStruct)
+    return m
+}
+  
+```
+
+
 
 
 
@@ -4768,7 +4972,6 @@ func main() {
 
 
 #### 单向通道
-
 &emsp;&emsp;有的时候我们会将通道作为参数在多个任务函数间传递，很多时候我们在不同的任务函数中使用通道都会对其进行限制，比如限制通道在函数中只能发送或只能接收。Go语言中提供了**单向通道**来处理这种情况。例如，我们把上面的例子改造如下：
 
 ```go

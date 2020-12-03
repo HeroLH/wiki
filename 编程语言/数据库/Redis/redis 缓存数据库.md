@@ -136,7 +136,7 @@ https://github.com/uglide/RedisDesktopManager
 
 
 
-## Redis API 使用
+## Redis API 使用个体
 
 ### 常用命令
 

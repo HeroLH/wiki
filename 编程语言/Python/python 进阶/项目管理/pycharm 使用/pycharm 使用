@@ -17,6 +17,14 @@
 
 --------------------------------------------
 
+## 激活
+
+http://idea.lanyus.com/
+
+
+
+
+
 ## Pycharm 快捷键
 
 
@@ -41,7 +49,26 @@ IdeaVim
 
 https://my.oschina.net/funcy/blog/1832719
 
-```shell
- 
-```
 
+
+
+
+## 自定义代码块
+
+- 打开File->Settings->Editor->Live Templates
+    ![这里写图片描述](.assets/20180428173600787.png)
+
+- 打开需要创建的程序下拉菜单，然后点击右侧“+”号并选择Live Template
+    ![这里写图片描述](.assets/20180428173619588.png)
+
+- 编辑自动补全：
+
+    - 修改为触发词
+
+    - Description为解释内容
+    - 最下面红字，点击后面的Define选择适用语言
+    - 右侧option选择触发按键
+        ![这里写图片描述](.assets/20180428173929827.png)
+
+- 点击applay就完成设置。比如下图的设置，在HTML文件里输入`，然后按Tab键就会补全称为``
+    ![这里写图片描述](.assets/20180428190634700.png)
