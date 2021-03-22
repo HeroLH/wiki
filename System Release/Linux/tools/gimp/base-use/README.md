@@ -1,0 +1,1 @@
+> [GIMP 基本教程](https://blog.csdn.net/ouening/article/details/90272880)
