@@ -18,13 +18,9 @@
 
 --------------------------------------------
 
-![介绍 Godot](.assets/v2-c45c123b33356cc35276cbb4ef46b479_1440w.jpg)
-
-# Arch 下安装
+## Arch 下安装
 
 ```shell
-sudo pacman -S godot
+sudo pacman -S blender
 ```
-
-
 

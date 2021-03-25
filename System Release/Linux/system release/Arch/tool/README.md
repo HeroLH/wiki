@@ -832,6 +832,12 @@ source ~/.profile
 
 
 
+### scrcpy 
+
+> https://zhuanlan.zhihu.com/p/87009933
+
+
+
 
 
 ## 虚拟化工具
@@ -869,6 +875,22 @@ source ~/.profile
     ```shell
     sudo usermod -G vboxusers -a 用户名
     ```
+
+
+
+
+
+## 桌面工具
+
+### oneko
+
+> https://linux.cn/article-6777-1.html
+
+```shell
+yay -S oneko
+```
+
+![image-20210325190331696](.assets/image-20210325190331696.png)
 
 
 
