@@ -624,6 +624,16 @@ yay -S wine-tim
 
 
 
+### Thunderbird
+
+```shell
+sudo pacman -S thunderbird-extension-enigmail
+```
+
+![image-20210326132520713](.assets/image-20210326132520713.png)
+
+
+
 
 
 ## 翻墙工具
@@ -891,6 +901,34 @@ yay -S oneko
 ```
 
 ![image-20210325190331696](.assets/image-20210325190331696.png)
+
+
+
+### 日历
+
+#### ccal
+
+> 命令行下的中国农历, 还可以输出为一些格式, 比如PDF, PNG, JPEG.
+
+```shell
+sudo pacman -S ccal
+```
+
+![image-20210326122330221](.assets/image-20210326122330221.png)
+
+##### 使用
+
+```shell
+Usage: ccal [-t|-p|-x] [-g|-b] [-u] [[<month>] <year>].
+        -t:     Generates HTML table output.
+        -p:     Generates encapsulated PostScript output.
+        -x:     Generates XML output.
+        -g:     Generates simplified Chinese output.
+        -b:     Generates traditional Chinese output.
+        -u:     Uses UTF-8 rather than GB or Big5 for Chinese output.
+```
+
+
 
 
 
