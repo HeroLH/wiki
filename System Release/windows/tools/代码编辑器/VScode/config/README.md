@@ -66,7 +66,7 @@
 
 
 
-### docker
+### GitLens
 
 ![image-20210126132200454](.assets/image-20210126132200454.png)
 
@@ -127,6 +127,45 @@
 
 
 
+
+### 前端开发环境
+
+#### 编写 HTML 文件
+
+在项目内新建 .html 文件，VScode 并不知道你想要写什么，在第一行输入 `!`，然后按下 Tab 即可快速生成标准的 HTML 代码。
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    
+</body>
+</html>
+```
+
+
+
+#### 运行 HTML 文件
+
+##### View In Browser
+
+![image-20210411234156779](.assets/image-20210411234156779.png)
+
+&emsp;&emsp;安装完成后，返回你要运行的文件界面，右击该文件，选择 “View In Browser” 选项，即可在默认浏览器中运行该文件。VScode 不会像 HBuilder 那样每次运行前提示保存，所以每次运行前请先手动保存。
+
+
+
+##### Live Server
+
+![image-20210411235855656](.assets/image-20210411235855656.png)
+
+部分情况下 *View In Browser* 会出现找不到浏览器的情况, 可以试试这个插件
 
 
 
@@ -212,3 +251,4 @@ Ctrl + Shitf + p，输入 settings，选择打开那个 JSON 的系统配置文�
 ```
 
 修改这两个值即可，第一个是编辑面板的，第二个是系统界面的。没有则新增。
+
