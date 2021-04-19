@@ -513,8 +513,6 @@ GET /test2
 
 ##### 查看默认类型的索引信息
 
-
-
 ```shell
 # 创建一个索引， _doc 是默认类型，可以省略
 PUT /test3/_doc/1
@@ -575,15 +573,299 @@ GET test3
 
 
 
+##### 查看其他信息
+
+- 查看我们的健康值，yellow状态
+
+    ```shell
+    GET _cat/health
+    
+    # 返回结果
+    1618839079 13:31:19 elasticsearch yellow 1 1 10 10 0 0 3 0 - 76.9%
+    ```
+
+- 查看具体信息(数据库等等)
+
+    ```shell
+    GET _cat/indices?v
+    
+    # 返回结果
+    health status index                           uuid                   pri rep docs.count docs.deleted store.size pri.store.size
+    yellow open   test2                           2cY9b_8aRNmqnSoqOA0D4w   1   1          0            0       208b           208b
+    green  open   .kibana_task_manager_7.12.0_001 JuBO9qzqTZu_9jUX4K99mg   1   0          9          257    213.3kb        213.3kb
+    green  open   .apm-custom-link                x3X9jL6bT5azSTGhTRgznw   1   0          0            0       208b           208b
+    green  open   .apm-agent-configuration        KBhfIgVAS_2QR5LBHX-FKA   1   0          0            0       208b           208b
+    yellow open   tes3                            uWk2Ba9sTBOU2ajnc6gW3Q   1   1          1            0      4.3kb          4.3kb
+    yellow open   test1                           kVMkxCeOQn6yCNzDNGgDYA   1   1          1            0      4.1kb          4.1kb
+    green  open   .kibana_7.12.0_001              B06vhxnvSV2IuDFnS-GovA   1   0         32           20      4.2mb          4.2mb
+    green  open   .kibana-event-log-7.12.0-000001 ZHghL9YnQrG2zI2BMW6fiw   1   0          8            0     43.4kb         43.4kb
+    green  open   .tasks                          ql2wFdsSRYud6u-gM11loA   1   0         10            0     67.8kb         67.8kb
+    ```
+
+    
+
+#### 修改索引信息
+
+##### 覆盖修改 PUT
+
+> 如果漏了一行数据，那行数据原来的值会被空覆盖( 数据没了 )
+
+```shell
+PUT /tes3/_doc/1
+{
+  "name":"test_update",
+  "age":3,
+  "birth":"2000-04-01"
+}
+
+# 结果
+{
+  "_index" : "tes3",
+  "_type" : "_doc",
+  "_id" : "1",
+  "_version" : 2,							# 修改的话版本会增加
+  "result" : "updated",						# 状态
+  "_shards" : {
+    "total" : 2,
+    "successful" : 1,
+    "failed" : 0
+  },
+  "_seq_no" : 1,
+  "_primary_term" : 2
+}
+
+```
 
 
 
+##### 更新修改
+
+```shell
+POST /tes3/_doc/1/_update
+{
+  "doc":{									# #doc表示你要修改的文档
+    "name":"法外狂徒张三"
+  }
+}
+
+
+# 返回结果
+{
+  "_index" : "tes3",
+  "_type" : "_doc",
+  "_id" : "1",
+  "_version" : 3,							# 再次加一
+  "result" : "updated",				
+  "_shards" : {
+    "total" : 2,
+    "successful" : 1,
+    "failed" : 0
+  },
+  "_seq_no" : 2,
+  "_primary_term" : 2
+}
+```
 
 
 
+#### 删除索引
+
+- 删除 test1 索引
+
+    ```shell
+    DELETE tes1
+    
+    # 返回结果
+    {
+      "acknowledged" : true
+    }
+    ```
+
+- 删除 test2 索引下的文档编号为 1 的数据
+
+    ```shell
+    DELETE tes2/_doc/1
+    
+    # 返回结果
+    {
+      "_index" : "test2",
+      "_type" : "_doc",
+      "_id" : "1",
+      "_version" : 2,
+      "result" : "deleted",
+      "_shards" : {
+        "total" : 2,
+        "successful" : 1,
+        "failed" : 0
+      },
+      "_seq_no" : 1,
+      "_primary_term" : 2
+    }
+    
+    ```
+
+    
 
 
 
+### 文档的基本操作
+
+#### 添加数据
+
+```json
+PUT /wang/user/1
+{
+  "name":"小王",
+  "age":23,
+  "desc":"一顿操作猛如虎，一看工资2500",
+  "tags":["技术宅","帅气","宅男"]
+}
+```
 
 
 
+#### 更新数据
+
+##### 覆盖修改 PUT
+
+> 如果漏了一行数据，那行数据原来的值会被空覆盖( 数据没了 )
+
+```shell
+PUT /wang/user/3
+{
+  "name":"上海名媛婉儿",
+  "age":20,
+  "desc":"上海名媛",
+  "tags":["靓女","名媛","渣女"]
+}
+```
+
+
+
+##### 更新修改
+
+> put 不传值的地方被空值覆盖，使用 _update 可以避免
+
+```shell
+POST wang/user/1/_update
+{
+  "doc":{
+    "name":"小王同学"
+  }
+}
+```
+
+
+
+#### 查询数据
+
+##### 简单搜索
+
+```shell
+GET wang/user/1
+
+# 返回结果
+{
+  "_index" : "wang",
+  "_type" : "user",
+  "_id" : "1",
+  "_version" : 1,
+  "_seq_no" : 0,
+  "_primary_term" : 1,
+  "found" : true,
+  "_source" : {
+    "name" : "小王",
+    "age" : 23,
+    "desc" : "一顿操作猛如虎，一看工资2500",
+    "tags" : [
+      "技术宅",
+      "帅气",
+      "宅男"
+    ]
+  }
+}
+```
+
+
+
+##### 简单的条件搜索
+
+```shell
+GET wang/user/_search?q=name:小王同学
+
+# 返回结果
+# 小王和王公子都能被搜索出来
+#! [types removal] Specifying types in search requests is deprecated.
+{
+  "took" : 28,
+  "timed_out" : false,
+  "_shards" : {
+    "total" : 1,
+    "successful" : 1,
+    "skipped" : 0,
+    "failed" : 0
+  },
+  "hits" : {
+    "total" : {
+      "value" : 3,
+      "relation" : "eq"
+    },
+    "max_score" : 2.8007593,
+    "hits" : [
+      {
+        "_index" : "wang",
+        "_type" : "user",
+        "_id" : "4",
+        "_score" : 2.8007593,
+        "_source" : {
+          "name" : "小王学长",
+          "age" : 23,
+          "desc" : "一顿操作猛如虎，一看工资2500",
+          "tags" : [
+            "技术宅",
+            "帅气",
+            "宅男"
+          ]
+        }
+      },
+      {
+        "_index" : "wang",
+        "_type" : "user",
+        "_id" : "1",
+        "_score" : 1.7781849,
+        "_source" : {
+          "name" : "小王",
+          "age" : 23,
+          "desc" : "一顿操作猛如虎，一看工资2500",
+          "tags" : [
+            "技术宅",
+            "帅气",
+            "宅男"
+          ]
+        }
+      },
+      {
+        "_index" : "wang",
+        "_type" : "user",
+        "_id" : "5",
+        "_score" : 0.60040116,
+        "_source" : {
+          "name" : "王公子",
+          "age" : 23,
+          "desc" : "一顿操作猛如虎，一看工资2500",
+          "tags" : [
+            "技术宅",
+            "帅气",
+            "宅男"
+          ]
+        }
+      }
+    ]
+  }
+}
+
+```
+
+
+
+#### 复杂查询
