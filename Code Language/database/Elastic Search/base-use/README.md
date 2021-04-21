@@ -25,6 +25,12 @@
 [知乎 - 狂神说 ElasticSearch 学习笔记 + 补充](https://zhuanlan.zhihu.com/p/268065286)
 [CSDN - 狂神说 ElasticSearch 入门（最全笔记）](https://blog.csdn.net/qq_21197507/article/details/115076913)
 
+- CSDN - [小 Wang_start](https://blog.csdn.net/qq_22155255) - 狂神说 ElasitcSearch 笔记
+
+    > [狂神说 ElasitcSearch 笔记（一）](https://blog.csdn.net/qq_22155255/article/details/110572762#t9)
+    > [ElasticSearch 学习笔记（二）](https://blog.csdn.net/qq_22155255/article/details/110673236?)
+    > [ElasticSearch 完结篇 ------ 京东搜索实战](https://blog.csdn.net/qq_22155255/article/details/110917773)
+
 
 
 ### 基石 Lucene
@@ -869,7 +875,9 @@ GET wang/user/_search?q=name:小王同学
 
 #### 复杂查询
 
-##### 模糊查询
+##### match 模糊匹配查询
+
+==match 会使用分词器去解析 (先分析文档，然后在通过分析的文档进行查询)==
 
 ```shell
 GET wang/user/_search
@@ -954,7 +962,7 @@ GET wang/user/_search
 
 
 
-##### 过滤查询结果字段
+##### _source 查询结果字段过滤 
 
 ```json
 GET wang/user/_search
@@ -1022,7 +1030,7 @@ GET wang/user/_search
 
 
 
-##### 查询排序
+##### sort 查询排序 
 
 ```json
 GET wang/user/_search
@@ -1196,25 +1204,737 @@ GET wang/user/_search
 
 
 
+##### highlight 高亮查询 
+
+> 高亮的会被 em 标签包裹起来
+
+```json
+GET wang/user/_search
+{
+  "query": {
+    "match": {
+      "name": "小王"
+    }
+  },
+  "highlight": {
+    "fields": {
+      "name":{
+      }
+    }
+  }
+}
+```
+
+```json
+# 返回结果
+#! [types removal] Specifying types in search requests is deprecated.
+{
+  "took" : 74,
+  "timed_out" : false,
+  "_shards" : {
+    "total" : 1,
+    "successful" : 1,
+    "skipped" : 0,
+    "failed" : 0
+  },
+  "hits" : {
+    "total" : {
+      "value" : 3,
+      "relation" : "eq"
+    },
+    "max_score" : 1.7781849,
+    "hits" : [
+      {
+        "_index" : "wang",
+        "_type" : "user",
+        "_id" : "1",
+        "_score" : 1.7781849,
+        "_source" : {
+          "name" : "小王",
+          "age" : 23,
+          "desc" : "一顿操作猛如虎，一看工资2500",
+          "tags" : [
+            "技术宅",
+            "帅气",
+            "宅男"
+          ]
+        },
+        "highlight" : {
+          "name" : [
+            "<em>小</em><em>王</em>"
+          ]
+        }
+      },
+      {
+        "_index" : "wang",
+        "_type" : "user",
+        "_id" : "4",
+        "_score" : 1.4144652,
+        "_source" : {
+          "name" : "小王学长",
+          "age" : 23,
+          "desc" : "一顿操作猛如虎，一看工资2500",
+          "tags" : [
+            "技术宅",
+            "帅气",
+            "宅男"
+          ]
+        },
+        "highlight" : {
+          "name" : [
+            "<em>小</em><em>王</em>学长"
+          ]
+        }
+      },
+      {
+        "_index" : "wang",
+        "_type" : "user",
+        "_id" : "5",
+        "_score" : 0.60040116,
+        "_source" : {
+          "name" : "王公子",
+          "age" : 23,
+          "desc" : "一顿操作猛如虎，一看工资2500",
+          "tags" : [
+            "技术宅",
+            "帅气",
+            "宅男"
+          ]
+        },
+        "highlight" : {
+          "name" : [
+            "<em>王</em>公子"
+          ]
+        }
+      }
+    ]
+  }
+}
+
+```
+
+
+
+###### 自定义高亮
+> 前缀标签： pre_tags
+> 后缀标签：post_tags
+
+```json
+# 自定义高亮条件
+GET wang/user/_search
+{
+  "query": {
+    "match": {
+      "name": "小王"
+    }
+  },
+  "highlight": {
+    "pre_tags": "<p class='key' style='color:red'>", 
+    "post_tags": "</p>", 
+    "fields": {
+      "name":{
+      }
+    }
+  }
+}
+```
+
+```json
+# 返回结果
+#! [types removal] Specifying types in search requests is deprecated.
+{
+  "took" : 2,
+  "timed_out" : false,
+  "_shards" : {
+    "total" : 1,
+    "successful" : 1,
+    "skipped" : 0,
+    "failed" : 0
+  },
+  "hits" : {
+    "total" : {
+      "value" : 3,
+      "relation" : "eq"
+    },
+    "max_score" : 1.7781849,
+    "hits" : [
+      {
+        "_index" : "wang",
+        "_type" : "user",
+        "_id" : "1",
+        "_score" : 1.7781849,
+        "_source" : {
+          "name" : "小王",
+          "age" : 23,
+          "desc" : "一顿操作猛如虎，一看工资2500",
+          "tags" : [
+            "技术宅",
+            "帅气",
+            "宅男"
+          ]
+        },
+        "highlight" : {
+          "name" : [
+            "<p class='key' style='color:red'>小</p><p class='key' style='color:red'>王</p>"
+          ]
+        }
+      },
+      {
+        "_index" : "wang",
+        "_type" : "user",
+        "_id" : "4",
+        "_score" : 1.4144652,
+        "_source" : {
+          "name" : "小王学长",
+          "age" : 23,
+          "desc" : "一顿操作猛如虎，一看工资2500",
+          "tags" : [
+            "技术宅",
+            "帅气",
+            "宅男"
+          ]
+        },
+        "highlight" : {
+          "name" : [
+            "<p class='key' style='color:red'>小</p><p class='key' style='color:red'>王</p>学长"
+          ]
+        }
+      },
+      {
+        "_index" : "wang",
+        "_type" : "user",
+        "_id" : "5",
+        "_score" : 0.60040116,
+        "_source" : {
+          "name" : "王公子",
+          "age" : 23,
+          "desc" : "一顿操作猛如虎，一看工资2500",
+          "tags" : [
+            "技术宅",
+            "帅气",
+            "宅男"
+          ]
+        },
+        "highlight" : {
+          "name" : [
+            "<p class='key' style='color:red'>王</p>公子"
+          ]
+        }
+      }
+    ]
+  }
+}
+
+```
 
 
 
 
 
+##### bool 值查询
+
+###### 多条件查询精确查询 must
+
+> must(and) 必须都满足，所有条件都要符合
+
+```shell
+GET /wang/user/_search
+{
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "match": {
+            "name": "小王"
+          }
+        },{
+          "match": {
+            "age": 23
+          }
+        }
+      ]
+    }
+  }
+}
+
+# 返回结果
+#! [types removal] Specifying types in search requests is deprecated.
+{
+  "took" : 11,
+  "timed_out" : false,
+  "_shards" : {
+    "total" : 1,
+    "successful" : 1,
+    "skipped" : 0,
+    "failed" : 0
+  },
+  "hits" : {
+    "total" : {
+      "value" : 3,
+      "relation" : "eq"
+    },
+    "max_score" : 2.778185,
+    "hits" : [
+      {
+        "_index" : "wang",
+        "_type" : "user",
+        "_id" : "1",
+        "_score" : 2.778185,
+        "_source" : {
+          "name" : "小王",
+          "age" : 23,
+          "desc" : "一顿操作猛如虎，一看工资2500",
+          "tags" : [
+            "技术宅",
+            "帅气",
+            "宅男"
+          ]
+        }
+      },
+      {
+        "_index" : "wang",
+        "_type" : "user",
+        "_id" : "4",
+        "_score" : 2.4144652,
+        "_source" : {
+          "name" : "小王学长",
+          "age" : 23,
+          "desc" : "一顿操作猛如虎，一看工资2500",
+          "tags" : [
+            "技术宅",
+            "帅气",
+            "宅男"
+          ]
+        }
+      },
+      {
+        "_index" : "wang",
+        "_type" : "user",
+        "_id" : "5",
+        "_score" : 1.6004012,
+        "_source" : {
+          "name" : "王公子",
+          "age" : 23,
+          "desc" : "一顿操作猛如虎，一看工资2500",
+          "tags" : [
+            "技术宅",
+            "帅气",
+            "宅男"
+          ]
+        }
+      }
+    ]
+  }
+}
+
+```
 
 
 
+###### 多条件模糊查询 should
+
+> should 相当于or, 满足其一即可
+
+```shell
+GET /wang/user/_search
+{
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "match": {
+            "name": "小王"
+          }
+        },{
+          "match": {
+            "age": 23
+          }
+        }
+      ]
+    }
+  }
+}
+
+# 返回结果
+{
+  "took" : 4,
+  "timed_out" : false,
+  "_shards" : {
+    "total" : 1,
+    "successful" : 1,
+    "skipped" : 0,
+    "failed" : 0
+  },
+  "hits" : {
+    "total" : {
+      "value" : 3,
+      "relation" : "eq"
+    },
+    "max_score" : 2.778185,
+    "hits" : [
+      {
+        "_index" : "wang",
+        "_type" : "user",
+        "_id" : "1",
+        "_score" : 2.778185,
+        "_source" : {
+          "name" : "小王",
+          "age" : 23,
+          "desc" : "一顿操作猛如虎，一看工资2500",
+          "tags" : [
+            "技术宅",
+            "帅气",
+            "宅男"
+          ]
+        }
+      },
+      {
+        "_index" : "wang",
+        "_type" : "user",
+        "_id" : "4",
+        "_score" : 2.4144652,
+        "_source" : {
+          "name" : "小王学长",
+          "age" : 23,
+          "desc" : "一顿操作猛如虎，一看工资2500",
+          "tags" : [
+            "技术宅",
+            "帅气",
+            "宅男"
+          ]
+        }
+      },
+      {
+        "_index" : "wang",
+        "_type" : "user",
+        "_id" : "5",
+        "_score" : 1.6004012,
+        "_source" : {
+          "name" : "王公子",
+          "age" : 23,
+          "desc" : "一顿操作猛如虎，一看工资2500",
+          "tags" : [
+            "技术宅",
+            "帅气",
+            "宅男"
+          ]
+        }
+      }
+    ]
+  }
+}
+
+```
 
 
 
+###### not 查询
+
+> 多条件查询 must_not 相当于 not
+
+```shell
+GET wang/user/_search
+{
+  "query": {
+    "bool": {
+      "must_not": [
+        {
+          "match": {
+            "age": 23
+          }
+        }
+      ]
+    }
+  }
+}
+
+# 返回结果
+#! [types removal] Specifying types in search requests is deprecated.
+{
+  "took" : 2,
+  "timed_out" : false,
+  "_shards" : {
+    "total" : 1,
+    "successful" : 1,
+    "skipped" : 0,
+    "failed" : 0
+  },
+  "hits" : {
+    "total" : {
+      "value" : 2,
+      "relation" : "eq"
+    },
+    "max_score" : 0.0,
+    "hits" : [
+      {
+        "_index" : "wang",
+        "_type" : "user",
+        "_id" : "2",
+        "_score" : 0.0,
+        "_source" : {
+          "name" : "法外狂徒涛涛",
+          "age" : 13,
+          "desc" : "法外狂徒",
+          "tags" : [
+            "技术宅",
+            "打游戏",
+            "渣男"
+          ]
+        }
+      },
+      {
+        "_index" : "wang",
+        "_type" : "user",
+        "_id" : "3",
+        "_score" : 0.0,
+        "_source" : {
+          "name" : "上海名媛fww",
+          "age" : 20,
+          "desc" : "上海名媛",
+          "tags" : [
+            "靓女",
+            "名媛",
+            "渣女"
+          ]
+        }
+      }
+    ]
+  }
+}
+
+```
 
 
 
+###### 查询过滤 filter
+
+> 查询名字中有王  且   过滤  筛选中 age>10 岁的
+
+```shell
+GET wang/user/_search
+{
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "match": {
+            "name": "王"
+          }
+        }
+      ],
+      "filter": {
+        "range": {
+          "age": {
+            "gt": 10
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+| 标识 | 说明         |
+| ---- | ------------ |
+| gt   | (>)大于      |
+| gte  | (>=)大于等于 |
+| lt   | (<)小于      |
+| lte  | (<=)小于等于 |
 
 
 
+###### 多条件查询
+
+> 多个条件 空格隔开
+
+```json
+GET wang/user/_search
+{
+  "query": {
+    "match": {
+      "tags": "渣 技术"
+    }
+  }
+}
+
+# 返回结果
+# 渣男渣女都能查出来		
+# 只要满足一个结果就可以查出来，通过分值进行判断，两个都符合  分数比较高，权重高
+#! [types removal] Specifying types in search requests is deprecated.
+{
+  "took" : 1,
+  "timed_out" : false,
+  "_shards" : {
+    "total" : 1,
+    "successful" : 1,
+    "skipped" : 0,
+    "failed" : 0
+  },
+  "hits" : {
+    "total" : {
+      "value" : 2,
+      "relation" : "eq"
+    },
+    "max_score" : 0.92980814,
+    "hits" : [
+      {
+        "_index" : "wang",
+        "_type" : "user",
+        "_id" : "3",
+        "_score" : 0.92980814,
+        "_source" : {
+          "name" : "上海名媛fww",
+          "age" : 20,
+          "desc" : "上海名媛",
+          "tags" : [
+            "靓女",
+            "名媛",
+            "渣女"
+          ]
+        }
+      },
+      {
+        "_index" : "wang",
+        "_type" : "user",
+        "_id" : "2",
+        "_score" : 0.82712996,
+        "_source" : {
+          "name" : "法外狂徒涛涛",
+          "age" : 13,
+          "desc" : "法外狂徒",
+          "tags" : [
+            "技术宅",
+            "打游戏",
+            "渣男"
+          ]
+        }
+      }
+    ]
+  }
+}
+
+```
 
 
 
+##### term 精确查询
+
+> term 查询是直接通过倒排索引指定的词条进程精确查找的
+
+==term 会直接查询精确的分词！==
+
+- term 比 match 的效率更高
+
+    > term 会直接查询精确的分词，而 match 会使用分词器去解析 (先分析文档，然后在通过分析的文档进行查询)
+
+- text 类型会被分词器解析，而 keyword 不会被分词器解析
+
+    ```json
+    # 创建索引数据库
+    PUT testdb
+    {
+        "mappings":{
+            "properties": {
+                "name":{
+                    "type": "text"
+                },
+                "desc":{
+                    "type":"keyword"
+                }
+            }
+        }
+    }
+    
+    # 存放数据
+    PUT testdb/_doc/1
+    {
+      "name":"狂神说Java name",
+      "desc":"狂神说Java desc"
+    }
+    PUT testdb/_doc/2
+    {
+      "name":"狂神说Java name",
+      "desc":"狂神说Java desc2"
+    }
+    
+    # 查找
+    ## 如果是 keyword，就不会拆分
+    GET _analyze
+    {
+      "analyzer": "keyword",
+      "text": "狂神说Java name"	
+    }
+    
+    ## 普通类型则会拆分，被拆分成了一个个字
+    GET _analyze
+    {
+      "analyzer":"standard",	
+      "text": "狂神说Java name"
+    }
+    
+    # 复杂查询测试
+    GET testdb/_search
+    {
+      "query": {
+        "term": {
+          "name": "狂"
+        }
+      }
+    }			
+    # 结果会被查询出来，因为上面的name是text类型，会被分词器解析，只要包含这个字，就能查出来
+    
+    # desc 是 keyword 那我搜他的子句能搜到么
+    GET testdb/_search
+    {
+      "query": {
+        "term": {
+          "desc": "狂神说Java desc"
+        }
+      }
+    }		
+    
+    ##只有1条数据出来了 狂神说Java desc2 没有被查出来
+    ```
+
+    
+
+###### 多值匹配的精确查询
+
+```shell
+GET testdb/_search
+{
+  "query": {
+    "bool": {
+      "should": [		#有
+        {
+          "term": {
+            "t1":"22"			
+          }
+        },
+        {
+          "term": {
+            "t1":"33"
+          }
+        }
+      ]
+    }
+  }
+}
+# 22,33都能被查出来, 精确查询t1=22 或 33的文档
+```
 
 
+
+## 客户端集成
+
+[官方文档指引](https://www.elastic.co/guide/en/elasticsearch/client/index.html)
+
+![image-20210421234812392](.assets/image-20210421234812392.png)
+
+
+
+### python 集成
+
+
+
+### go 集成
