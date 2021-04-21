@@ -795,7 +795,6 @@ GET wang/user/_search?q=name:小王同学
 
 # 返回结果
 # 小王和王公子都能被搜索出来
-#! [types removal] Specifying types in search requests is deprecated.
 {
   "took" : 28,
   "timed_out" : false,
@@ -816,7 +815,7 @@ GET wang/user/_search?q=name:小王同学
         "_index" : "wang",
         "_type" : "user",
         "_id" : "4",
-        "_score" : 2.8007593,
+        "_score" : 2.8007593,						# 该值为匹配度，多条结果下，匹配度越高分值越大
         "_source" : {
           "name" : "小王学长",
           "age" : 23,
@@ -869,3 +868,353 @@ GET wang/user/_search?q=name:小王同学
 
 
 #### 复杂查询
+
+##### 模糊查询
+
+```shell
+GET wang/user/_search
+{
+  "query": {
+    "match": {	
+      "name": "小王"
+    }
+  }
+}
+
+# 搜索结果
+# 不带小的也能查询出来， 但是对应的匹配度会较低
+{
+  "took" : 12,
+  "timed_out" : false,
+  "_shards" : {
+    "total" : 1,
+    "successful" : 1,
+    "skipped" : 0,
+    "failed" : 0
+  },
+  "hits" : {									# 对象
+    "total" : {									# 总量
+      "value" : 3,
+      "relation" : "eq"							# 匹配相等
+    },
+    "max_score" : 1.7781849,					# 最高匹配度
+    "hits" : [
+      {
+        "_index" : "wang",
+        "_type" : "user",
+        "_id" : "1",
+        "_score" : 1.7781849,
+        "_source" : {
+          "name" : "小王",
+          "age" : 23,
+          "desc" : "一顿操作猛如虎，一看工资2500",
+          "tags" : [
+            "技术宅",
+            "帅气",
+            "宅男"
+          ]
+        }
+      },
+      {
+        "_index" : "wang",
+        "_type" : "user",
+        "_id" : "4",
+        "_score" : 1.4144652,
+        "_source" : {
+          "name" : "小王学长",
+          "age" : 23,
+          "desc" : "一顿操作猛如虎，一看工资2500",
+          "tags" : [
+            "技术宅",
+            "帅气",
+            "宅男"
+          ]
+        }
+      },
+      {
+        "_index" : "wang",
+        "_type" : "user",
+        "_id" : "5",
+        "_score" : 0.60040116,
+        "_source" : {
+          "name" : "王公子",
+          "age" : 23,
+          "desc" : "一顿操作猛如虎，一看工资2500",
+          "tags" : [
+            "技术宅",
+            "帅气",
+            "宅男"
+          ]
+        }
+      }
+    ]
+  }
+}
+```
+
+
+
+##### 过滤查询结果字段
+
+```json
+GET wang/user/_search
+{
+  "query": {
+    "match": {
+      "name": "小王"
+    }
+  },
+  "_source": ["name","desc"]		# 结果过滤，只显示我们规定的
+}	
+
+# 返回结果
+#! [types removal] Specifying types in search requests is deprecated.
+{
+  "took" : 7,
+  "timed_out" : false,
+  "_shards" : {
+    "total" : 1,
+    "successful" : 1,
+    "skipped" : 0,
+    "failed" : 0
+  },
+  "hits" : {
+    "total" : {
+      "value" : 3,
+      "relation" : "eq"
+    },
+    "max_score" : 1.7781849,
+    "hits" : [
+      {
+        "_index" : "wang",
+        "_type" : "user",
+        "_id" : "1",
+        "_score" : 1.7781849,
+        "_source" : {
+          "name" : "小王",
+          "desc" : "一顿操作猛如虎，一看工资2500"
+        }
+      },
+      {
+        "_index" : "wang",
+        "_type" : "user",
+        "_id" : "4",
+        "_score" : 1.4144652,
+        "_source" : {
+          "name" : "小王学长",
+          "desc" : "一顿操作猛如虎，一看工资2500"
+        }
+      },
+      {
+        "_index" : "wang",
+        "_type" : "user",
+        "_id" : "5",
+        "_score" : 0.60040116,
+        "_source" : {
+          "name" : "王公子",
+          "desc" : "一顿操作猛如虎，一看工资2500"
+        }
+      }
+    ]
+  }
+}
+```
+
+
+
+##### 查询排序
+
+```json
+GET wang/user/_search
+{
+  "query": {
+    "match": {
+      "name": "小王"
+    }
+  },
+  "sort": [					# 根据我们的age年龄排序
+    {				
+      "age": {
+        "order": "asc"		# asc 升序排序, desc 降序排序
+      }
+    }
+  ]
+}
+
+# 返回结果
+#! [types removal] Specifying types in search requests is deprecated.
+{
+  "took" : 3,
+  "timed_out" : false,
+  "_shards" : {
+    "total" : 1,
+    "successful" : 1,
+    "skipped" : 0,
+    "failed" : 0
+  },
+  "hits" : {
+    "total" : {
+      "value" : 3,
+      "relation" : "eq"
+    },
+    "max_score" : null,
+    "hits" : [
+      {
+        "_index" : "wang",
+        "_type" : "user",
+        "_id" : "1",
+        "_score" : null,
+        "_source" : {
+          "name" : "小王",
+          "age" : 23,
+          "desc" : "一顿操作猛如虎，一看工资2500",
+          "tags" : [
+            "技术宅",
+            "帅气",
+            "宅男"
+          ]
+        },
+        "sort" : [
+          23
+        ]
+      },
+      {
+        "_index" : "wang",
+        "_type" : "user",
+        "_id" : "4",
+        "_score" : null,
+        "_source" : {
+          "name" : "小王学长",
+          "age" : 23,
+          "desc" : "一顿操作猛如虎，一看工资2500",
+          "tags" : [
+            "技术宅",
+            "帅气",
+            "宅男"
+          ]
+        },
+        "sort" : [
+          23
+        ]
+      },
+      {
+        "_index" : "wang",
+        "_type" : "user",
+        "_id" : "5",
+        "_score" : null,
+        "_source" : {
+          "name" : "王公子",
+          "age" : 23,
+          "desc" : "一顿操作猛如虎，一看工资2500",
+          "tags" : [
+            "技术宅",
+            "帅气",
+            "宅男"
+          ]
+        },
+        "sort" : [
+          23
+        ]
+      }
+    ]
+  }
+}
+
+```
+
+
+
+##### 分页查询
+
+```json
+GET wang/user/_search
+{
+  "query": {
+    "match": {
+      "name": "小王"
+    }
+  },
+  "from": 0,			# 从第几个数据开始，数据下标还是从0开始的
+  "size": 2				# 返回多少个数据(单页面的数据)
+}
+
+# 返回结果
+#! [types removal] Specifying types in search requests is deprecated.
+{
+  "took" : 4,
+  "timed_out" : false,
+  "_shards" : {
+    "total" : 1,
+    "successful" : 1,
+    "skipped" : 0,
+    "failed" : 0
+  },
+  "hits" : {
+    "total" : {
+      "value" : 3,
+      "relation" : "eq"
+    },
+    "max_score" : 1.7781849,
+    "hits" : [
+      {
+        "_index" : "wang",
+        "_type" : "user",
+        "_id" : "1",
+        "_score" : 1.7781849,
+        "_source" : {
+          "name" : "小王",
+          "age" : 23,
+          "desc" : "一顿操作猛如虎，一看工资2500",
+          "tags" : [
+            "技术宅",
+            "帅气",
+            "宅男"
+          ]
+        }
+      },
+      {
+        "_index" : "wang",
+        "_type" : "user",
+        "_id" : "4",
+        "_score" : 1.4144652,
+        "_source" : {
+          "name" : "小王学长",
+          "age" : 23,
+          "desc" : "一顿操作猛如虎，一看工资2500",
+          "tags" : [
+            "技术宅",
+            "帅气",
+            "宅男"
+          ]
+        }
+      }
+    ]
+  }
+}
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
