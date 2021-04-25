@@ -100,13 +100,7 @@
 
     插件
 
-#### 安装 es 的图形化界面插件
 
-- 下载 [nodejs](https://nodejs.org/en/), LTS: 长期支持版本:
-- 下载 `elasticsearch-head-master.zip`, 解压后安装依赖，一定要跳转到该解压文件夹下输入该命令：
-- 访问测试：
-- 由于 ES 进程和客户端进程端口号不同，存在跨域问题，所以需要在 ES 的配置文件中配置下解决跨域问题：
-- 启动 es，使用 head 工具进行连接测试：
 
 
 
@@ -144,15 +138,15 @@
 
 
 
-#### 安装 es 的图形化界面插件
-##### 前期准备：
+### 安装 es 的图形化界面插件
+#### 前期准备：
 
 - 下载 [nodejs](https://nodejs.org/en/), LTS: 长期支持版本
 - 下载 `elasticsearch-head-master.zip`，下载地址  [github - es-head](https://github.com/mobz/elasticsearch-head)
 
 
 
-##### 安装
+#### 安装
 
 - 解压后安装依赖，一定要跳转到该解压文件夹下输入该命令：
 
@@ -167,7 +161,7 @@
 
 
 
-##### 解决跨域
+#### 解决跨域
 
 > 由于 ES 进程和客户端进程端口号不同，存在跨域问题，所以需要在 ES 的配置文件中配置下解决跨域问题：
 
@@ -175,7 +169,7 @@
 
 
 
-##### 解决方法：
+#### 解决方法：
 
 打开 `elastic  search` 的配置文件 `config/elasticsearch.yml`, 在文件尾部追加：
 
