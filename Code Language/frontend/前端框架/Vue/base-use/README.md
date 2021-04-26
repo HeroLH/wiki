@@ -2,7 +2,8 @@
 > *Made By Herolh*
 ----------------------------------------------
 
-# 目录 {#index}
+# Vue 基本使用 {#index}
+
 [TOC]
 
 
@@ -17,87 +18,57 @@
 
 --------------------------------------------
 
-# 学习 vue 前的准备工作
+## 简介
+- Vue (读音 `/vjuː/`，类似于 **view**) 是一套用于构建用户界面的==渐进式框架==，发布于 2014 年 2 月。
+- 与其它大型框架不同的是，Vue 被设计为可以==自底向上逐层应用==。
+- Vue 的核心库只关注视图层，不仅易于上手，还便于与第三方库（如：`vue-router:跳转`，`vue-resource:通信`，`vuex:管理`) 或既有项目整合。
+- 在 vue 中，一个核心的概念，就是让用户不再操作 DOM 元素，解放了用户的双手，让程序员可以更多的时间去关注业务逻辑
 
-## 起步
-- 扎实的 **HTML/CSS/Javascript** 基本功，这是前置条件。
+[Vue.js 官网](https://cn.vuejs.org/)
+
+
+
+### 教程
+
+- [Vue.js 官方文档](https://cn.vuejs.org/v2/guide/)
+- [gitlab - 狂神说 Vue 课堂笔记](https://github.com/lzh66666/Vue/tree/master/Vue%E8%AF%BE%E5%A0%82%E7%AC%94%E8%AE%B0)
+
+
+
+### 学习 vue 前的准备工作
+
+- 扎实的 HTML/CSS/Javascript 基本功，这是前置条件。
 - 不要用任何的构建项目工具，只用最简单的 `<script>`，把教程里的例子模仿一遍，理解用法。**不推荐上来就直接用 `vue-cli`  构建项目，尤其是如果没有 `Node/Webpack` 基础。**
 
 
 
-## 什么是ECMAScript，以及es6的诞生？
-- 1997年 ECMAScript 1.0 诞生
-- 1999年12月 ECMAScript 3.0诞生，它 是一个巨大的成功，在业界得到了广泛的支持，它奠定了JS的基本语法，被其后版本完全继承。直到今天，我们一开始学习JS，其实就是在学3.0版的语法
-- 2000年的ECMAScript4.0是当下ES6的前身，但由于这个版本太过激烈，对ES3做了彻底升级，所以暂时被“和谐”了
-- 2009年12月，ECMAScript5.0版正式发布。ECMA专家组预计ECMAScript的第五个版本会在2013年中期到2018年作为主流的开发标准。2011年6月，ES5.1版发布，并且成为ISO国际标准
-- 2013年，ES6草案冻结，不再添加新的功能，新的功能将被放到ES7中；2015年6月，ES6正式通过，成为国际标准
+### 概念了解
 
-&emsp;&emsp;好的，介绍 es6 的诞生，如果感兴趣的同学可以查看 [ECMAScript 6 入门](http://es6.ruanyifeng.com/)，我们简单来学几个 es6 的语法，仅仅的只是为了后面咱们vue的课程做课前准备：
+#### 前端框架和库的区别
 
-
-
-## es6 填的语法坑
-
-### let 和 const
-
-&emsp;&emsp;es6 新增了 let 命令，用来声明变量。它的用法类似于 var，但是**所声明的变量，只在 let 命令所在的代码块内有效。**
-
-```javascript
-var a = [];
-for (var i = 0; i < 10; i++) {
-  a[i] = function () {
-    console.log(i);
-  };
-}
-a[6]();
-// 输出结果:10
-```
-
-&emsp;&emsp;上面代码中，变量 `i` 是 var 命令声明的，在全局范围内都有效，所以全局只有一个变量 `i`。每一次循环，变量 `i` 的值都会发生改变，而**循环内被赋给数组 `a` 的函数内部的`console.log(i)` ，里面的 `i` 指向的就是全局的 `i`**。也就是说，所有数组`a`的成员里面的`i`，指向的都是同一个`i`，导致运行时输出的是最后一轮的`i`的值，也就是 10
-&emsp;&emsp;如果使用`let`，声明的变量仅在块级作用域内有效，最后输出的是 6
-
-```javascript
-var a = [];
-for (let i = 0; i < 10; i++) {
-  a[i] = function () {
-    console.log(i);
-  };
-}
-a[6]();
-
-// 输出结果:6
-```
-
-上面代码中，变量`i`是 let声明的，当前的`i`只在本轮循环有效，所以每一次循环的`i`其实都是一个新的变量，所以最后输出的是`6`。你可能会问，如果每一轮循环的变量`i`都是重新声明的，那它怎么知道上一轮循环的值，从而计算出本轮循环的值？这是因为 JavaScript 引擎内部会记住上一轮循环的值，初始化本轮的变量`i`时，就在上一轮循环的基础上进行计算
-
-
-
-
-
-
-
-## 前端框架和库的区别
 - **框架**：是一套完整的解决方案；对项目的侵入性较大，项目如果需要重新更换框架，需要重新架构整个项目
 - **库**： 提供某个小功能，对项目侵入性小，如果某个库无法完成某些需求，可以很容易的切换到其他库实现需求
 
 
 
-### 功能上的不同
+##### 功能上的不同
+
 - **jquery库**：包含 `DOM(操作DOM)+请求`，就是一块功能。
 - **art-template库**：模板引擎渲染，高性能的渲染DOM  (我们后端的一种模板  跟python的模板类似)
 - **框架**：大而全的概念，简易的 `DOM体验+请求处理+模板引擎`
-> 库就是一个小套餐，框架就是全家桶。
+
+==库就是一个小套餐，框架就是全家桶。==
 
 
 
-### 代码上的不同
+##### 代码上的不同
 
 > 一般使用库的代码，是调用某个函数或者直接使用抛出来的对象，我们自己处理库中的代码。 
 > 一般使用框架，其框架本身提供的好的成套的工具帮我们运行我们编写好的代码。
 
 
 
-### 框架的使用
+##### 框架的使用
 
 - 初始化自身的一些行为
 - 执行你所编写的代码
@@ -105,74 +76,57 @@ a[6]();
 
 
 
+#### MVVM
 
+> MVVM (Model-View-ViewModel) 是一种软件架构设计模式，由微软 WPF (用于替代 WinForm，以前就是用这个技术开发桌面应用程序的) 和 Silverlight (类似于 Java Applet, 简单点说就是在浏览器上运行的 WPF) 的架构师 Ken Cooper 和 Ted Peters 开发，是一种简化用户界面的事件驱动编程方式。由 John Gossman (同样也是 WPF 和 Silverlight 的架构师) 于 2005 年在他的博客上发表。
 
-## nodejs
-- 去官网https://nodejs.org/en/download/ 下载 安装(傻瓜式安装)
+&emsp;&emsp;MVVM 是前端视图层的概念，主要关注于视图层分离，也就是说 MVVM 把前端的视图层分成了三部分：`Model`、`View`、`VM ViewModel`。MVVM 的核心是 ViewModel 层，负责转换 Model 中的数据对象来让数据变得更容易管理和使用，其作用是：==向上与视图层进行双向数据绑定，向下与 Model 层通过接口请求进行数据交互。==
 
-- 打开终端 cmd : 执行`node -v` 如果出现版本号，证明安装node成功 ，跟安装python雷同
+![mg-dZfj6UVP-1595254922257](.assets/20200720222239842.png)
 
-- 下载完node之后，会自带包管理器 npm，好比 是python中 pip3包管理器。pip3 install xxx
+- **Model**
 
-- 使用npm
+    > 模型层， 在这里表示 JavaScript 对象。
 
-    - `npm init --yes` 自动生成一个package.json文件( 管理包 )
+- **View**
 
-        ```javascript
-        {
-            "name": "vue_lesson",
-            "version": "1.0.0",
-            "description": "这是我的vue的第一个项目",
-            "main": "index.js",
-            "scripts": {
-              "test": "echo "Error: no test specified" && exit 1"
-            },
-            "author": "mjj",
-            "license": "ISC",
-            "dependencies": {				
-              "vue": "^2.5.16"
-            }
-        }
-        ```
+    > 视图层， 在这里表示 DOM (HTML 操作的元素)。
 
-    - 2.下载依赖包
+- **ViewModel**
 
-        ```shell
-        npm install vue --save
-        npm install jquery@2.1 --save			# @后面跟的是你想下载的版本号
-        ```
-
-    - 卸载包
-
-        ```shell
-        npm uninstall vue --save
-        ```
-
-    - 4.下载项目所有的依赖包
-
-        ```shell
-        npm install
-        ```
+    > 连接视图和数据的中间件， Vue.js 就是 MVVM 中的 View Model 层的实现者。
 
 
 
-## MVVM 
+##### 为什么要使用 MVVM
 
-&emsp;&emsp;MVVM 是前端视图层的概念，主要关注于视图层分离，也就是说 MVVM 把前端的视图层分成了三部分：`Model`、`View`、`VM ViewModel`
+MVVM 模式和 MVC 模式一样，主要目的是分离视图 (View) 和模型 (Model), 有几大好处：
+
+- **低耦合**
+
+    > 视图 (View) 可以独立于 Model 变化和修改，一个 ViewModel 可以绑定到不同的 View 上，当 View 变化的时候 Model 可以不变，当 Model 变化的时候 View 也可以不变。
+
+- **可复用**
+
+    > 你可以把一些视图逻辑放在一个 ViewModel 里面，让很多 View 重用这段视图逻辑。
+
+- **独立开发**
+
+    > 开发人员可以专注于业务逻辑和数据的开发 (ViewModel), 设计人员可以专注于页面设计。
+
+- **可测试**
+
+    > 界面素来是比较难于测试的，而现在测试可以针对 ViewModel 来写。
 
 
 
+##### Vue 是 MVVM 模式的实现者
+
+![img-n9t7FtSN-1595254922262](.assets/20200720222311692.png)
+
+&emsp;&emsp;在 MVVM 架构中， 是不允许数据和视图直接通信的， 只能通过 ViewModel 来通信， 而 View Model 就是定义了一个 Observer 观察者。ViewModel 能够观察到数据的变化， 并对视图对应的内容进行更新；ViewModel 能够监听到视图的变化， 并能够通知数据发生改变。至此， 我们就明白了， Vue.js 就是一个 MV VM 的实现者， 他的核心就是实现了 DOM 监听与数据绑定
 
 
-
-# vue的起步
-
-&emsp;&emsp;Vue (读音 `/vjuː/`，类似于 **view**) 是一套用于构建用户界面的**渐进式框架**。与其它大型框架不同的是，Vue 被设计为可以**自底向上逐层应用**。Vue 的核心库只关注视图层，不仅易于上手，还便于与第三方库或既有项目整合。另一方面，当与现代化的工具链以及各种支持类库结合使用时，Vue 也完全能够为复杂的单页应用提供驱动。
-&emsp;&emsp;在 vue 中，一个核心的概念，就是让用户不再操作 DOM 元素，解放了用户的双手，让程序员可以更多的时间去关注业务逻辑
-
-
-
-## 安装
 
 ### 兼容性
 
@@ -184,7 +138,16 @@ a[6]();
 
 
 
-### 引包
+### 下载地址
+
+- 开发版本
+    - 包含完整的警告和调试模式：https：//yuejs.org/js/vue.js
+    - 删除了警告， 30.96KBmin+gzip：https：//vuejs.org/js/vue.min.js
+- CDN
+    - `<script src=“https://cdn.jsdelivr.net/npm/vue@2.5.21/dist/vue.js”></script>`
+    - `<script src="https://cdn.jsdelivr.net/npm/vue@2.5.21/dist/vue.min.js"></script>`
+
+#### 引包
 
 - 对于制作原型或学习，你可以这样使用最新版本：
 
@@ -210,31 +173,87 @@ a[6]();
 
 
 
-## 创建实例化对象
+## vue 的基础语法
+### hello world!
+- 创建一个 HTML 文件
+- 引入 Vue.js
+
+    ```html
+     <!--1.导入Vue.js-->
+     <script src="https://cdn.jsdelivr.net/npm/vue@2.5.21/dist/vue.min.js"></script>
+    ```
+
+- 创建一个 Vue 实例
+    ```javascript
+    <script type="text/javascript">
+         var vm = new Vue({
+             el:"#app",
+             /*Model：数据*/
+             data:{
+                 message:"hello,vue!"
+             }
+         });
+    </script>
+    
+    //说明：
+    //- `el: '#vue'`：绑定元素的ID
+    //- `data:{message:'Hello Vue!'}`：数据对象中有一个名为message的属性，并设置了初始值 Hello Vue！
+    ```
+
+- 将数据绑定到页面元素
+
+    ```html
+    <!--view层，模板-->
+     <div id="app">
+         {{message}}
+     </div>
+    ```
+
+    只需要在绑定的元素中使用双花括号将Vue创建的名为message属性包裹起来， 即可实现数据绑定功能， 也就实现了View Model层所需的效果， 是不是和EL表达式非常像?
+
+
+
+#### 测试
+&emsp;&emsp;为了能够更直观的体验 Vue 带来的数据绑定功能，我们需要在浏览器测试一番， 操作流程如下：
+- 在浏览器上运行第一个 Vue 应用程序， 进入开发者工具
+- 在控制台输入 `vm.message=‘HelloWorld’`， 然后回车， 你会发现浏览器中显示的内容会直接变成 HelloWorld
+&emsp;&emsp;此时就可以在控制台直接输入 `vm.message` 来修改值， 中间是可以省略 data 的，在这个操作中，我并没有主动操作 DOM，就让页面的内容发生了变化，这就是借助了 Vue 的数据绑定功能实现的；MV VM 模式中要求 View Model 层就是==使用观察者模式来实现数据的监听与绑定==，以做到数据与视图的快速响应。
+
+
+
+
+#### 完整代码：
 
 ``` html
-<div id="app">
-    <h1>{{msg}}</h1>
-    <h2>字符串: {{'hello world!'}}</h2>
-    <h2>运算式: {{1+1}}</h2>
-    <h2>运算式: {{1==1?'真的':'假的'}}</h2>
-    <h2>函数的调用:</h2>
-</div>
+<!-- 1. 导入 Vue.JS -->
+<script src="https://cdn.jsdelivr.net/npm/vue@2.5.21/dist/vue.min.js"></script>
+<body>
+    <!-- 3. view 层，相当于${} -->
+    <div id="app">
+        <!-- 只在该 div 内生效 -->
+        <h1>{{message}}</h1>
+        <h2>字符串: {{'hello world!'}}</h2>
+        <h2>运算式: {{1+1}}</h2>
+        <h2>运算式: {{1==1?'真的':'假的'}}</h2>
+    </div>
+    <!-- 插值语句不生效 -->
+</body>
 
 <script>
-    var app = new Vue({
-        el:'#app',							// 绑定哪块区域的元素
-        data:{
-            msg:"hello Vue"
+    var vm = new Vue({
+        el: "#app",                     // 绑定元素
+        data: {                         // Model: 绑定数据
+            message: "Hello World!"
         }
-    });
-    
+    })
     // 不建议这么去用,失去了 vue 的优势
     console.log( app );
     console.log( app.$el );					// 会自动将管理块的元素转化为 $变量
-    console.log( app.msg );                // data 内的数据都暴露为全局了
+    console.log( app.msg );                 // data 内的数据都暴露为全局了
 </script>
 ```
+
+![image-20210426212344394](.assets/image-20210426212344394.png)
 
 
 
@@ -255,10 +274,41 @@ a[6]();
 
 
 
-## 指令系统
+### 指令系统
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/vue@2.5.21/dist/vue.min.js"></script>
+<body>
+<div id="app">
+    <a v-bind:href="url">link</a>
+</div>
+</body>
+
+<script>
+    var vm = new Vue({
+        el: "#app",
+        data: {
+            "url": "http://www.baidu.com"
+        }
+    })
+</script>
+```
+
+- 你看到的 v-bind 等被称为指令。
+
+    > <u>指令带有前缀 v 以表示它们是 Vue 提供的特殊特性</u>。
+    >
+    > 可能你已经猜到了， 它们会在渲染的 DOM 上应用特殊的响应式行为在这里，该指令的意思是：“将这个元素节点的 href 特性和 Vue 实例的 url 属性保持一致”。
+
+如果你再次打开浏览器的 JavaScript 控制台， 输入 vm.url=‘新地址’，就会再一次看到这个绑定了 title 特性的 HTML 已经进行了更新。
+
+
+
+
+
+#### 常用
 
 ```markdown
-# 常用
 v-text 
 v-html 
 v-if
@@ -271,64 +321,81 @@ v-on
 
 
 
-### 条件渲染
+#### 条件渲染
 
-#### v-if
+##### v-if、v-else
 
 &emsp;&emsp;`v-if` 指令用于条件性地渲染一块内容。这块内容只会在指令的表达式返回 `truthy` 值的时候被渲染。
 
 ```html
-<div v-if="type === 'A'"> A</div>
-<div v-else-if="type === 'B'"> B</div>				<!-- 2.1.0 新增 -->
-<div v-else> Not A/B</div>
+<body>
+    <div id="app">
+        <div v-if="type === 'A'"> A</div>
+        <div v-else-if="type === 'B'"> B</div>				<!-- 2.1.0 新增 -->
+        <div v-else> Not A/B</div>
+
+        <div v-if="flag">Yes</div>
+        <div v-else>No</div>
+    </div>
+</body>
+<script>
+    var vm = new Vue({
+        el: "#app",
+        data: {
+            type: "B",
+            flag: true,
+        }
+    })
+</script>
 ```
 
+![image-20210426232049184](.assets/image-20210426232049184.png)
 
 
-#### v-show
 
-&emsp;&emsp;另一个用于根据条件展示元素的选项是 `v-show` 指令。用法大致一样：
+##### v-show
+
+&emsp;&emsp;另一个用于根据条件展示元素的选项是 `v-show` 指令。==不同的是带有 `v-show` 的元素始终会被渲染并保留在 DOM 中。`v-show` 只是简单地切换元素的 CSS 属性 `display`。==用法大致一样：
 
 ```html
 <h1 v-show="ok">Hello!</h1>
 ```
 
-&emsp;&emsp;不同的是带有 `v-show` 的元素始终会被渲染并保留在 DOM 中。`v-show` 只是简单地切换元素的 CSS 属性 `display`。
-
 ```html
 <div id="app">
-    <div v-show="show">v-show="show"</div>
+   <div v-show="flag">show</div>
     <button v-on:click="clickHandler">切换</button>
 </div>
-
+</body>
 <script>
-    var app = new Vue({
-        el:'#app',							
-        data:{
-            show:true
+    var vm = new Vue({
+        el: "#app",
+        data: {
+            flag: true,
         },
         methods:{
             clickHandler:function(){
-                this.show = !this.show;
+                this.flag = !this.flag;
             }
         }
-    });	
+    })
 </script>
 ```
 
-
-
-```markdown
-# 注意，v-show 不支持 <template> 元素，也不支持 v-else。
-```
+==注意，v-show 不支持 `<template> ` 元素，也不支持 v-else。==
 
 
 
-#### v-if 和 v-show 的区别
+##### v-if 和 v-show 的区别
+- **`v-if` 是"真正"的条件渲染;**
 
-&emsp;&emsp;`v-if` 是"真正"的条件渲染，因为它会确保在切换过程中条件块内的事件监听器和子组件适当地被销毁和重建。`v-if` 也是惰性的：如果在初始渲染时条件为假，则什么也不做——直到条件第一次变为真时，才会开始渲染条件块。
+  > 因为它会确保在切换过程中条件块内的事件监听器和子组件适当地被销毁和重建。
+
+- **`v-if` 也是惰性的;**
+
+> 如果在初始渲染时条件为假，则什么也不做——直到条件第一次变为真时，才会开始渲染条件块。
+
 &emsp;&emsp;相比之下，`v-show` 就简单得多——不管初始条件是什么，元素总是会被渲染，并且只是简单地基于 CSS 进行切换。
-&emsp;&emsp;一般来说，**`v-if` 有更高的切换开销，而 `v-show` 有更高的初始渲染开销。**因此，如果需要非常频繁地切换，则使用 `v-show` 较好；如果在运行时条件很少改变，则使用 `v-if` 较好。
 
 ```html
 <div id="app">
@@ -351,16 +418,74 @@ v-on
 </script>
 ```
 
+&emsp;&emsp;一般来说，==`v-if` 有更高的切换开销，而 `v-show` 有更高的初始渲染开销。==因此，如果需要非常频繁地切换，则使用 `v-show` 较好；如果在运行时条件很少改变，则使用 `v-if` 较好。
 
 
-### 元素绑定
 
-#### v-on
-&emsp;&emsp;vue 中使用 `v-on:click` 对当前 DOM 绑定 click 事件 注意:所有的原 js 的事件使用 `v-on` 都可以绑定:
+#### 循环语句 v-for
+
+```html
+<!--导入Vue.js-->
+<script src="https://cdn.jsdelivr.net/npm/vue@2.5.21/dist/vue.min.js"></script>
+<body>
+<div id="app">
+    <div v-for="(item, index) in items">
+        {{item.message}} -- {{index}}
+    </div>
+</div>
+</body>
+<script>
+    var vm = new Vue({
+        el: "#app",
+        data: {
+            items: [
+                {"message": "item1"},
+                {"message": "item2"},
+            ]
+        }
+    })
+</script>
+```
+
+在控制台里，输入 `app4.todos.push({ text: '新项目' })`，你会发现列表最后添加了一个新项目。
+
+![image-20210426235307240](.assets/image-20210426235307240.png)
+
+
+
+#### 元素绑定 v-bind
+
+> 用于响应式地更新 HTML 特性
+
+```html
+<a v-bind:href="url">...</a>
+```
+
+在这里 `href` 是参数，告知 `v-bind` 指令将该元素的 `href` 特性与表达式 `url` 的值绑定。
+
+
+
+**v-bind 缩写**
+
+```html
+<!-- 完整语法 -->
+<a v-bind:href="url">...</a>
+
+<!-- 缩写 -->
+<a :href="url">...</a>
+```
+
+
+
+
+
+#### 事件绑定 v-on
+
+&emsp;&emsp;vue 中使用 `v-on:click` 对当前 DOM 绑定 click 事件 注意: ==所有的原 js 的事件使用 `v-on` 都可以绑定==:[浏览器事件列表](https://www.jquery123.com/category/events/)
 
 ```html
 <div id="app">
-    <h1> The button above has been clicked {{ counter }} times. </h1>
+    <p> The button above has been clicked {{ counter }} times. </p>
     <button v-on:click="clickHandler">切换</button>		 <!-- 绑定事件处理 -->
     <button v-on:click="say('what')">Say what</button>
     <button v-on:click="counter += 1">Add 1</button>
@@ -452,33 +577,41 @@ v-on
 
 
 
+## Vue 常用 7 个属性
 
+[Vue 常用 7 个属性](https://www.cnblogs.com/bgwhite/p/9297221.html)
 
-#### v-bind
+学习 vue 我们必须之到它的 7 个属性，8 个 方法，以及 7 个指令。787 原则
 
-> 用于响应式地更新 HTML 特性
+- el 属性
 
-```html
-<a v-bind:href="url">...</a>
-```
+- - 用来指示 vue 编译器从什么地方开始解析 vue 的语法，可以说是一个占位符。
 
-在这里 `href` 是参数，告知 `v-bind` 指令将该元素的 `href` 特性与表达式 `url` 的值绑定。
+- data 属性
 
+- - 用来组织从 view 中抽象出来的属性，可以说将视图的数据抽象出来存放在 data 中。
 
+- template 属性
 
-##### v-bind 缩写
+- - 用来设置模板，会替换页面元素，包括占位符。
 
-```html
-<!-- 完整语法 -->
-<a v-bind:href="url">...</a>
+- methods 属性
 
-<!-- 缩写 -->
-<a :href="url">...</a>
-```
+- - 放置页面中的业务逻辑，js 方法一般都放置在 methods 中
 
+- render 属性
 
+- - 创建真正的 Virtual Dom
 
+- computed 属性
 
+- - 用来计算
+
+- watch 属性
+
+- - watch:function(new,old){}
+    - 监听 data 中数据的变化
+    - 两个参数，一个返回新值，一个返回旧值，
 
 
 
