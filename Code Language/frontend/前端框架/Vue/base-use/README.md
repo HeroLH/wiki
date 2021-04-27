@@ -575,6 +575,246 @@ v-on
 
 
 
+#### 双向数据绑定 v-model
+
+&emsp;&emsp;Vue.js 是一个 MV VM 框架，即数据双向绑定，即当数据发生变化的时候，视图也就发生变化，当视图发生变化的时候，数据也会跟着同步变化。这也算是 Vue.js 的精髓之处了。值得注意的是，我们所说的数据双向绑定，一定是对于 UI 控件来说的非 UI 控件不会涉及到数据双向绑定。
+&emsp;&emsp;单向数据绑定是使用状态管理工具的前提。如果我们使用 vue x 那么数据流也是单项的，这时就会和双向数据绑定有冲突。
+
+
+
+##### 在表单中使用双向数据绑定
+&emsp;&emsp;你可以用 `v-model` 指令在表单、及元素上创建双向数据绑定。它会根据控件类型自动选取正确的方法来更新元素。尽管有些神奇， 但 `v-model` 本质上不过是语法糖。它负责监听用户的输入事件以更新数据，并对一些极端场景进行一些特殊处理。   
+&emsp;&emsp;注意：==`v-model` 会忽略所有表单元素的 `value`、`checked`、`selected` 特性的初始值而总是将 `Vue` 实例的数据作为数据来源。==你应该通过 `JavaScript` 在组件的 `data` 选项中声明初始值！
+
+```html
+<body>
+    <div id="app">
+        文本:
+        <input type="text" value="hello" v-model="message"> {{message}}
+        <textarea cols="30" rows="10" v-model="message"></textarea>{{message}}
+        <hr />
+
+        单复选框:
+        <input id="test_check_1" type="checkbox" v-model="checked">
+        <label for="test_check_1">{{checked}}</label>
+        <hr />
+        多复选框:
+        <input type="checkbox" value="张三" v-model="checkedName">
+        <input type="checkbox" value="李四" v-model="checkedName">
+        <input type="checkbox" value="王五" v-model="checkedName">
+        <span>选中的值为: {{checkedName}}</span>
+        <hr />
+
+        <input type="radio" value="One" v-model="picked">
+        <input type="radio" value="Two" v-model="picked">
+        {{picked}}
+        <hr />
+
+        下拉框
+        <select v-model="pan">
+            <option value="" disabled>---请选择---</option>
+            <!--
+            注意：v-model 表达式的初始值未能匹配任何选项，元系将被渲染为 “未选中” 状态。
+            在 iOS 中， 这会使用户无法选择第一个选项，因为这样的情况下，iOS 不会触发 change 事件。
+            因此，更推荐像上面这样提供一个值为空的禁用选项。
+            -->
+            <option>A</option>
+            <option>B</option>
+            <option>C</option>
+            <option>D</option>
+        </select>
+        <span>value:{{pan}}</span>
+    </div>
+</body>
+<script>
+    var vm = new Vue({
+        el: "#app",
+        data: {
+            message: "",
+            checked: false,
+            checkedName: [],
+            picked: "Two",
+            pan: "A"
+        }
+    })
+</script>
+```
+
+
+
+
+
+### Vue 组件
+
+> 组件是可复用的 `Vue` 实例， 说白了就是一组==可以重复使用的模板==， 跟 `JSTL` 的自定义标签、`Thymeleal` 的 `th:fragment` 等框架有着异曲同工之妙，通常一个应用会以一棵嵌套的组件树的形式来组织：
+
+![1595251605760](.assets/1595251605760.png)
+
+例如，你可能会有页头、侧边栏、内容区等组件，每个组件又包含了其它的像导航链接、博文之类的组件。
+
+
+
+#### 第一个 Vue 组件
+&emsp;&emsp;注意：在实际开发中，我们并不会用以下方式开发组件，而是采用 `vue-cli` 创建，`vue` 模板文件的方式开发，以下方法只是为了让大家理解什么是组件。使用 `Vue.component()` 方法注册组件，格式如下：
+
+```html
+<body>
+    <div id="app">
+        <!--组件，传递给组件中的值：props-->
+        <temp_span v-for="item in items" v-bind:for_item="item"></temp_span>
+        <!--
+            v-for="item in items"：
+                遍历 Vue 实例中定义的名为 items 的数组，并创建同等数量的组件
+            v-bind:for_item="item"：
+                将遍历的 item 项绑定到组件中 props 定义名为 item 属性上；
+                = 号左边的 for_item 为 props 定义的属性名，右边的为 item in items 中遍历的 item 项的值
+               -->
+    </div>
+</body>
+<script>
+    //先注册组件
+    Vue.component("temp_span", {                // 自定义组件的名字
+        props: ["for_item"],                    // 注意：默认规则下 props 属性里的值不能为大写
+        template: "<li>{{for_item}}</li>"       // 组件的模板
+    })
+
+    //再实例化 Vue
+    var vm = new Vue({
+        el: "#app",
+        data: {
+            items: ["item1", "item2", "item3"]
+        }
+    })
+</script>
+```
+
+
+
+### 计算属性 computed
+
+&emsp;&emsp;计算属性的重点突出在 **属性** 两个字上(属性是名词)，首先它是个属性，其次这个属性有 **计算** 的能力(计算是动词)，这里的计算就是个函数：简单点说，它就是一个==能够将计算结果缓存起来的属性==( 将行为转化成了静态的属性 )，仅此而已；可以想象为缓存!
+
+```html
+<body>
+<!--view层，模板-->
+<div id="app">
+    <p>currentTime1:{{currentTime1()}}</p>
+    <p>currentTime2:{{currentTime2}}</p>
+</div>
+
+<!--1.导入Vue.js-->
+<script src="https://cdn.jsdelivr.net/npm/vue@2.5.21/dist/vue.min.js"></script>
+<script type="text/javascript">
+    var vm = new Vue({
+        el:"#app",
+        data:{
+            message:"message"
+        },
+        methods:{
+            currentTime1:function(){
+                return Date.now();
+            }
+        },
+        computed:{
+            currentTime2:function(){//计算属性：methods，computed方法名不能重名，重名之后，只会调用methods的方法
+                return Date.now();
+            }
+        }
+    });
+</script>
+</body>
+```
+
+![image-20210427234753041](.assets/image-20210427234753041.png)
+
+调用方法时，每次都需要讲行计算，既然有计算过程则必定产生系统开销，那如果这个结果是不经常变化的呢?此时就可以考虑将这个结果缓存起来，采用计算属性可以很方便的做到这点，**计算属性的主要特性就是为了将不经常变化的计算结果进行缓存，以节约我们的系统开销；**
+
+
+
+### 内容分发 `<slot>`
+
+
+
+### 自定义事件
+
+
+
+
+
+## Vue 通信
+
+### Axios
+
+&emsp;&emsp;由于 `Vue.js` 是一个视图层框架并且作者( 尤雨溪 )严格准守SoC( 关注度分离原则 )，所以 `Vue.js` 并不包含AJAX的通信功能， 为了解决通信问题， 作者单独开发了一个名为 `vue-resource` 的插件， 不过在进入 2.0 版本以后停止了对该插件的维护并推荐了 `Axios` 框架。==少用 jQuery， 因为它操作Dom太频繁!==
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        <!-- v-cloak解决页面闪烁问题（不会出现{{message}}这样的信息） -->
+        [v-cloak]{
+            display: none;
+        }
+    </style>
+</head>
+    <!--导入Vue.js-->
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.5.21/dist/vue.min.js"></script>
+
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<body>
+<div id="app"  v-cloak>
+    <div>地名：{{info.name}}</div>
+    <div>地址：{{info.address.country}}--{{info.address.city}}--{{info.address.street}}</div>
+    <div>链接：<a v-bind:href="info.url" target="_blank">{{info.url}}</a> </div>
+</div>
+</body>
+<script>
+    var vm = new Vue({
+        el: "#app",
+        // data: 是全局的，容易在项目中污染数据，将data封装成一个函数，我们在实例化组件2的时候只是调用了这个函数生成的数据副本，避免污染数据
+        data(){
+            return{
+                info:{
+                    name:null,                  // 上面有调用，所以留着占位
+                    address:{
+                        country:null,
+                        city:null,
+                        street:null
+                    },
+                    url:null
+                }
+            }
+        },
+        mounted(){
+            axios.get('../data.json').then(response=>(this.info=response.data))
+        }
+    })
+</script>
+</html>
+```
+
+
+
+
+
+
+
+#### 第一个Axios应用程序
+
+&emsp;&emsp;咱们开发的接口大部分都是采用 JSON 格式， 可以先在项目里模拟一段 JSON 数据， 数据内容如下：创建一个名为 `data.json` 的文件并填入上面的内容， 放在项目的根目录下：
+
+
+
+## Vue 的生命周期
+
+官方文档：[生命周期图示](https://cn.vuejs.org/v2/guide/instance.html#生命周期图示)  
+&emsp;&emsp;Vue 实例有一个完整的生命周期，也就是从开始创建初始化数据、编译模板、挂载 DOM、渲染一更新一渲染、卸载等一系列过程，我们称这是 Vue 的生命周期。通俗说就是 Vue 实例从创建到销毁的过程，就是生命周期。在 Vue 的整个生命周期中，它提供了一系列的事件，可以让我们在事件触发时注册 JS 方法，可以让我们用自己注册的 JS 方法控制整个大局，在这些事件响应方法中的 `this` 直接指向的是 Vue 的实例。
+
+![1595253373596](.assets/1595253373596.png)
+
 
 
 ## Vue 常用 7 个属性
