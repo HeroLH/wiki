@@ -35,7 +35,7 @@
 
 
 
-### 学习 vue 前的准备工作
+#### 学习 vue 前的准备工作
 
 - 扎实的 HTML/CSS/Javascript 基本功，这是前置条件。
 - 不要用任何的构建项目工具，只用最简单的 `<script>`，把教程里的例子模仿一遍，理解用法。**不推荐上来就直接用 `vue-cli`  构建项目，尤其是如果没有 `Node/Webpack` 基础。**
@@ -43,6 +43,12 @@
 
 
 ### 概念了解
+
+#### 什么是渐进式框架？
+
+- 渐进式意味着你可以将 Vue 作为你应用的一部分嵌入，在使用 Vue.js 时，你也可以结合其他库一起使用，比如 jQuery。也可以使用 Vue 完成更多的业务逻辑。
+
+
 
 #### 前端框架和库的区别
 
@@ -78,7 +84,7 @@
 
 #### MVVM
 
-> MVVM (Model-View-ViewModel) 是一种软件架构设计模式，由微软 WPF (用于替代 WinForm，以前就是用这个技术开发桌面应用程序的) 和 Silverlight (类似于 Java Applet, 简单点说就是在浏览器上运行的 WPF) 的架构师 Ken Cooper 和 Ted Peters 开发，是一种简化用户界面的事件驱动编程方式。由 John Gossman (同样也是 WPF 和 Silverlight 的架构师) 于 2005 年在他的博客上发表。
+> &emsp;&emsp;MVVM (Model-View-ViewModel) 是一种软件架构设计模式，由微软 WPF (用于替代 WinForm，以前就是用这个技术开发桌面应用程序的) 和 Silverlight (类似于 Java Applet, 简单点说就是在浏览器上运行的 WPF) 的架构师 Ken Cooper 和 Ted Peters 开发，是一种简化用户界面的事件驱动编程方式。由 John Gossman (同样也是 WPF 和 Silverlight 的架构师) 于 2005 年在他的博客上发表。
 
 &emsp;&emsp;MVVM 是前端视图层的概念，主要关注于视图层分离，也就是说 MVVM 把前端的视图层分成了三部分：`Model`、`View`、`VM ViewModel`。MVVM 的核心是 ViewModel 层，负责转换 Model 中的数据对象来让数据变得更容易管理和使用，其作用是：==向上与视图层进行双向数据绑定，向下与 Model 层通过接口请求进行数据交互。==
 
@@ -128,6 +134,16 @@ MVVM 模式和 MVC 模式一样，主要目的是分离视图 (View) 和模型 (
 
 
 
+##### Vue 的 MVVM
+
+![这里写图片描述](.assets/mvvm.png)
+
+&emsp;&emsp;**ViewModel 是 Vue.js 的核心，它是一个 Vue 实例**。Vue 实例是作用于某一个 HTML 元素上的，这个元素可以是 HTML 的 body 元素，也可以是指定了 id 的某个元素。
+
+
+
+
+
 ### 兼容性
 
 &emsp;&emsp;Vue **不支持** `IE8` 及以下版本，因为 Vue 使用了 IE8 无法模拟的 `ECMAScript 5` 特性。但它支持所有兼容 `ECMAScript 5` 的浏览器。在使用 Vue 时，我们推荐在你的浏览器上安装 [Vue Devtools](https://github.com/vuejs/vue-devtools#vue-devtools)。它允许你在一个更友好的界面中审查和调试 Vue 应用。
@@ -141,11 +157,29 @@ MVVM 模式和 MVC 模式一样，主要目的是分离视图 (View) 和模型 (
 ### 下载地址
 
 - 开发版本
-    - 包含完整的警告和调试模式：https：//yuejs.org/js/vue.js
-    - 删除了警告， 30.96KBmin+gzip：https：//vuejs.org/js/vue.min.js
+
+    ```shell
+    # 包含完整的警告和调试模式：
+    https://yuejs.org/js/vue.js
+    
+    # 删除了警告， 30.96KBmin+gzip：
+    https://vuejs.org/js/vue.min.js
+    ```
+
 - CDN
-    - `<script src=“https://cdn.jsdelivr.net/npm/vue@2.5.21/dist/vue.js”></script>`
-    - `<script src="https://cdn.jsdelivr.net/npm/vue@2.5.21/dist/vue.min.js"></script>`
+  
+    ```html
+    <!-- 开发环境版本，包含了有帮助的命令行警告 -->
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    
+    <!-- 生产环境版本，优化了尺寸和速度 -->
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    ```
+    
+
+
+
+
 
 #### 引包
 
@@ -232,6 +266,7 @@ MVVM 模式和 MVC 模式一样，主要目的是分离视图 (View) 和模型 (
     <div id="app">
         <!-- 只在该 div 内生效 -->
         <h1>{{message}}</h1>
+        <h1 v-once>{{message}}</h1>         <!-- 只会在第一次的时候展示数据，后续不做改变 --> 
         <h2>字符串: {{'hello world!'}}</h2>
         <h2>运算式: {{1+1}}</h2>
         <h2>运算式: {{1==1?'真的':'假的'}}</h2>
@@ -240,6 +275,7 @@ MVVM 模式和 MVC 模式一样，主要目的是分离视图 (View) 和模型 (
 </body>
 
 <script>
+    // 编程范式： 声明式编程
     var vm = new Vue({
         el: "#app",                     // 绑定元素
         data: {                         // Model: 绑定数据
@@ -250,7 +286,15 @@ MVVM 模式和 MVC 模式一样，主要目的是分离视图 (View) 和模型 (
     console.log( app );
     console.log( app.$el );					// 会自动将管理块的元素转化为 $变量
     console.log( app.msg );                 // data 内的数据都暴露为全局了
+    
+    // 元素 js 的做法(编程范式： 命令式编程)
+    // 1. 创建 div 元素， 设置 id 属性
+    // 2. 定义一个变量叫 message
+    // 3. 将 message 变量放在前面的 div 元素中显示
+    // 4. 修改 message 的数据
+    // 5. 将修改后的数据再次替换岛 div 元素中
 </script>
+
 ```
 
 ![image-20210426212344394](.assets/image-20210426212344394.png)
@@ -269,6 +313,135 @@ MVVM 模式和 MVC 模式一样，主要目的是分离视图 (View) 和模型 (
     {{1==1?'真的':'假的'}}
 */
 ```
+
+
+
+#### 文本 v-test
+
+> 了解即可，不常用
+
+```html
+<body>
+    <div id="app">
+        <h1>{{url}}</h1>
+        <h1 v-text="url">hello world!</h1>          <!-- 会覆盖标签内的值-->
+    </div>
+</body>
+
+<script>
+    var vm = new Vue({
+        el: "#app",
+        data: {                         // Model: 绑定数据
+            url: 'http://www.baidu.com',
+        }
+    })
+</script>
+```
+
+
+
+
+
+#### 一次性地插值 v-once
+
+> 了解即可，不常用
+
+通过使用 [v-once 指令](https://cn.vuejs.org/v2/api/#v-once)，你也能执行一次性地插值，当数据改变时，插值处的内容不会更新。但请留心这会影响到该节点上的其它数据绑定：
+
+```html
+<span v-once>这个将不会改变: {{ msg }}</span>
+```
+
+
+
+#### 原始 HTML v-html
+
+> 了解即可，不常用
+
+双大括号会将数据解释为普通文本，而非 HTML 代码。为了输出真正的 HTML，你需要使用 [`v-html` 指令](https://cn.vuejs.org/v2/api/#v-html)：
+
+```html
+<body>
+    <!-- 3. view 层，相当于${} -->
+    <div id="app">
+        <!-- 只在该 div 内生效 -->
+        <h1>{{url_a1}}</h1>
+        <h1><span v-html="url_a1"></span></h1>
+        <h1><span v-html="url_a2"></span></h1>
+    </div>
+    <!-- 插值语句不生效 -->
+</body>
+
+<script>
+    // 编程范式： 声明式编程
+    var vm = new Vue({
+        el: "#app",                     // 绑定元素
+        data: {                         // Model: 绑定数据
+            url: 'http://www.baidu.com',
+            url_a1: '<a href="http://www.baidu.com">link</a>',
+            url_a2: '<a href="{{url}}">{{url}}</a>'
+        }
+    })
+</script>
+```
+
+`span` 的内容将会被替换成为 property 值 `rawHtml`，直接作为 HTML—— 会忽略解析 property 值中的数据绑定。注意，你不能使用 `v-html` 来复合局部模板，因为 Vue 不是基于字符串的模板引擎。反之，对于用户界面 (UI)，组件更适合作为可重用和可组合的基本单位。
+
+
+
+**注意：**
+
+你的站点上动态渲染的任意 HTML 可能会非常危险，因为它很容易导致 [XSS 攻击](https://en.wikipedia.org/wiki/Cross-site_scripting)。请只对可信内容使用 HTML 插值，**绝不要**对用户提供的内容使用插值。
+
+
+
+#### 不解析 v-pre
+
+> 了解即可，不常用
+
+原封不动的展示，不会去解析
+
+```html
+<h1 v-pre>{{url}}</h1>
+```
+
+不会填充，直接展示 `url`
+
+
+
+#### 解决闪烁 v-cloak
+
+> 了解即可，不常用
+
+```html
+<style>
+    [v-cloak] {
+        display: none;
+    }
+</style>
+
+<body>
+    <div id="app">
+        <h1>{{url}}</h1>
+        <h1 v-cloak>{{url}}</h1>
+        <h1>{{url}}</h1>
+    </div>
+</body>
+
+<script>
+    setTimeout(function () {                // 停止 1 秒加载
+        var vm = new Vue({
+            el: "#app", 
+            data: {  
+                url: 'http://www.baidu.com',
+            }
+        })
+    }, 1000)
+    
+</script>
+```
+
+
 
 
 
@@ -316,7 +489,6 @@ v-show
 v-for
 v-bind
 v-on
-表单控件的value (看后面)
 ```
 
 
@@ -459,6 +631,12 @@ v-on
 
 ```html
 <a v-bind:href="url">...</a>
+
+<!-- 
+	错误做法： 此处不可使用插值语法：
+	<a href="{{url}}">link</a>
+	<a href="url">link</a>
+-->
 ```
 
 在这里 `href` 是参数，告知 `v-bind` 指令将该元素的 `href` 特性与表达式 `url` 的值绑定。
@@ -477,6 +655,169 @@ v-on
 
 
 
+##### 动态绑定 class
+
+###### 对象语法
+
+```html
+<style>
+    .line {
+        background-color: red;
+    }
+    .active {
+        color: green;
+    }
+</style>
+
+<div id="app">
+    <h2 class="active">{{message}}</h2>
+    <h2 :class="class_active">{{message}}</h2>
+    <!-- 
+        <h2 :class="{key1: value1, key2: value2}">{{message}}</h2>
+        <h2 :class="{类名1： true, 类名2： boolean}">{{message}}</h2> 
+    -->
+    <!-- class 会进行合并 -->
+    <h3 :style="{fontSize: '100px'}">{{message}}</h3>
+    <h2 class="" :class="{active:is_class_active, line:is_class_line}">{{message}}</h2> 
+    <h2 class="" :class="getClasses()">{{message}}</h2> 
+    <button v-on:click="activeClick">font_green</button>
+    <button v-on:click="lineClick">background_red</button>
+
+</div>
+</body>
+
+<script>
+    var vm = new Vue({
+        el: "#app",
+        data: {
+            message: "hello world!",
+            class_active: "active",
+            class_line: "line",
+            is_class_active: true,
+            is_class_line: true
+        },
+        methods: {
+            activeClick: function () {
+                this.is_class_active = !this.is_class_active
+            },
+            lineClick: function () {
+                this.is_class_line = !this.is_class_line
+            },
+            getClasses: function () {
+                return {active: this.is_class_active, line: this.is_class_line}
+            }
+        }
+    })
+</script>
+```
+
+
+
+###### 数组语法
+
+```html
+ <div id="app">
+    <!-- 
+        数组语法
+        <h2 :class="[类名1, 类名2]">{{message}}</h2> 
+     -->
+     <h2 :class="[class_active, class_line]">{{message}}</h2> 
+     <h2 :class="getClassesList()">{{message}}</h2> 
+
+</div>
+
+
+<script>
+    var vm = new Vue({
+        el: "#app",
+        data: {
+            message: "hello world!",
+            class_active: "active",
+            class_line: "line",
+        },
+        methods: {
+            getClassesList: function () {
+                return [this.class_active, this.class_line]
+            }
+        }
+    })
+</script>
+```
+
+
+
+##### 动态绑定 style
+
+###### 对象语法
+
+```html
+<div id="app">
+
+
+    <!-- class 会进行合并 -->
+    <h3 :style="{fontSize: '100px'}">{{message}}</h3>
+    <h3 :style="{fontSize: finalSize + 'px', color: finalColor}">{{message}}</h3>
+    <h3 :style="getStyles()">{{message}}</h3>
+
+</div>
+</body>
+
+<script>
+    var vm = new Vue({
+        el: "#app",
+        data: {
+            message: "hello world!",
+            finalSize: 100,
+            finalColor: 'red',
+        },
+        methods: {
+            getStyles: function () {
+            	// font_size ==> fontSize
+                return { fontSize: this.finalSize + 'px', color: this.finalColor}
+            }
+        }
+    })
+</script>
+```
+
+
+
+###### 数组语法
+
+```html
+<div id="app">
+    <!-- 对象语法 -->
+    <h3 :style="{fontSize: '100px'}">{{message}}</h3>
+    <h3 :style="{fontSize: finalSize + 'px', color: finalColor}">{{message}}</h3>
+    <h3 :style="getStyles()">{{message}}</h3>
+
+    <!-- 数组语法 -->
+    <h4 :style="[baseStyle, baseStyle2]">{{message}}</h4>
+</div>
+</body>
+
+<script>
+    var vm = new Vue({
+        el: "#app",
+        data: {
+            message: "hello world!",
+            finalSize: 100,
+            finalColor: 'red',
+            baseStyle: {fontSize: '50px'},
+            baseStyle2: {color: 'red'}
+        },
+        methods: {
+            getStyles: function () {
+                // font_size ==> fontSize
+                return { fontSize: this.finalSize + 'px', color: this.finalColor}
+            }
+        }
+    })
+</script>
+```
+
+
+
 
 
 #### 事件绑定 v-on
@@ -485,10 +826,15 @@ v-on
 
 ```html
 <div id="app">
+    <h2>当前计数： {{counter}}</h2>
+    <button v-on:click="counter++">+</button>
+    <button v-on:click="counter--">-</button>
+    <hr />
+    
     <p> The button above has been clicked {{ counter }} times. </p>
     <button v-on:click="clickHandler">切换</button>		 <!-- 绑定事件处理 -->
     <button v-on:click="say('what')">Say what</button>
-    <button v-on:click="counter += 1">Add 1</button>
+    <button @click="counter += 1">Add 1</button>
 </div>
 
 <script>
@@ -508,6 +854,8 @@ v-on
     });	
 </script>
 ```
+
+
 
 
 
@@ -571,6 +919,9 @@ v-on
 
 <!-- 缩写 -->
 <a @click="doSomething">...</a>
+
+<!-- 动态参数的缩写 (2.6.0+) -->
+<a @[event]="doSomething"> ... </a>
 ```
 
 
@@ -715,8 +1066,9 @@ v-on
                 return Date.now();
             }
         },
-        computed:{
-            currentTime2:function(){//计算属性：methods，computed方法名不能重名，重名之后，只会调用methods的方法
+        computed:{						// 定义计算属性， 调用属性使用currentTime2， 不需要带括号
+            currentTime2:function(){	//计算属性：methods，computed方法名不能重名，重名之后，只会调用methods的方法
+                this.message;           // this.message 是为了能够让 currentTime2 观察到数据变化而变化
                 return Date.now();
             }
         }
@@ -817,38 +1169,45 @@ v-on
 
 
 
-## Vue 常用 7 个属性
+## Vue 常用属性 options
 
 [Vue 常用 7 个属性](https://www.cnblogs.com/bgwhite/p/9297221.html)
 
 学习 vue 我们必须之到它的 7 个属性，8 个 方法，以及 7 个指令。787 原则
 
-- el 属性
+### el 属性
 
-- - 用来指示 vue 编译器从什么地方开始解析 vue 的语法，可以说是一个占位符。
+类型： `string|htmlElement`
 
-- data 属性
+>  用来指示 vue 编译器从什么地方开始解析 vue 的语法，可以说是一个占位符。决定之后的 Vue 实例会管理哪一个 DOM。
 
-- - 用来组织从 view 中抽象出来的属性，可以说将视图的数据抽象出来存放在 data 中。
 
-- template 属性
+
+### data 属性
+
+类型： `Object|Function`
+
+>  用来组织从 view 中抽象出来的数据对象，可以说将视图的数据抽象出来存放在 data 中。
+
+
+
+### methods 属性
+
+类型： `{[ket: string]: function}`
+
+> 放置页面中的业务逻辑，js 方法一般都放置在 methods 中
+
+
+
+### template 属性
 
 - - 用来设置模板，会替换页面元素，包括占位符。
-
-- methods 属性
-
-- - 放置页面中的业务逻辑，js 方法一般都放置在 methods 中
-
+- 
 - render 属性
-
 - - 创建真正的 Virtual Dom
-
 - computed 属性
-
 - - 用来计算
-
 - watch 属性
-
 - - watch:function(new,old){}
     - 监听 data 中数据的变化
     - 两个参数，一个返回新值，一个返回旧值，
