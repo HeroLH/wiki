@@ -169,6 +169,40 @@
 
 
 
+#### Vue 开发环境
+
+##### Vetur
+
+![image-20210429212402853](.assets/image-20210429212402853.png)
+
+[插件文档地址](https://marketplace.visualstudio.com/items?itemName=octref.vetur)
+
+Vetur 不用说了吧，开发 Vue 必装的一个插件, 未安装之前 vue 文件显示这样的
+
+![image-20210429212324884](.assets/image-20210429212324884.png)
+
+安装完成后显示这样的，看着舒服多了
+
+![image-20210429212338304](.assets/image-20210429212338304.png)
+
+
+
+##### Vue 2 Snippets
+
+![image-20210429212515204](.assets/image-20210429212515204.png)
+
+[插件文档地址](https://marketplace.visualstudio.com/items?itemName=hollowtree.vue-snippets)，主要加强 vue 的便捷写法
+
+![demo2.gif](.assets/1460000019203853)
+
+
+
+
+
+
+
+
+
 ### python 开发环境
 
 #### 插件

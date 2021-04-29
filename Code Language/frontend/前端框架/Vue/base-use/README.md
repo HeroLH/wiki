@@ -175,7 +175,6 @@ MVVM 模式和 MVC 模式一样，主要目的是分离视图 (View) 和模型 (
     <!-- 生产环境版本，优化了尺寸和速度 -->
     <script src="https://cdn.jsdelivr.net/npm/vue"></script>
     ```
-    
 
 
 
@@ -527,7 +526,7 @@ v-on
 
 ##### v-show
 
-&emsp;&emsp;另一个用于根据条件展示元素的选项是 `v-show` 指令。==不同的是带有 `v-show` 的元素始终会被渲染并保留在 DOM 中。`v-show` 只是简单地切换元素的 CSS 属性 `display`。==用法大致一样：
+&emsp;&emsp;另一个用于根据条件展示元素的选项是 `v-show` 指令。==不同的是带有 `v-show` 的元素始终会被渲染并保留在 DOM 中。`v-show` 只是简单地切换元素的 CSS 属性 `display: none`。==用法大致一样：
 
 ```html
 <h1 v-show="ok">Hello!</h1>
@@ -594,13 +593,69 @@ v-on
 
 
 
+##### 注意事项
+
+```html
+<body>
+    <div id="app">
+        <span v-if="flag1">
+            <label for="username">用户帐号</label>
+            <input type="text" id="username" placeholder="用户账户"> 
+        </span>
+        <span v-else>
+            <label for="email">用户邮箱</label>
+            <input type="text" id="email" placeholder="用户邮箱"> 
+        </span>
+        <button @click="flag1 = !flag1">切换类型</button>
+        <!-- 问题：有输入内容的时候，切换了类型，会发现文字依然显示之前的输入内容，按道理我们应该切换到另一个 input 元素中，这时候值应该清空
+            
+            解答：
+                这是因为 Vue 在进行 DOM 渲染的时候，出于性能考虑，会尽可能复用已经存在的元素，而不是重新创建新的元素
+                在上面的案例中，Vue 会发现原来的 input 元素不再使用，直接作为 else 中的 input 进行使用
+            解决方案：
+                如果我们不希望出现类似复用的问题，可以给对应的 input 加 key，并保证 key 的不同
+         -->
+
+        <br>
+        <span v-if="flag2">
+            <label for="username2">用户帐号</label>
+            <input type="text" id="username2" placeholder="用户账户" key="username"> 
+        </span>
+        <span v-else>
+            <label for="email2">用户邮箱</label>
+            <input type="text" id="email2" placeholder="用户邮箱" key="email2"> 
+        </span>
+        <button @click="flag2 = !flag2">切换类型</button>
+    </div>
+</body>
+<script>
+    var vm = new Vue({
+        el: "#app",
+        data: {
+            flag1: true,
+            flag2: true,
+        }
+    })
+</script>
+```
+
+
+
 #### 循环语句 v-for
 
 ```html
-<!--导入Vue.js-->
-<script src="https://cdn.jsdelivr.net/npm/vue@2.5.21/dist/vue.min.js"></script>
 <body>
 <div id="app">
+    <div v-for="item in items">
+        {{item}}
+    </div>
+    <hr>
+
+    <div v-for="(key, value, index) in info">
+        {{key}} - {{value}} - {{index}}
+    </div>
+    <hr>
+
     <div v-for="(item, index) in items">
         {{item.message}} -- {{index}}
     </div>
@@ -613,15 +668,17 @@ v-on
             items: [
                 {"message": "item1"},
                 {"message": "item2"},
-            ]
+            ],
+            info: {
+                "str1": "string1",
+                "str2": "string2"
+            }
         }
     })
 </script>
 ```
 
-在控制台里，输入 `app4.todos.push({ text: '新项目' })`，你会发现列表最后添加了一个新项目。
-
-![image-20210426235307240](.assets/image-20210426235307240.png)
+在控制台里，输入 `app.items.push({ text: '新项目' })`，你会发现列表最后添加了一个新项目。
 
 
 
@@ -832,6 +889,7 @@ v-on
     <hr />
     
     <p> The button above has been clicked {{ counter }} times. </p>
+    <!-- 在事件定义时，写函数时省略了小括号，但是方法本身是需要一个参数的 -->
     <button v-on:click="clickHandler">切换</button>		 <!-- 绑定事件处理 -->
     <button v-on:click="say('what')">Say what</button>
     <button @click="counter += 1">Add 1</button>
@@ -847,7 +905,7 @@ v-on
             clickHandler:function(){
                 alert( "绑定无参数方法!" );
             },
-            say: function (message) {
+            say(message) {                          // 相当于 say: function(message)
                 alert(message+" 绑定有参数方法!");
             }
         }
@@ -857,26 +915,139 @@ v-on
 
 
 
+##### v-on 缩写
+
+```html
+<!-- 完整语法 -->
+<a v-on:click="doSomething">...</a>
+
+<!-- 缩写 -->
+<a @click="doSomething">...</a>
+
+<!-- 动态参数的缩写 (2.6.0+) -->
+<a @[event]="doSomething"> ... </a>
+```
+
+
+
+##### v-on 传参
+
+```html
+<body>
+<div id="app">
+    <p> The button above has been clicked {{ counter }} times. </p>
+    <!-- 
+        在事件定义时，写函数时省略了小括号，但是方法本身是需要一个参数的 
+        这个时候 Vue 会把浏览器产生的 event 事件对象作为参数传入方法
+    -->
+    <button v-on:click="say">say</button>              <!-- 默认传递事件对象 --> 
+    <button v-on:click="say()">say()</button>            <!-- undefined -->
+    <button v-on:click="say('counter')">say('counter')</button>      <!-- str -->
+    <button v-on:click="say(counter)">say(counter)</button>     <!-- var -->
+
+    <!-- 方法调用时，我们需要 event 对象， 同时又需要其他参数 
+        调用方法时，手动获取到浏览器参数的 event 对象： $event
+    -->
+    <button v-on:click="paramsWithEvent(counter, $event)">Say what</button>
+</div>
+
+<script>
+    var app = new Vue({
+        el:'#app',
+        data:{
+            counter: 0,
+        },
+        methods:{
+            say(message) {                          // 相当于 say: function(message)
+                console.log(message)
+                alert(message+" 绑定有参数方法!");
+            },
+            paramsWithEvent(message, event) {
+                console.log(message)
+                console.log(event)
+            }
+        }
+    });
+
+    // 如果函数需要参数，但是没有传入，那么函数的形参为 undefined
+    // function abc(name) {
+    //     console.log(name);
+    // };
+</script>
+</body>
+```
+
+![image-20210430000641268](.assets/image-20210430000641268.png)
+
+
+
 
 
 ##### 事件修饰符
 
 > 修饰符是以半角句号 `.` 指明的特殊后缀，用于指出一个指令应该以特殊方式绑定。
 
-- `.stop`
-- `.prevent`
-- `.capture`
-- `.self`
-- `.once`
-- `.passive`
+###### `.stop`
+
+当我们使用点击按钮的时候，会遇到个别问题，比如在一个 div 区域之内绑定了点击事件而在这个区域之内绑定了一个按钮的点击事件，会发现一个问题，点击按钮的时候，同时也会触发 div 的点击事件，代码加上 stop 修饰符之后，再点击按钮的时候就不会触发 div 的点击事件。
 
 ```html
 <!-- 阻止单击事件继续传播 -->
 <a v-on:click.stop="doThis"></a>
+```
 
+
+
+###### `.once`
+
+点击多次，只会触发一次
+
+```html
+<button @click.once="onceBtn">只能点击一次</button>
+```
+
+
+
+###### `.prevent`
+
+例如 form 表单的提交，现在有个需求需要手动提交，不需要默认提交在监听点击事件后面加上 prevent 修饰符
+
+```html
 <!-- 提交事件不再重载页面 -->
 <form v-on:submit.prevent="onSubmit"></form>
+```
 
+
+
+###### `.enter`
+
+回车按键：enter 修饰符。输入之后，keyup 监听事件没有反应，当按下回车之后则会触发监听事件
+
+```html
+<!-- 当输入一些信息之后，按下回车才能触发事件 -->
+<input type="text" @keyup.enter="keyUp">
+```
+
+
+
+###### `.native`
+
+监听自定义组件。当我们自定义组件时候需要监听自定义组件之时，`@click` 则不会起到监听作用。
+
+```html
+//当监听不是原生的组件时候，而是自定义组件的时候则需要native修饰
+<cpn @click.native="cpn">自定义组件</cpn>
+```
+
+
+
+
+
+- `.capture`
+- `.self`
+- `.passive`
+
+```html
 <!-- 修饰符可以串联 -->
 <a v-on:click.stop.prevent="doThat"></a>
 
@@ -911,18 +1082,68 @@ v-on
 
 
 
-##### v-on 缩写
+###### demo
 
 ```html
-<!-- 完整语法 -->
-<a v-on:click="doSomething">...</a>
+<div id="app">
+    <div @click="divClick">
+        <button @click="btnClick">无修饰符按钮</button>
+    </div>
 
-<!-- 缩写 -->
-<a @click="doSomething">...</a>
+    <div @click="divClick">
+        <!-- 阻止单击事件继续传播 -->
+        <button @click.stop="btnClick">stop 修饰符按钮</button>
+    </div>
+    <hr>
 
-<!-- 动态参数的缩写 (2.6.0+) -->
-<a @[event]="doSomething"> ... </a>
+    <form action="http://www.baidu.com" method="get">
+        <input type="submit" value="无修饰符提交" @click="submitClick">会跳转
+    </form>
+
+    <form action="http://www.baidu.com" method="get">
+        <!-- 提交事件不再重载页面 -->
+        <input type="submit" value="prevent 修饰符提交" @click.prevent="submitClick">不会跳转
+    </form>
+    <hr>
+
+    <input type="text" @keyup="keyUp" @keydown="keyDown">
+    <input type="text" @keyup.enter="keyUp">
+    <hr>
+
+    <button @click="btnClick">无修饰符按钮</button>
+    <button @click.once="btnClick">once 修饰符按钮</button>
+</div>
+
+<script>
+    var app = new Vue({
+        el:'#app',
+        data:{
+            counter: 0,
+        },
+        methods:{
+            divClick() {
+                console.log("divClick")
+            },
+            btnClick() {
+                console.log("btnClick")
+            },
+            submitClick() {
+                console.log("submitClick")
+            },
+            keyDown() {
+                console.log("键盘按下")
+            },
+            keyUp() {
+                // 用的更多
+                console.log("键盘按起")
+            }
+        }
+    });
+</script>
+</body>
 ```
+
+
 
 
 
@@ -1051,6 +1272,8 @@ v-on
 <div id="app">
     <p>currentTime1:{{currentTime1()}}</p>
     <p>currentTime2:{{currentTime2}}</p>
+    <p>fullDefinition:{{fullDefinition}}</p>
+    <p>fullDefinition2:{{fullDefinition2}}</p>
 </div>
 
 <!--1.导入Vue.js-->
@@ -1059,18 +1282,43 @@ v-on
     var vm = new Vue({
         el:"#app",
         data:{
-            message:"message"
+            message:"hello world!",
+            firstName: "Doctor",
+            lastName: "who"
         },
-        methods:{
+        methods:{                       // 定义方法， 调用方法使用currentTime1()， 需要带括号
             currentTime1:function(){
                 return Date.now();
             }
         },
-        computed:{						// 定义计算属性， 调用属性使用currentTime2， 不需要带括号
-            currentTime2:function(){	//计算属性：methods，computed方法名不能重名，重名之后，只会调用methods的方法
+        computed:{                      // 定义计算属性， 调用属性使用currentTime2， 不需要带括号
+            currentTime2:function(){    // 计算属性：methods，computed方法名不能重名，重名之后，只会调用methods的方法
                 this.message;           // this.message 是为了能够让 currentTime2 观察到数据变化而变化
                 return Date.now();
-            }
+            },
+            // 完整的计算属性
+            fullDefinition: {
+                set: function (newValue) {
+                    //  一般情况下我们不希望计算属性有人去修改他的值，所以就省略了，就只有只读属性
+                }, 
+                get: function () {
+                    return this.message
+                }
+            },
+            // 简化如下
+            // fullDefinition: function () {
+            //     return this.message
+            // }
+            fullDefinition2: {
+                set: function (newValue) {
+                    const names = newValue.split(" ");
+                    this.firstName = names[0];
+                    this.lastName = names[1];
+                }, 
+                get: function () {
+                    return this.firstName + " " + this.lastName
+                }
+            },
         }
     });
 </script>
