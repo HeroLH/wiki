@@ -158,19 +158,181 @@ func main() {
 
 &emsp;&emsp;我们首先定义一个存放模板文件的 `templates` 文件夹，然后在其内部按照业务分别定义一个 `posts` 文件夹和一个 `users` 文件夹。 `posts/index.html` 文件的内容如下：
 
+```html
+{{define "posts/index.html"}}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>posts/index</title>
+</head>
+<body>
+    {{.title}}
+</body>
+</html>
+{{end}}
+```
+
+`users/index.html`文件的内容如下：
+
+```html
+{{define "users/index.html"}}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>users/index</title>
+</head>
+<body>
+    {{.title}}
+</body>
+</html>
+{{end}}
+```
+
+Gin框架中使用`LoadHTMLGlob()`或者`LoadHTMLFiles()`方法进行HTML模板渲染:
+
+```go
+func main() {
+	r := gin.Default()
+	r.LoadHTMLGlob("templates/**/*")
+	//r.LoadHTMLFiles("templates/posts/index.html", "templates/users/index.html")
+	r.GET("/posts/index", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "posts/index.html", gin.H{
+			"title": "posts/index",
+		})
+	})
+
+	r.GET("users/index", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "users/index.html", gin.H{
+			"title": "users/index",
+		})
+	})
+
+	r.Run(":8080")
+}
+```
 
 
 
+#### 自定义模板函数
+
+定义一个不转义相应内容的 `safe` 模板函数如下：
+
+```go
+func main() {
+	router := gin.Default()
+	router.SetFuncMap(template.FuncMap{
+		"safe": func(str string) template.HTML{
+			return template.HTML(str)
+		},
+	})
+	router.LoadHTMLFiles("./index.tmpl")
+
+	router.GET("/index", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "index.tmpl", "<a href='https://liwenzhou.com'>李文周的博客</a>")
+	})
+
+	router.Run(":8080")
+}
+```
+
+在`index.tmpl`中使用定义好的`safe`模板函数：
+
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <title>修改模板引擎的标识符</title>
+</head>
+<body>
+<div>{{ . | safe }}</div>
+</body>
+</html>
+```
 
 
 
+#### 静态文件处理
+
+当我们渲染的HTML文件中引用了静态文件时，我们只需要按照以下方式在渲染页面前调用`gin.Static`方法即可。
+
+```go
+func main() {
+	r := gin.Default()
+	r.Static("/static", "./static")
+	r.LoadHTMLGlob("templates/**/*")
+   // ...
+	r.Run(":8080")
+}
+```
 
 
 
+#### 模板继承
 
+Gin框架默认都是使用单模板，如果需要使用`block template`功能，可以通过`"github.com/gin-contrib/multitemplate"`库实现，具体示例如下：
 
+首先，假设我们项目目录下的templates文件夹下有以下模板文件，其中`home.tmpl`和`index.tmpl`继承了`base.tmpl`：
 
+```shell
+templates
+├── includes
+│   ├── home.tmpl
+│   └── index.tmpl
+├── layouts
+│   └── base.tmpl
+└── scripts.tmpl
+```
 
+然后我们定义一个`loadTemplates`函数如下：
+
+```go
+func loadTemplates(templatesDir string) multitemplate.Renderer {
+	r := multitemplate.NewRenderer()
+	layouts, err := filepath.Glob(templatesDir + "/layouts/*.tmpl")
+	if err != nil {
+		panic(err.Error())
+	}
+	includes, err := filepath.Glob(templatesDir + "/includes/*.tmpl")
+	if err != nil {
+		panic(err.Error())
+	}
+	// 为layouts/和includes/目录生成 templates map
+	for _, include := range includes {
+		layoutCopy := make([]string, len(layouts))
+		copy(layoutCopy, layouts)
+		files := append(layoutCopy, include)
+		r.AddFromFiles(filepath.Base(include), files...)
+	}
+	return r
+}
+```
+
+我们在`main`函数中:
+
+```go
+func indexFunc(c *gin.Context){
+	c.HTML(http.StatusOK, "index.tmpl", nil)
+}
+
+func homeFunc(c *gin.Context){
+	c.HTML(http.StatusOK, "home.tmpl", nil)
+}
+
+func main(){
+	r := gin.Default()
+	r.HTMLRender = loadTemplates("./templates")
+	r.GET("/index", indexFunc)
+	r.GET("/home", homeFunc)
+	r.Run()
+}
+```
 
 
 
