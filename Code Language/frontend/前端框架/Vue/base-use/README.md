@@ -595,6 +595,14 @@ v-on
 
 ##### 注意事项
 
+问题：有输入内容的时候，切换了类型，会发现文字依然显示之前的输入内容，按道理我们应该切换到另一个 input 元素中，这时候值应该清空
+
+> 解答：
+> 这是因为 Vue 在进行 DOM 渲染的时候，出于性能考虑，会尽可能复用已经存在的元素，而不是重新创建新的元素，在下面的案例中，Vue 会发现原来的 input 元素不再使用，直接作为 else 中的 input 进行使用
+>
+> 解决方案：
+> 如果我们不希望出现类似复用的问题，可以给对应的 input 加 key，并保证 key 的不同
+
 ```html
 <body>
     <div id="app">
@@ -607,15 +615,6 @@ v-on
             <input type="text" id="email" placeholder="用户邮箱"> 
         </span>
         <button @click="flag1 = !flag1">切换类型</button>
-        <!-- 问题：有输入内容的时候，切换了类型，会发现文字依然显示之前的输入内容，按道理我们应该切换到另一个 input 元素中，这时候值应该清空
-            
-            解答：
-                这是因为 Vue 在进行 DOM 渲染的时候，出于性能考虑，会尽可能复用已经存在的元素，而不是重新创建新的元素
-                在上面的案例中，Vue 会发现原来的 input 元素不再使用，直接作为 else 中的 input 进行使用
-            解决方案：
-                如果我们不希望出现类似复用的问题，可以给对应的 input 加 key，并保证 key 的不同
-         -->
-
         <br>
         <span v-if="flag2">
             <label for="username2">用户帐号</label>
@@ -679,6 +678,76 @@ v-on
 ```
 
 在控制台里，输入 `app.items.push({ text: '新项目' })`，你会发现列表最后添加了一个新项目。
+
+
+
+##### v-for 绑定 key
+
+> 官方推荐我们在使用 v-for 的时候，给对应的元素或组件添加上一个 `:key` 属性。
+
+为什么需要这个 `:key` 属性？
+
+> 和 Vue 的虚拟 DOM 的 DIff 算法有关系。 **key 的作用是为了高效的更新虚拟 DOM**
+
+![image-20210501081212802](.assets/image-20210501081212802.png)
+
+```html
+<body>
+<div id="app">
+    <div v-for="item in letters" ::key="item">{{item}}</div>
+</div>
+</body>
+<script>
+    var vm = new Vue({
+        el: "#app",
+        data: {
+            letters: ["A", "B", "C", "D", "E"]
+        }
+    })
+    // vm.letters.splice(2, 0, "F")
+</script>
+```
+
+
+
+##### 并不是所有的修改都是响应式的
+
+```html
+<div id="app">
+    <div v-for="item in letters" ::key="item">{{item}}</div>
+    <button @click="pushClick">push a value</button>
+    <button @click="modifyClick">modify a value</button>
+</div>
+</body>
+<script>
+    var vm = new Vue({
+        el: "#app",
+        data: {
+            letters: ["A", "B", "C", "D", "E"]
+        },
+        methods: {
+            pushClick() {
+                // 响应式
+                this.letters.push("push a value")
+                // pop()            删除最后一个元素
+                // shift()          删除第一个元素
+                // unshift()        在数组最前面添加一个元素
+                // splice()         删除元素/插入元素/替换元素 (start_index, delete_num, value)
+                // sort()           排序
+                // reverse()        反序
+            },
+            modifyClick() {
+                // 非响应式
+                this.letters[0] = "modify a value"
+                // vm.letters.splice(0, 1, "modify a value")            // 响应式
+                // Vue.set(this.letters, 0, "modify a value")           // 响应式
+            }
+        },
+    })
+</script>
+```
+
+
 
 
 
@@ -1214,6 +1283,117 @@ v-on
 
 
 
+##### v-model 原理
+
+v-model 其实是一个语法糖，他的背后本质是包含两个操作的：
+
+- v-bind 绑定一个 value 属性
+- v-on 指令给当前的元素绑定 input 事件
+
+```html
+<body>
+    <div id="app">
+        <!-- <input type="text" :value="message" @input="valueChange"> -->
+        <input type="text" :value="message" @input="message = $event.target.value">
+        <h3>{{message}}</h3>
+    </div>
+</body>
+<script>
+    var vm = new Vue({
+        el: "#app",
+        data: {
+            message: ""
+        },
+        // methods: {
+        //     valueChange(event) {
+        //         this.message = event.target.value;
+        //     }
+        // },
+    })
+</script>
+```
+
+
+
+#####  修饰符
+
+###### `.lazy`
+
+> v-model 是每次修改都会绑定值，添加了 lazy 就只会在回车后或者失去焦点后绑定
+
+```html
+<input type="text" :value="message" v-model.lazy="message" id="v-model.lazy">{{message}}
+```
+
+
+
+##### `.number`
+
+> 默认以 string 类型保存在 data 中，通过 number 修饰符可以以 number 类型存入 data 中
+
+```html
+<input :value="numberAge" v-model.number="numberAge" id=v-model.number>{{numberAge}}: {{typeof numberAge}}
+```
+
+
+
+##### `.trim`
+
+> 去除字符串两边的空字符
+
+```html
+<input type="text" :value="message" v-model.trim="message" id="v-model.trim">
+```
+
+**注：**一般浏览器显示的时候不会显示字符串的空格，但在 data 中存在
+
+
+
+
+
+##### demo
+
+```html
+<body>
+    <div id="app">
+        <!-- 修饰符： .lazy -->
+        <label for="v-model">原始 v-model</label>
+        <input type="text" :value="message" v-model="message" id="v-model">{{message}}
+        <br>
+
+        <label for="v-model.lazy">v-model.lazy</label>
+        <input type="text" :value="message" v-model.lazy="message" id="v-model.lazy">{{message}}
+        <br>
+        
+        <!-- 修饰符： .number -->
+        <label for="v-model.number">v-model.number1</label>
+        <input :value="stringAge" v-model.number="stringAge" id=v-model.number>{{stringAge}}: {{typeof stringAge}}
+        <br>
+
+        <label for="v-model.number">v-model.number2</label>
+        <input :value="numberAge" v-model.number="numberAge" id=v-model.number>{{numberAge}}: {{typeof numberAge}}
+        <br>
+
+        <!-- 修饰符: .trim -->
+        <label for="v-model.trim">v-model.trim</label>
+        <input type="text" :value="message" v-model.trim="message" id="v-model.trim">
+        <pre>{{message}}</pre>
+    </div>
+</body>
+<script>
+    var vm = new Vue({
+        el: "#app",
+        data: {
+            message: "",
+            stringAge: "",
+            numberAge: 0,
+        }
+    })
+</script>
+```
+
+
+
 
 
 ### Vue 组件
@@ -1262,82 +1442,481 @@ v-on
 
 
 
-### 计算属性 computed
+#### 使用组件的基本步骤
 
-&emsp;&emsp;计算属性的重点突出在 **属性** 两个字上(属性是名词)，首先它是个属性，其次这个属性有 **计算** 的能力(计算是动词)，这里的计算就是个函数：简单点说，它就是一个==能够将计算结果缓存起来的属性==( 将行为转化成了静态的属性 )，仅此而已；可以想象为缓存!
+- 创建组件构造器
+
+    > 调用 `Vue.extend()` 方法创建一个组件构造器
+
+- 注册组件
+
+    > 调用 `Vue.component() `方法注册组件
+
+- 使用组件
+
+    > 在 Vue 实例的作用范围内使用组件
+
+```html
+<body>
+    <div id="app">
+        <!-- 4. 使用组件 -->
+        <my_cpn></my_cpn>
+</body>
+<script>
+    // 1.创建组件构造器对象
+    const cpnC = Vue.extend({
+        template: `<div>
+            <h2>title</h2>
+            <p>context</p>
+        </div>`
+    })
+
+    // 2. 注册组件（全局组件）
+    // Vue.comment('组件的标签名'， 组件构造器)   组件的标签名必须全小写
+    // Vue.component('my-cpn', cpnC)
+
+    // 3. 再实例化 Vue
+    var vm = new Vue({
+        el: "#app",
+        components: {
+            // 局部组件
+            my_cpn: cpnC,
+        }
+    })
+</script>
+```
+
+
+
+#### 父组件与子组件
+
+```html
+<body>
+    <div id="app">
+        <my_cpn2></my_cpn2>
+    </div>
+</body>
+<script>
+    // 创建一个组件构造器(子组件)
+    const cpnC1 = Vue.extend({
+        template: `<div>
+            <h2>title</h2>
+            <p>context</p>
+        </div>`
+    })
+
+    // 创建一个组件构造器(父组件)
+    const cpnC2 = Vue.extend({
+        template: `<div>
+            <h2>title</h2>
+            <p>context</p>
+            <my_cpn></my_cpn>               <!-- 不能写在根组件 div 外 -->
+        </div>
+        `,
+        components: {
+            my_cpn: cpnC1,
+        }
+    })
+
+    var vm = new Vue({
+        el: "#app",
+        components: {
+            // 局部组件
+            my_cpn2: cpnC2,
+        }
+    })
+</script>
+
+```
+
+
+
+
+
+#### 组件模板抽离
+
+- 第一种： script 标签，注意： 类型必须是 text/templates
+- 第二种： template 标签
+
+```html
+<body>
+    <div id="app">
+        <my_cpn1></my_cpn1>
+        <my_cpn1></my_cpn1>
+    </div>
+</body>
+<!-- 第一种： script 标签，注意： 类型必须是 text/templates -->
+<script type="text/x-template" id="cpn1">
+    <div>
+        <h2>title</h2>
+        <p>context</p>
+    </div>
+</script>
+
+<!-- 第二种： template 标签 -->
+<template id="cpn2">
+    <div>
+        <h2>title</h2>
+        <p>context</p>
+    </div>
+</template>
+
+<script>
+    var vm = new Vue({
+        el: "#app",
+        components: {
+            // 局部组件
+            my_cpn1: {
+                template: "#cpn1"
+            },
+            my_cpn2: {
+                template: "#cpn2"
+            }
+        }
+    })
+</script>
+```
+
+
+
+#### 组件访问数据
+
+- 组件是一个单独功能模块的封装
+
+    > 这个模块有属于自己的 HTML 模板，也应该有自己的数据 data
+
+- 组件不能直接访问Vue实例中的 data
+
+    > 即使可以访问，如果把所有的数据都放在 Vue 实例中，Vue 实例就会变得非常臃肿。所以，Vue 组件也应该有自己保存数据的地方。
+
+- 组件的数据存放在哪？
+
+    > 组件对象也有一个 data 属性，只能是function，不能为对象，而且这个 function 返回一个对象，对象内部保存数据
+
+
+
+#### 父子组件的通信
+
+##### 父向子传递数据
+
+通过 props(properties) 向子组件传递数据
+
+```html
+<body>
+    <div id="app">
+        <!-- 如果不用 v-bind 会直接把 movies 这个字符串直接赋值过去 -->
+        <my_cpn :cmovies="movies" :cmessage="message" :array-test="[1,2,3]"></my_cpn>
+    </div>
+</body>
+
+<template id="f_cpn">
+    <div>
+        {{cmessage}}
+        <h2>{{cmovies}}</h2>
+        {{cmessage2}}
+        {{arrayTest}}
+    </div>
+</template>
+
+<script> 
+    var vm = new Vue({
+        el: "#app",
+        data: {
+            message: "Hello World!",
+            movies: ["钢铁侠", "美国队长", "蜘蛛侠"]
+        },
+        components: {
+            my_cpn: {
+                template: "#f_cpn",
+                // props: ["cmovies", "cmessage"]
+                props: {
+                    cmovies:Array,
+                    cmessage: String,
+                    cmessage2: {
+                        type: String,
+                        default: "test",
+                        required: true,                 // 必填字段
+                    },
+                    // 对象或默认值必须从一个工厂函数获取
+                    arrayTest: {                        // 驼峰要改为中斜杆 array-test
+                        type: Array,
+                        default() {
+                            return []
+                        }
+                    },
+                    // varTest: [string, Number]        // 多种可能类型
+                    // 自定义校验函数
+                    vartest2: {
+                        validator: function(value) {
+                            // value 必须匹配下列字符串中的一个
+                            return ["success", "warning", "danger"].indexOf(value) !== -1
+                        }
+                    }
+                }
+            },
+
+        }
+    })
+</script>
+```
+
+
+
+##### 子向父传递数据
+
+通过事件向父组件发送消息:
+
+- 在子组件通过 `$emit()` 来触发事件
+- 在父组件中，通过 `v-on` 监听子组件事件
+
+```html
+<body>
+    <div id="app">
+        <my_cpn @categories-item-click="cpnEvent"></my_cpn>
+    </div>
+</body>
+
+<template id="c_cpn">
+    <div>
+        <div v-for="item in categories">
+            <button @click="btnClick(item)">{{item.name}}</button>
+        </div>
+    </div>
+</template>
+
+<script> 
+    var vm = new Vue({
+        el: "#app",
+        data: {
+            message: "Hello World!",
+            movies: ["钢铁侠", "美国队长", "蜘蛛侠"]
+        },
+        methods: {
+            cpnEvent(clickItem) {
+                console.log('cpnEvent', clickItem)
+            }
+        },
+        components: {
+            my_cpn: {
+                template: "#c_cpn",
+                // props: ["cmovies", "cmessage"]
+                data() {
+                    return {
+                        categories: [
+                            {id: 1, name: "热门推荐"},
+                            {id: 2, name: "手机数码"},
+                            {id: 3, name: "电脑办公"},
+                        ]
+                    }
+                },
+                methods: {
+                    btnClick(item) {
+                        // 发送事件
+                        this.$emit("categories-item-click", item)         // 不要驼峰！
+                    }
+                },
+            },
+
+        }
+    })
+</script>
+```
+
+
+
+#### 父子组件的访问方式
+
+##### 父组件访问子组件
+
+使用 `$children` 或 `$refs`
+
+```html
+<body>
+    <div id="app">
+        <my_cpn></my_cpn>
+        <my_cpn ref="test2"></my_cpn>                   <!-- ref 必须注册 -->
+        <button @click="btnClick">按钮</button>
+    </div>
+</body>
+
+<template id="cpn">
+    <div>
+        <h3>我是子组件</h3>
+    </div>
+</template>
+
+<script>
+    var vm = new Vue({
+        el: "#app",
+        methods: {
+            btnClick() {
+                // 1. $children
+                // console.log(this.$children);                     // 是个数组
+                // console.log(this.$children[0].showChildCPN());
+
+                // 2. $refs, 对象类型，默认是个空的对象，必须要在组件使用时注册 ref="a_id"
+                // console.log(this.$refs.test2);
+                console.log(this.$refs.test2.showChildCPN());
+            }
+        },
+        components: {
+            my_cpn: {
+                template: "#cpn",
+                methods: {
+                    showChildCPN() {
+                        console.log("show child message")
+                    }
+                },
+            },
+        }
+    })
+</script>
+```
+
+
+
+##### 子组件访问父组件
+
+使用 `$parent `，如果要直接访问根组件则使用 `$root`
+
+```html
+<body>
+    <div id="app">
+        <my_cpn></my_cpn>  
+    </div>
+</body>
+
+<template id="cpn">
+    <div>
+        <h3>我是子组件</h3>
+        <button @click="btnClickc">按钮</button>
+        <my_ccpn></my_ccpn>
+    </div>
+</template>
+
+<template id="ccpn">
+    <div>
+        <h3>我是子子组件</h3>
+        <button @click="btnClickcc">按钮</button>
+    </div>
+</template>
+
+<script>
+    var vm = new Vue({
+        el: "#app",
+        components: {
+            my_cpn: {
+                template: "#cpn",
+                methods: {
+                    btnClickc() {
+                        // 1. 访问父组件 $parent
+                        console.log(this.$parent);              // 只会找到父组件，不会找到爷组件
+                        console.log(this.$root)
+                    }
+                },
+                components: {
+                    my_ccpn: {
+                        template: "#ccpn",
+                        methods: {
+                            btnClickcc() {
+                                // 1. 访问父组件 $parent
+                                console.log(this.$parent);      // 只会找到父组件，不会找到爷组件
+
+                                // 2. 访问根组件 $parent
+                                console.log(this.$root)
+                            }
+                        },
+                    }
+                }
+            },
+        }
+    })
+</script>
+```
+
+
+
+
+
+### 内容分发 `<slot>`
+
+&emsp;&emsp;在 `Vue.js` 中我们使用 `<slot>` 元素作为承载分发内容的出口，作者称其为插槽，可以应用在组合组件的场景中；组件的插槽也是让我们封装的组件更加具有扩展性，让使用者可以决定组件内部的一些内容到底展示什么。
+
+```html
+<div id="app">
+    <cpn><button>按钮</button></cpn>
+    <cpn><a href="http://www.baidu.com">按钮</a></cpn>
+    <cpn>
+        <!-- 全部替换 -->
+        <span>按钮</span>
+        <span>按钮</span>
+        <span>按钮</span>
+    </cpn>
+    <cpn></cpn>
+</div>
+
+<template id="cpn">
+    <div>
+        <h2>组件</h2>
+        <slot><!-- 默认值 --></slot>
+    </div>
+</template>
+
+<script type="text/javascript">
+    var vm = new Vue({
+        el:"#app",
+        components: {
+            cpn: {
+                template: "#cpn",
+            }
+        }
+    });
+</script>
+```
+
+
+
+#### 具名插槽
 
 ```html
 <body>
 <!--view层，模板-->
 <div id="app">
-    <p>currentTime1:{{currentTime1()}}</p>
-    <p>currentTime2:{{currentTime2}}</p>
-    <p>fullDefinition:{{fullDefinition}}</p>
-    <p>fullDefinition2:{{fullDefinition2}}</p>
+    <cpn>
+        <!-- <button>按钮</button>              会复制给全部无名的插槽 -->
+        <button slot="center">按钮</button>     <!-- 只会替换 center slot -->
+    </cpn>
 </div>
 
-<!--1.导入Vue.js-->
-<script src="https://cdn.jsdelivr.net/npm/vue@2.5.21/dist/vue.min.js"></script>
+<template id="cpn">
+    <div>
+        <slot name="left"><span>左边</span></slot>
+        <slot name="center"><span>中间</span></slot>
+        <slot name="right"><span>右边</span></slot>
+        <slot><!-- 没有名字的附加 --></slot>
+    </div>
+</template>
+
 <script type="text/javascript">
     var vm = new Vue({
         el:"#app",
-        data:{
-            message:"hello world!",
-            firstName: "Doctor",
-            lastName: "who"
-        },
-        methods:{                       // 定义方法， 调用方法使用currentTime1()， 需要带括号
-            currentTime1:function(){
-                return Date.now();
+        components: {
+            cpn: {
+                template: "#cpn",
             }
-        },
-        computed:{                      // 定义计算属性， 调用属性使用currentTime2， 不需要带括号
-            currentTime2:function(){    // 计算属性：methods，computed方法名不能重名，重名之后，只会调用methods的方法
-                this.message;           // this.message 是为了能够让 currentTime2 观察到数据变化而变化
-                return Date.now();
-            },
-            // 完整的计算属性
-            fullDefinition: {
-                set: function (newValue) {
-                    //  一般情况下我们不希望计算属性有人去修改他的值，所以就省略了，就只有只读属性
-                }, 
-                get: function () {
-                    return this.message
-                }
-            },
-            // 简化如下
-            // fullDefinition: function () {
-            //     return this.message
-            // }
-            fullDefinition2: {
-                set: function (newValue) {
-                    const names = newValue.split(" ");
-                    this.firstName = names[0];
-                    this.lastName = names[1];
-                }, 
-                get: function () {
-                    return this.firstName + " " + this.lastName
-                }
-            },
         }
     });
 </script>
 </body>
 ```
 
-![image-20210427234753041](.assets/image-20210427234753041.png)
-
-调用方法时，每次都需要讲行计算，既然有计算过程则必定产生系统开销，那如果这个结果是不经常变化的呢?此时就可以考虑将这个结果缓存起来，采用计算属性可以很方便的做到这点，**计算属性的主要特性就是为了将不经常变化的计算结果进行缓存，以节约我们的系统开销；**
 
 
+#### 作用域
 
-### 内容分发 `<slot>`
+父组件模板的所有东西都会在父级作用域内编译；子组件模板的所有东西都会在子级作用域内编译
 
-
-
-### 自定义事件
-
-
+父组件替换插槽的标签, 但是内容由子组件提供
 
 
 
@@ -1444,6 +2023,169 @@ v-on
 类型： `{[ket: string]: function}`
 
 > 放置页面中的业务逻辑，js 方法一般都放置在 methods 中
+
+
+
+### components 属性
+
+```html
+<body>
+    <div id="app">
+        <my_cpn></my_cpn>
+</body>
+<script>
+    const cpnC = Vue.extend({
+        template: `<div>
+            <h2>title</h2>
+            <p>context</p>
+        </div>`
+    })
+
+    var vm = new Vue({
+        el: "#app",
+        components: {
+            my_cpn: cpnC,
+        }
+    })
+</script>
+```
+
+
+
+
+
+### computed 计算属性
+
+&emsp;&emsp;计算属性的重点突出在 **属性** 两个字上(属性是名词)，首先它是个属性，其次这个属性有 **计算** 的能力(计算是动词)，这里的计算就是个函数：简单点说，它就是一个==能够将计算结果缓存起来的属性==( 将行为转化成了静态的属性 )，仅此而已；可以想象为缓存!
+
+```html
+<body>
+<!--view层，模板-->
+<div id="app">
+    <p>currentTime1:{{currentTime1()}}</p>
+    <p>currentTime2:{{currentTime2}}</p>
+    <p>fullDefinition:{{fullDefinition}}</p>
+    <p>fullDefinition2:{{fullDefinition2}}</p>
+</div>
+
+<!--1.导入Vue.js-->
+<script src="https://cdn.jsdelivr.net/npm/vue@2.5.21/dist/vue.min.js"></script>
+<script type="text/javascript">
+    var vm = new Vue({
+        el:"#app",
+        data:{
+            message:"hello world!",
+            firstName: "Doctor",
+            lastName: "who"
+        },
+        methods:{                       // 定义方法， 调用方法使用currentTime1()， 需要带括号
+            currentTime1:function(){
+                return Date.now();
+            }
+        },
+        computed:{                      // 定义计算属性， 调用属性使用currentTime2， 不需要带括号
+            currentTime2:function(){    // 计算属性：methods，computed方法名不能重名，重名之后，只会调用methods的方法
+                this.message;           // this.message 是为了能够让 currentTime2 观察到数据变化而变化
+                return Date.now();
+            },
+            // 完整的计算属性
+            fullDefinition: {
+                set: function (newValue) {
+                    //  一般情况下我们不希望计算属性有人去修改他的值，所以就省略了，就只有只读属性
+                }, 
+                get: function () {
+                    return this.message
+                }
+            },
+            // 简化如下
+            // fullDefinition: function () {
+            //     return this.message
+            // }
+            fullDefinition2: {
+                set: function (newValue) {
+                    const names = newValue.split(" ");
+                    this.firstName = names[0];
+                    this.lastName = names[1];
+                }, 
+                get: function () {
+                    return this.firstName + " " + this.lastName
+                }
+            },
+        }
+    });
+</script>
+</body>
+```
+
+![image-20210427234753041](.assets/image-20210427234753041.png)
+
+调用方法时，每次都需要讲行计算，既然有计算过程则必定产生系统开销，那如果这个结果是不经常变化的呢?此时就可以考虑将这个结果缓存起来，采用计算属性可以很方便的做到这点，**计算属性的主要特性就是为了将不经常变化的计算结果进行缓存，以节约我们的系统开销；**
+
+
+
+### watch 监听属性
+
+```html
+<div id="app">
+    <input type="text" v-model:value="message">{{message}}
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/vue@2.5.21/dist/vue.min.js"></script>
+<script type="text/javascript">
+    var vm = new Vue({
+        el:"#app",
+        data:{
+            message:"hello world!",
+        },
+        watch: {
+            message(newValue, oldvalue) {
+                console.log(newValue, oldvalue);
+            }
+        },
+    });
+</script>
+```
+
+
+
+
+
+###  fiters 过滤属性
+
+```html
+<body>
+    <div id="app">
+        {{price}}
+        <!-- 保留小数点后两位 -->
+        {{"￥" + price.toFixed(2)}}
+        {{getFinalPrice(price)}}
+        {{price | showFinalPrice}}
+        </table>
+    </div>
+</body>
+<script>
+    const app = new Vue({
+        el: "#app",
+        data: {
+            price: 58.00,
+        },
+        methods: {
+            getFinalPrice(price) {
+                return "￥" + price.toFixed(2)
+            }
+        },
+        filters: {
+            showFinalPrice(price) {
+                return "￥" + price.toFixed(2)
+            }
+        }
+    })
+</script>
+```
+
+
+
+
 
 
 

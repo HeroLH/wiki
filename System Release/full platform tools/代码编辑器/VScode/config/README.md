@@ -130,7 +130,9 @@
 
 ### 前端开发环境
 
-#### 编写 HTML 文件
+#### HTML
+
+##### 编写 HTML 文件
 
 在项目内新建 .html 文件，VScode 并不知道你想要写什么，在第一行输入 `!`，然后按下 Tab 即可快速生成标准的 HTML 代码。
 
@@ -151,9 +153,9 @@
 
 
 
-#### 运行 HTML 文件
+##### 运行 HTML 文件
 
-##### View In Browser
+###### View In Browser
 
 ![image-20210411234156779](.assets/image-20210411234156779.png)
 
@@ -161,11 +163,47 @@
 
 
 
-##### Live Server
+###### Live Server
 
 ![image-20210411235855656](.assets/image-20210411235855656.png)
 
 部分情况下 *View In Browser* 会出现找不到浏览器的情况, 可以试试这个插件
+
+
+
+#### HTML Snippets
+
+智能提示 HTML 标签，以及标签含义
+
+![image-20210503211426192](.assets/image-20210503211426192.png)
+
+
+
+##### Auto Rename Tag
+
+自动完成另一侧标签的同步修改
+
+![image-20210503211305062](.assets/image-20210503211305062.png)
+
+
+
+#### javascript
+
+##### JavaScript (ES6) code snippets
+
+ES6 语法智能提示以及快速输入，除 js 外还支持.ts，.jsx，.tsx，.html，.vue，省去了配置其支持各种包含 js 代码文件的时间。
+
+![image-20210503210948734](.assets/image-20210503210948734.png)
+
+
+
+#### Css
+
+##### HTML CSS Support
+
+让 html 标签上写 class 智能提示当前项目所支持的样式
+
+![image-20210503211052953](.assets/image-20210503211052953.png)
 
 
 

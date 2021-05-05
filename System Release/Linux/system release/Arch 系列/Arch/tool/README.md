@@ -842,6 +842,38 @@ source ~/.profile
 
 
 
+#### nvm
+
+```shell
+sudo pacman -S nvm
+```
+
+```shell
+# 环境变量
+echo 'source /usr/share/nvm/init-nvm.sh' >> ~/.bashrc
+echo 'source /usr/share/nvm/init-nvm.sh' >> ~/.zshrc
+```
+
+##### 基本使用
+
+`nvm list` 或者 `nvm ls` 查看 node 的安装版本
+
+`nvm install 6.9.0` 安装一个 6.9.0 版本的 node
+
+`nvm use 6.9.0` 使用这个 6.9.0 版本的 node
+
+`nvm uninstall 6.9.0` 删除 6.9.0 版本的 node
+
+`nvm ls-remote` 罗列远程的 node 版本
+
+`nvm current` 查看当前正在使用的 node 版本
+
+`nvm alias default v4.3.0` 切换 v.4.3.0 为默认版本，每次新建的命令行中就是默认的版本了
+
+`npm list --depth=0 -g` 查看全局都安装了那些 npm 的包
+
+
+
 ### scrcpy 
 
 > https://zhuanlan.zhihu.com/p/87009933
@@ -1178,9 +1210,17 @@ pacman -S remmina freerdp libvncserver telepathy-glib gnome-keyring nxproxy spic
 
 ## 捕捉键盘软件
 
+[github](https://gitlab.com/screenkey/screenkey)
+
 ```shell
-pacman  -S  screenkey
+sudo pacman  -S  screenkey
 ```
+
+要在录制时（例如，在密码提示时）禁用屏幕按键，请同时按两个控制键或两个 Shift 键或两个 alt 键。再次按相同的组合以恢复它。
+
+如果您需要查看者将注意力集中在刚键入的句子上，则可以按无声修饰符（例如 Shift 或 Control），使输出窗口可见的时间更长一点，而无需延长默认超时时间。
+
+
 
 
 
