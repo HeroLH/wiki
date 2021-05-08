@@ -701,6 +701,39 @@ sudo systemctl enable v2ray.service
 
 
 
+### proxychains
+
+虽然设置全局代理很简单，只需要下面的一行代码：
+
+```shell
+export all_proxy="socks://127.0.0.1:1088"
+```
+
+但是有些软件就是不走这个全局代理，比如 git。在简单搜索后，我发现了 `proxychains` 这个软件，先安装上：
+
+```shell
+yay -S proxychains-ng
+```
+
+配置代理信息：
+
+```shell
+sudo nano /etc/proxychains.conf
+
+# 把最后一行改成自己的代理信息，比如：
+socks5 127.0.0.1 1088
+```
+
+然后及可以无脑使用了，在想使用代理但是软件就是不走代理的命令前，加上 `proxychains`，就能自动走代理，比如：
+
+```shell
+proxychains git clone xxxxxxxxx
+```
+
+
+
+
+
 ## 开发工具
 
 ### python 3
@@ -919,6 +952,33 @@ echo 'source /usr/share/nvm/init-nvm.sh' >> ~/.zshrc
     ```
 
 
+
+## 投屏远程工具
+
+### remmina 远程桌面客户端
+
+```shell
+pacman -S remmina freerdp libvncserver telepathy-glib gnome-keyring nxproxy spice-gtk3 xorg-server-xephyr
+```
+
+
+
+### UxPlay
+
+> iPad 和 iPhone 投屏到 Linux
+
+```shell
+yay -S uxplay-git
+```
+
+启动服务
+
+```shell
+systemctl start avahi-daemon.service
+uxplay
+```
+
+设备连接同一个 wifi 即可投屏
 
 
 
@@ -1182,16 +1242,6 @@ baidupcs
 
 ```cpp
 yay -S baidunetdisk-bin  //并尽可能安装可选依赖
-```
-
-
-
-
-
-## remmina 远程桌面客户端
-
-```shell
-pacman -S remmina freerdp libvncserver telepathy-glib gnome-keyring nxproxy spice-gtk3 xorg-server-xephyr
 ```
 
 
