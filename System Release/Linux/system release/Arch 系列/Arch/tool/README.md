@@ -805,6 +805,41 @@ sudo pacman -S postman-bin
 
 
 
+### mysql
+
+arch 默认已经不再支持 MySQL，但是可以安装 MariaDB，其比 MySQL 的性能更好且操作基本相同。 输入下面命令安装：
+
+```shell
+sudo pacman -S mariadb libmariadbclient mariadb-clients    # 安装mariadb
+```
+
+运行初始化脚本 `mysql_install_db`
+
+```shell
+sudo mysql_install_db --user=mysql --basedir=/usr --datadir=/var/lib/mysql
+```
+
+启动 mysql
+
+```shell
+sudo systemctl start mysql
+```
+
+设置 root 用户密码
+
+```shell
+sudo mysql
+set password for root@localhost = password('新密码');
+exit;
+# mysql -uroot -p新密码　　#使用密码登入root用户方法
+```
+
+ ps: 可以通过修改 `/etc/my.cnf.d/server.cnf` 配置文件 `bind-address=127.0.0.1` 设置 mysql 只用于本机访问。
+
+
+
+
+
 ### Navicat
 
 ```shell
@@ -820,9 +855,19 @@ vim start_navicat
 export LANG="zh_CN.UTF-8"
 
 
-“ 重新试用
+" 重新试用
 rm -rf ～/.navicat64
 ```
+
+
+
+添加软链接
+
+```shell
+sudo ln -s /opt/navicat15-premium-cs/AppRun /usr/bin/navicat
+```
+
+
 
 
 
