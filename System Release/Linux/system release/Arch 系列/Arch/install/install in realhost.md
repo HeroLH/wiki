@@ -806,6 +806,48 @@ xrandr --output DP1 --left-of eDP1
 
 
 
+## 亮度调节
+
+我们知道调整屏幕亮度在硬件层面就是调整 LED 灯的功率大小，在 linux 里面通过 acpi（高级配置与电源接口）来控制，具体是通过设置 `/sys/class/backlight/%k/brightness` 来实现的，当然手动调节这个文件的数值是可行的，但是并不是很方便。所以安装 ACPI 的亮度控制取代 xbacklight 的功能：
+------------------------------------------------
+版权声明：本文为CSDN博主「始新世公子」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。
+原文链接：https://blog.csdn.net/weixin_40101580/article/details/105347874
+
+```shell
+sudo pacman -S acpilight
+
+# 将当前用户加入 video 组，实现免 root 控制亮度：
+sudo gpasswd video -a 用户名
+```
+
+acpilight 兼容 xbacklight 重启之后就可以通过下面命令控制亮度了：
+
+```shell
+# 获得当前亮度
+xbacklight -get
+# 设置亮度
+xbacklight -set 70
+# 增加亮度
+xbacklight -inc 10
+# 降低亮度
+xbacklight -dec 10
+```
+
+
+
+### 遇到问题
+
+[设置屏幕亮度：xbacklight 在 HDMI 上不起作用，xrandr - 亮度不固定](https://qastack.cn/unix/297935/set-the-screen-brightness-xbacklight-does-not-work-on-hdmi-xrandr-brightness)
+
+```shell
+xrandr --output DP-0 --brightness 0.5
+xrandr --output HMDI-0 --brightness 0.5
+```
+
+
+
+
+
 
 
 ## 解决 arch 下挂载 ntfs 格式硬盘
@@ -824,7 +866,7 @@ sudo pacman -S ntfs-3g
 sudo fdisk -l
 ```
 
-知道哪个是 NTFS分区 后,我们来编辑 ``/etc/fstab`, 实现自动挂载.加入类似如下的内容:(只是一个例子)
+知道哪个是 NTFS分区 后,我们来编辑 `/etc/fstab`, 实现自动挂载.加入类似如下的内容:(只是一个例子)
 
 ```shell
 /dev/sda1  /mnt/windows  ntfs-3g  users,noauto,uid=1000,gid=100,fmask=0113,dmask=0002,locale=zh_CN.utf8  0 0

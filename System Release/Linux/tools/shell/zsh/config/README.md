@@ -364,8 +364,14 @@ source ~/.zshrc
 ```shell
  # 设置自动更新oh-my-zsh : ~/.zshrc
 DISABLE_UPDATE_PROMPT=true
- # 加入需要手动更新
-$ upgrade_oh_my_zsh
+```
+
+手动更新
+
+```shell
+upgrade_oh_my_zsh
+# 或
+omz update
 ```
 
 

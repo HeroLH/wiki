@@ -16,6 +16,8 @@ sudo make clean install
 ## 快捷键
 
 > [dwm 问题汇总（含快捷键）](https://blog.csdn.net/qq_34548075/article/details/106941934)
+>
+> [DWM 快捷键配置](https://blog.csdn.net/qq_36390239/article/details/112990746)
 
 
 
@@ -68,16 +70,25 @@ sudo make clean install
 - 切换标签页
 
     ```shell
-    Mod + num
+    Alt + num
     ```
 
 - 移动窗口至某标签页
 
     ```shell
-    Mod + shift + num
+    Alt + shift + num
     ```
 
-    
+
+
+
+### 缩放窗口
+
+```shell
+A + 鼠标右键
+```
+
+
 
 
 
