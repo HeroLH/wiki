@@ -522,6 +522,16 @@ sudo pacman -S vlc
 
 
 
+### deadbeef 
+
+> 本地无损音乐播放器
+
+```shell
+sudo pacman -S deadbeef
+```
+
+
+
 ### 网易云音乐
 
 ```shell
@@ -559,6 +569,21 @@ pacman  -S  simplescreenrecorder
 ```shell
 pacman -S kdenlive
 ```
+
+
+
+### 视频转化工具
+
+#### avidemux
+
+```shell
+sudo pacman -S avidemux-qt
+
+# 运行
+avidemux3_qt5
+```
+
+![image-20210524211534680](.assets/image-20210524211534680.png)
 
 
 
@@ -1084,6 +1109,19 @@ sudo pacman -S amule
 ![image-20210314122219806](.assets/image-20210314122219806.png)
 
 
+
+### uget
+
+> 支持 aria2
+
+```shell
+sudo pacman -S uget
+
+# 运行
+uget-gtk
+```
+
+![image-20210524211853474](.assets/image-20210524211853474.png)
 
 
 
