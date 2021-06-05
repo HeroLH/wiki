@@ -5024,7 +5024,7 @@ func main() {
 
 ### worker pool（goroutine池）
 
-&emsp;&emsp;在工作中我们通常会使用可以指定启动的goroutine数量——`worker pool`模式，控制 `goroutine` 的数量，防止 `goroutine` 泄漏和暴涨。一个简易的`work pool`示例代码如下：
+&emsp;&emsp;在工作中我们通常会使用可以指定启动的 goroutine 数量——`worker pool` 模式，控制 `goroutine` 的数量，防止 `goroutine` 泄漏和暴涨。一个简易的`work pool`示例代码如下：
 
 ```go
 func worker(id int, jobs <-chan int, results chan<- int) {
