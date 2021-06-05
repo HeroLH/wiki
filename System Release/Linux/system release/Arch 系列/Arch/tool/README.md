@@ -1025,6 +1025,21 @@ echo 'source /usr/share/nvm/init-nvm.sh' >> ~/.zshrc
 
 ## 投屏远程工具
 
+### 向日葵
+
+#### 向日葵客户端
+
+```shell
+yay -S sunloginclient
+
+# 执行
+systemctl start runsunloginclient.service
+```
+
+
+
+
+
 ### remmina 远程桌面客户端
 
 ```shell
@@ -1098,6 +1113,84 @@ Usage: ccal [-t|-p|-x] [-g|-b] [-u] [[<month>] <year>].
 
 ## 下载工具
 
+### 百度网盘
+
+#### BaiduPCS-Go
+
+> 百度网盘命令行版本， [BaiduPCS-Go的使用](https://www.jianshu.com/p/57167f6d89f2)
+
+##### 安装
+
+```shell
+sudo pacman -S baidupcs-go
+```
+
+
+
+##### 使用
+
+```shell
+ # 打开
+baidupcs
+```
+
+第一次使用需要有登陆的操作，输入 `login` 即可登陆，尊许提示依次输入账户和密码即可，如果需要验证码，则会输出一个链接，打开就可以看到验证码了。
+
+
+
+#### baidunetdisk-bin
+
+```cpp
+yay -S baidunetdisk-bin  //并尽可能安装可选依赖
+```
+
+
+
+### snap
+
+Snap是 Ubuntu 母公司 Canonical 于 2016 年 4 月发布 Ubuntu16.04 时候引入的一种安全的、易于管理的、沙盒化的软件包格式，与传统的dpkg/apt有着很大的区别。
+
+> [Ubuntu 使用 snap 常用操作](https://blog.csdn.net/gulang03/article/details/85251620)
+
+```shell
+git clone https://aur.archlinux.org/snapd.git
+cd snapd
+makepkg -si
+
+sudo systemctl enable --now snapd.socket
+
+ # snap支持，请在/var/lib/snapd/snap和/snap之间创建符号链接：
+sudo ln -s /var/lib/snapd/snap /snap
+```
+
+使用：
+
+```shell
+ #搜索要安装的Snap软件包
+sudo snap find xxxx
+
+ #查看Snap软件的更多信息
+sudo snap info xxxx
+
+ # 安装软件
+sudo snap install pycharm-professional --classic
+
+ # 列出已安装的snaps
+snap list
+
+
+ #更新Snap软件包
+sudo snap refresh xxxx
+
+ #还原到之前版本
+sudo snap revert xxxx
+
+ # 删除snap
+sudo snap remove hello-world
+```
+
+
+
 ### amule
 
 ```shell
@@ -1126,6 +1219,37 @@ uget-gtk
 
 
 ## 图书工具
+
+### typora 文本编辑器
+
+```shell
+yay -S typora
+```
+
+
+
+### 思维导图
+
+#### mindmaster
+
+```shell
+yay -S mindmaster_cn
+```
+
+![image-20210605224248560](.assets/image-20210605224248560.png)
+
+
+
+#### xmind
+
+```shell
+yay -S xmind
+# 我选的 xmind-2020
+```
+
+![image-20210605225313233](.assets/image-20210605225313233.png)
+
+
 
 ### Zathura
 
@@ -1263,94 +1387,6 @@ yay -S hmcl
 ![image-20210317232211729](.assets/image-20210317232211729.png)
 
 
-
-
-
-## snap
-
-Snap是 Ubuntu 母公司 Canonical 于 2016 年 4 月发布 Ubuntu16.04 时候引入的一种安全的、易于管理的、沙盒化的软件包格式，与传统的dpkg/apt有着很大的区别。
-
-> [Ubuntu 使用 snap 常用操作](https://blog.csdn.net/gulang03/article/details/85251620)
-
-```shell
-git clone https://aur.archlinux.org/snapd.git
-cd snapd
-makepkg -si
-
-sudo systemctl enable --now snapd.socket
-
- # snap支持，请在/var/lib/snapd/snap和/snap之间创建符号链接：
-sudo ln -s /var/lib/snapd/snap /snap
-```
-
-使用：
-
-```shell
- #搜索要安装的Snap软件包
-sudo snap find xxxx
-
- #查看Snap软件的更多信息
-sudo snap info xxxx
-
- # 安装软件
-sudo snap install pycharm-professional --classic
-
- # 列出已安装的snaps
-snap list
-
-
- #更新Snap软件包
-sudo snap refresh xxxx
-
- #还原到之前版本
-sudo snap revert xxxx
-
- # 删除snap
-sudo snap remove hello-world
-```
-
-
-
-
-
-## typora 文本编辑器md
-
-```shell
-yay -S typora
-```
-
-
-
-## 百度网盘
-
-### BaiduPCS-Go 
-
-> 百度网盘命令行版本， [BaiduPCS-Go的使用](https://www.jianshu.com/p/57167f6d89f2)
-
-#### 安装
-
-```shell
-sudo pacman -S baidupcs-go
-```
-
-
-
-#### 使用
-
-```shell
- # 打开
-baidupcs
-```
-
-第一次使用需要有登陆的操作，输入 `login` 即可登陆，尊许提示依次输入账户和密码即可，如果需要验证码，则会输出一个链接，打开就可以看到验证码了。
-
-
-
-### baidunetdisk-bin
-
-```cpp
-yay -S baidunetdisk-bin  //并尽可能安装可选依赖
-```
 
 
 
