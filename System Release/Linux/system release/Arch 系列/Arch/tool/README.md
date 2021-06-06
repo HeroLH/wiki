@@ -480,6 +480,24 @@ yay -S wps-office-cn ttf-wps-fonts wps-office-mui-zh-cn
 
 
 
+### 钉钉
+
+```shell
+yay -S deepin.com.dingtalk.com
+
+# 运行
+./opt/deepinwine/apps/Deepin-DingTalk/run.sh
+
+# 软链接
+sudo ln -s /opt/deepinwine/apps/Deepin-DingTalk/run.sh /usr/bin/dingtalk
+
+# 字体发虚
+# dpi 调整为 120-144
+env WINEPREFIX="$HOME/.deepinwine/Deepin-DingTalk" winecfg
+```
+
+
+
 
 
 ## 影音工具
@@ -617,6 +635,8 @@ yay -S pinta
 
 ### 微信(可多开)
 
+#### win-wechat
+
 > [ArchLinux微信多开wine-wechat多开](https://www.jianshu.com/p/581abc92bf29)
 >
 > [Deepin Wine 版 qq 和微信可以视频通话吗？](https://bbs.archlinuxcn.org/viewtopic.php?id=11171)
@@ -638,6 +658,26 @@ sudo vim /etc/pacman.conf
 
 sudo pacman -Syy
 ```
+
+
+
+#### spark-wechat
+
+```shell
+yay -S com.qq.weixin.spark
+
+# 运行
+./opt/apps/com.qq.weixin.spark/files/run.sh
+
+# 软链接
+sudo ln -s /opt/apps/com.qq.weixin.spark/files/run.sh /usr/bin/dingtalk
+
+# 字体发虚
+# dpi 调整为 120-144
+env WINEPREFIX="$HOME/.deepinwine/Spark-WeChat" winecfg
+```
+
+
 
 
 
@@ -1038,6 +1078,14 @@ systemctl start runsunloginclient.service
 
 
 
+#### 蒲公英异地组网
+
+- 官网下载 deb 包
+- 使用 debtap 转换成 zst 包
+- 使用 pacman -U 安装
+
+![image-20210606134629302](.assets/image-20210606134629302.png)
+
 
 
 ### remmina 远程桌面客户端
@@ -1396,7 +1444,17 @@ yay -S hmcl
 
 [一个小型局域网web](https://link.zhihu.com/?target=http%3A//iscute.cn/chfs)，方便手机与电脑传文件，当然用wine.qq也很方便，不过wine.qq没法在局域网共享资源吧。 `init.sh`默认安装并设置了开机自动启动它，使用`ip a`查看主机的ip地址，然后用浏览器访问就ok。
 
+```shell
+yay -S chfs
+```
+
 ![img](.assets/v2-677f93fe4b2e89c21a598f74e4f026b0_720w.jpg)
+
+启动脚本
+
+```shell
+https://gitee.com/jq-code/chfs-network-disk
+```
 
 
 
@@ -1420,9 +1478,21 @@ sudo pacman  -S  screenkey
 
 ## 密码管理器
 
+### keepass
+
 ```shell
 sudo pacman -S keepass
 ```
+
+
+
+### keeppassxc
+
+```shell
+sudo pacman -S keepassxc
+```
+
+![image-20210606115955747](.assets/image-20210606115955747.png)
 
 
 
