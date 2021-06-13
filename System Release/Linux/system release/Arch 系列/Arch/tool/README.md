@@ -1350,6 +1350,45 @@ yay -S wudao-dict-git
 
 
 
+## 兼容工具
+
+### 罗技
+
+#### 鼠标按键
+
+> [logitech options ubuntu/linux](https://blog.csdn.net/folkboat/article/details/109011807)
+
+罗技的某些鼠标提供了一些辅助键，可以通过官方的 Logitech Options 这个软件来为这些辅助键绑定操作。但是 Logitech Options 只在 Windows 和 macOS 上支持.…..因此我找到了下面这个第三方的鼠标配置APP：它是 librabag 项目的一个UI前端，这是它所[支持的设备列表](https://github.com/libratbag/libratbag/tree/master/data/devices)
+
+```shell
+sudo pacman -S piper
+```
+
+![img](assets/20201011150609120.png)
+
+但是如果不被支持的话，就只能勉强用一用了，如下图，它只会显示你鼠标提供的所有按键，但是并没有和物理按键对应起来，所以你可能需要一个个试，自己找到对应关系，比如我的界面中倒数二三个按钮分别是滚轮左滚和滚轮右滚，我把它设置为了backward和forward。需要注意，设置了之后一定要点击右上角的Apply，这样才能生效。
+
+![img](assets/20201011150656330.png)
+
+
+
+
+
+#### 键盘
+
+##### k380
+
+> 将 Logitech K380 蓝牙键盘上的功能键设为默认
+
+```shell
+ yay -S k380-function-keys-conf
+ 
+ # 运行 
+ k380_conf
+```
+
+
+
 
 
 ## 游戏

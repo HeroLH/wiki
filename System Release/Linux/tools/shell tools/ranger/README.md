@@ -34,7 +34,7 @@ sudo ln -s /usr/local/bin/ranger /usr/local/bin/ra
 安装好了 ranger 之后，将其图标的插件安装上。
 
 ```bash
-ranger --copy-config=all
+rererranger --copy-config=all
 git clone https://github.com/alexanderjeurissen/ranger_devicons ~/.config/ranger/plugins/ranger_devicons
 echo export RANGER_LOAD_DEFAULT_RC=FALSE >> ~/.bashrc
 source ~/.bashrc
