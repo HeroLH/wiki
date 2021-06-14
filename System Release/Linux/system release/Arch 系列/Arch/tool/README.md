@@ -482,6 +482,8 @@ yay -S wps-office-cn ttf-wps-fonts wps-office-mui-zh-cn
 
 ### 钉钉
 
+#### wine 版
+
 ```shell
 yay -S deepin.com.dingtalk.com
 
@@ -497,6 +499,12 @@ env WINEPREFIX="$HOME/.deepinwine/Deepin-DingTalk" winecfg
 ```
 
 
+
+#### dingtalk-linux
+
+```shell
+yay -S dingtalk-linux
+```
 
 
 
