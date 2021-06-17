@@ -5115,6 +5115,3 @@ func main() {
 - 对于没有`case`的`select{}`会一直等待，可用于阻塞main函数。
 
 
-
-
-
