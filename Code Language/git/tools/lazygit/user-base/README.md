@@ -180,3 +180,30 @@ Ctrl + o ： 将文件名复制到剪贴板
 
 
 
+
+
+## 结合其他应用
+
+### 终端 zsh
+
+```shell
+# 法1: alias
+alias lg='lazygit'
+
+# 法2: 软链接
+ln -s /usr/bin/lazygit /usr/bin/lg
+```
+
+
+
+
+
+### range
+
+```shell
+vim ~/.config/ranger/rc.conf
+
+# 添加以下内容, 即可在 ranger 中通过 CTRL + g 的方式快速打开 lazygit
+map <c-g> shell lazygit
+```
+
