@@ -809,9 +809,6 @@ xrandr --output DP1 --left-of eDP1
 ## 亮度调节
 
 我们知道调整屏幕亮度在硬件层面就是调整 LED 灯的功率大小，在 linux 里面通过 acpi（高级配置与电源接口）来控制，具体是通过设置 `/sys/class/backlight/%k/brightness` 来实现的，当然手动调节这个文件的数值是可行的，但是并不是很方便。所以安装 ACPI 的亮度控制取代 xbacklight 的功能：
-------------------------------------------------
-版权声明：本文为CSDN博主「始新世公子」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。
-原文链接：https://blog.csdn.net/weixin_40101580/article/details/105347874
 
 ```shell
 sudo pacman -S acpilight

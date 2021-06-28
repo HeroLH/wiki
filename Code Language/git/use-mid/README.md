@@ -2,7 +2,7 @@
 > *Made By Herolh*
 ----------------------------------------------
 
-# {Title} {#index}
+# git 中级应用 {#index}
 
 [TOC]
 
@@ -20,10 +20,10 @@
 
 ## 文档版本
 
-|   时间    | /修改人 | 内容     |
-| :-------: | :-----: | :------- |
-| 2021-5-19 | Herolh  | 文档创建 |
-|           |         |          |
+|    时间    | 修改人 | 内容                      |
+| :--------: | :----: | :------------------------ |
+| 2021-5-19  | Herolh | 文档创建                  |
+| 2021-06-28 | Herolh | 补充 git 代码统计相关内容 |
 
 
 
@@ -38,3 +38,93 @@
 > [git subtree教程](https://segmentfault.com/a/1190000012002151)
 >
 > [使用子模块和子树来管理 Git 项目](https://linux.cn/article-12244-1.html)
+
+
+
+
+
+## 代码统计
+
+> [segmentfault - Pines_Cheng - git代码统计](https://segmentfault.com/a/1190000008542123)
+
+
+
+### 命令行
+
+#### 查看git上的个人代码量
+
+```shell
+# 记得修改 username 为想统计的 git 账户名
+git log --author="username" --pretty=tformat: --numstat | awk '{ add += $1; subs += $2; loc += $1 - $2 } END { printf "added lines: %s, removed lines: %s, total lines: %s\n", add, subs, loc }' -
+
+# --author   	指定作者
+# --stat   		显示每次更新的文件修改统计信息，会列出具体文件列表
+# --shortstat   统计每个commit 的文件修改行数，包括增加，删除，但不列出文件列表：
+# --numstat   	统计每个commit 的文件修改行数，包括增加，删除，并列出文件列表：
+```
+
+结果示例：
+
+```shell
+added lines: 120745, removed lines: 71738, total lines: 49007
+```
+
+
+
+#### 统计每个人增删行数
+
+```shell
+git log --format='%aN' | sort -u | while read name; do echo -en "$name\t"; git log --author="$name" --pretty=tformat: --numstat | awk '{ add += $1; subs += $2; loc += $1 - $2 } END { printf "added lines: %s, removed lines: %s, total lines: %s\n", add, subs, loc }' -; done
+```
+
+结果示例：
+
+```shell
+Max-laptop    added lines: 1192, removed lines: 748, total lines: 444
+chengshuai    added lines: 120745, removed lines: 71738, total lines: 49007
+cisen    added lines: 3248, removed lines: 1719, total lines: 1529
+max-h    added lines: 1002, removed lines: 473, total lines: 529
+max-l    added lines: 2440, removed lines: 617, total lines: 1823
+mw    added lines: 148721, removed lines: 6709, total lines: 142012
+spider    added lines: 2799, removed lines: 1053, total lines: 1746
+thy    added lines: 34616, removed lines: 13368, total lines: 21248
+wmao    added lines: 12, removed lines: 8, total lines: 4
+xrl    added lines: 10292, removed lines: 6024, total lines: 4268
+yunfei.huang    added lines: 427, removed lines: 10, total lines: 417
+³ö    added lines: 5, removed lines: 3, total lines: 2
+```
+
+
+
+#### 查看仓库提交者排名前 5
+
+```shell
+git log --pretty='%aN' | sort | uniq -c | sort -k1 -n -r | head -n 5
+```
+
+
+
+#### 贡献值统计
+
+```shell
+git log --pretty='%aN' | sort -u | wc -l
+```
+
+
+
+#### 提交数统计
+
+```shell
+git log --oneline | wc -l
+```
+
+
+
+#### 添加或修改的代码行数：
+
+```shell
+git log --stat|perl -ne 'END { print $c } $c += $1 if /(\d+) insertions/'
+```
+
+
+
