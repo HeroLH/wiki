@@ -915,6 +915,8 @@ exit;
 
 ### Navicat
 
+#### navicat12
+
 ```shell
 yay -S navicat121_premium_cs_x64
 ```
@@ -939,6 +941,18 @@ rm -rf ～/.navicat64
 ```shell
 sudo ln -s /opt/navicat15-premium-cs/AppRun /usr/bin/navicat
 ```
+
+
+
+#### navicat15
+
+```shell
+" 延期试用
+rm -rf ~/.config/dconf ~/.config/navicat
+" 删除上述文件之前先备份连接，否则会丢失
+```
+
+
 
 
 
@@ -1372,11 +1386,11 @@ yay -S wudao-dict-git
 sudo pacman -S piper
 ```
 
-![img](assets/20201011150609120.png)
+![img](.assets/20201011150609120.png)
 
 但是如果不被支持的话，就只能勉强用一用了，如下图，它只会显示你鼠标提供的所有按键，但是并没有和物理按键对应起来，所以你可能需要一个个试，自己找到对应关系，比如我的界面中倒数二三个按钮分别是滚轮左滚和滚轮右滚，我把它设置为了backward和forward。需要注意，设置了之后一定要点击右上角的Apply，这样才能生效。
 
-![img](assets/20201011150656330.png)
+![img](.assets/20201011150656330.png)
 
 
 

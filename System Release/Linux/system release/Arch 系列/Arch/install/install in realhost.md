@@ -891,8 +891,14 @@ sudo fdisk -l
 
 ```shell
 [archlinuxcn]
-Server = https://mirrors.zju.edu.cn/archlinuxcn/$arch
- # Server = https://cdn.repo.archlinuxcn.org/$arch
+# 官方源
+Server   = http://repo.archlinuxcn.org/$arch
+# 163源
+Server = http://mirrors.163.com/archlinux-cn/$arch
+# 清华大学
+Server = https://mirrors.tuna.tsinghua.edu.cn/archlinuxcn/$arch
+
+# 注意：以上源，只能添加一个
 ```
 
 然后：
