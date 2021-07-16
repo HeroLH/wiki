@@ -5114,4 +5114,3 @@ func main() {
 - 如果多个`case`同时满足，`select`会随机选择一个。
 - 对于没有`case`的`select{}`会一直等待，可用于阻塞main函数。
 
-

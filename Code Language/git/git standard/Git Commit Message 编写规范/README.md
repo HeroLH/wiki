@@ -199,6 +199,8 @@ Body部分的格式是固定的，必须写成`This reverts commit <hash>.`，�
 
 ## Git 提交时的 emoji 表情使用指南
 
+> [github 支持的 emoji](https://github.com/caiyongji/emoji-list)
+>
 > [Git提交时的emoji表情使用指南——一波骚操作让你的Git提交更加生动](https://blog.csdn.net/weixin_34194551/article/details/91373327)
 
 &emsp;&emsp;关于所有的emoji图标代码，可以参考 [emojipedia](https://link.juejin.im/?target=https%3A%2F%2Femojipedia.org%2F)，不过GitHub上有一套约定俗成的 emoji 使用规范，我整理成了以下表格，在使用git提交信息的时候，你不妨尝试使用它们，让你的提交信息更加明晰和生动。
