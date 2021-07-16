@@ -23,7 +23,7 @@
 
 https://www.mls-software.com/opensshd.html
 
-![img](assets/B562_SN{FC{R8T$A$}SDI.png)
+![img](.assets/B562_SN{FC{R8T$A$}SDI.png)
 
 点下一步下一步安装openssh软件到win7默认安装即可。
 
