@@ -433,13 +433,13 @@ git log --until=1.minute.ago
 git log --since=1.hour.ago 
 
 # 一天之内的log
-git log --since=1.day.ago 
+git log --since=1.day.ago r
 
 # 显示最近两周的提交
 git log --since=2.weeks  
 
 # 一个月之前到半个月之前的log
-git log --since=.month.ago --until=2.weeks.ago 
+git log --since=1.month.ago --until=2.weeks.ago 
 
 # 某个时间段的 log
 git log --since ==2013-08.01 --until=2013-09-07

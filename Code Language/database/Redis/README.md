@@ -109,6 +109,12 @@ sudo apt-get install redis-server
 redis-server
 #  查看 redis 是否还在运行
 redis-cli
+
+用法：redis-cli [OPTIONS] [cmd [arg [arg ...]]]
+-h <主机ip>，默认是 127.0.0.1
+-p <端口>，默认是 6379
+-a <密码>，如果 redis 加锁，需要传递密码
+--help，显示帮助信息
 ```
 
 这将打开一个 Redis 提示符，如下图所示：

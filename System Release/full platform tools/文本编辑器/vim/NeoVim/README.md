@@ -22,5 +22,5 @@
 
 > [neovim在win10下安装配置](https://www.cnblogs.com/wudongwei/p/8836047.html)
 >
-> [安装使用配置 Neovim——配置](https://www.jianshu.com/p/c382222e5151)
+> [安装使用配置 Nehovim——配置](https://www.jianshu.com/p/c382222e5151)
 
