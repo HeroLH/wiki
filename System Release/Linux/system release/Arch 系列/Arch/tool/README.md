@@ -954,6 +954,12 @@ rm -rf ~/.config/dconf ~/.config/navicat
 
 
 
+### workbench
+
+```shell
+sudo pacman -S mysql-workbench
+```
+
 
 
 
