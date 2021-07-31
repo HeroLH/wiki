@@ -1,3 +1,3 @@
 # 目录
 
-wait for Herolh
+wait for Herol
