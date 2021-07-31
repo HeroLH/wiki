@@ -36,8 +36,8 @@ sudo ln -s /usr/local/bin/ranger /usr/local/bin/ra
 ```bash
 rererranger --copy-config=all
 git clone https://github.com/alexanderjeurissen/ranger_devicons ~/.config/ranger/plugins/ranger_devicons
-echo export RANGER_LOAD_DEFAULT_RC=FALSE >> ~/.bashrc
-source ~/.bashrc
+
+echo "default_linemode devicons" >> $HOME/.config/ranger/rc.conf
 ```
 
 如果出现乱码:
@@ -45,7 +45,7 @@ source ~/.bashrc
 ```shell
 git clone https://github.com/ryanoasis/nerd-fonts.git
 cd nerd-fonts
-./install.sh noto
+./install.sh Noto
 ```
 
 
