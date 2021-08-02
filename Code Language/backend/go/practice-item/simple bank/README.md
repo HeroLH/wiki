@@ -441,19 +441,131 @@ github.com/stretchr/testify/require
 
 
 
+## Lesson 7 DB 事务锁 & 如何处理 Golang 的死锁
+
+> 修复由外键引起的死锁 => `FOR NO KEY UPDATE`
+
+```sql
+BEGIN;
+
+INSERT INTO transfers (from_account_id,to_account_id,amount) VALUES (1, 2, 10) RETURNING *;
+
+INSERT INTO entries (account_id, amount) VALUES (1, -10) RETURNING *;
+INSERT INTO entries (account_id, amount) VALUES (2, 10) RETURNING *;
+
+SELECT * FROM accounts WHERE id = 1 LIMIT 1 FOR UPDATE;
+UPDATE accounts SET balance = 90 WHERE id = 1 RETURNING *;
+
+SELECT * FROM accounts WHERE id = 2 LIMIT 1 FOR UPDATE;
+UPDATE accounts SET balance = 90 WHERE id = 2 RETURNING *;
+
+ROLLBACK;
+```
+
+查看 postgresql 锁
+
+```shell
+  SELECT blocked_locks.pid     AS blocked_pid,
+         blocked_activity.usename  AS blocked_user,
+         blocking_locks.pid     AS blocking_pid,
+         blocking_activity.usename AS blocking_user,
+         blocked_activity.query    AS blocked_statement,
+         blocking_activity.query   AS current_statement_in_blocking_process
+   FROM  pg_catalog.pg_locks         blocked_locks
+    JOIN pg_catalog.pg_stat_activity blocked_activity  ON blocked_activity.pid = blocked_locks.pid
+    JOIN pg_catalog.pg_locks         blocking_locks 
+        ON blocking_locks.locktype = blocked_locks.locktype
+        AND blocking_locks.database IS NOT DISTINCT FROM blocked_locks.database
+        AND blocking_locks.relation IS NOT DISTINCT FROM blocked_locks.relation
+        AND blocking_locks.page IS NOT DISTINCT FROM blocked_locks.page
+        AND blocking_locks.tuple IS NOT DISTINCT FROM blocked_locks.tuple
+        AND blocking_locks.virtualxid IS NOT DISTINCT FROM blocked_locks.virtualxid
+        AND blocking_locks.transactionid IS NOT DISTINCT FROM blocked_locks.transactionid
+        AND blocking_locks.classid IS NOT DISTINCT FROM blocked_locks.classid
+        AND blocking_locks.objid IS NOT DISTINCT FROM blocked_locks.objid
+        AND blocking_locks.objsubid IS NOT DISTINCT FROM blocked_locks.objsubid
+        AND blocking_locks.pid != blocked_locks.pid
+
+    JOIN pg_catalog.pg_stat_activity blocking_activity ON blocking_activity.pid = blocking_locks.pid
+   WHERE NOT blocked_locks.granted;
+```
+
+
+
+查看进程
+
+```shell
+SELECT
+	pa.datname,      						-- 数据库名称
+	pa.pid,											-- 
+	pa.application_name,				-- 哪个进程在使用
+	pa.usename,									-- 运行查询的用户名
+	l.relation :: regclass,			-- 表的名称
+	l.transactionid,						-- 交易 ID
+	l.MODE,											-- 锁的 mod
+	l.locktype,									-- 锁的类型
+	l.GRANTED,									-- 锁的类新
+	pa.query,										-- 持有或试图获取锁的查询
+	pa.query_start, 						-- 锁开始的时间
+	age(now(), pa.query_start) as "age" 			-- 持有锁的时间
+FROM
+	pg_stat_activity pa
+	JOIN pg_locks l ON l.pid = pa.pid 
+ORDER BY
+	pa.pid
+```
 
 
 
 
 
+## Lesson 8 如何避免 DB 事务中的死锁？查询顺序问题
+
+> 防止死锁最好的方法是通过确保我们的应用程序总是以一致的顺序获得锁.
+
+会导致死锁
+
+```sql
+-- Tx1: transfer $10 from account1 to account2
+BEGIN;		-- 1
+UPDATE accounts SET balance = balance - 10 WHERE id = 1 RETURNING *; -- 2
+UPDATE accounts SET balance = balance + 10 WHERE id = 2 RETURNING *; -- 5 死锁
+ROLLBACK;
+
+
+-- Tx2: transfer $10 from account2 to account1
+BEGIN;  -- 3
+UPDATE accounts SET balance = balance - 10 WHERE id = 2 RETURNING *; -- 4
+UPDATE accounts SET balance = balance + 10 WHERE id = 1 RETURNING *;
+ROLLBACK;
+```
 
 
 
+解死锁
+
+```sql
+-- Tx1: transfer $10 from account1 to account2
+BEGIN; -- 1
+UPDATE accounts SET balance = balance - 10 WHERE id = 1 RETURNING *; -- 2
+UPDATE accounts SET balance = balance + 10 WHERE id = 2 RETURNING *; -- 5
+ROLLBACK; -- 6
+
+
+-- Tx2: transfer $10 from account2 to account1
+BEGIN; -- 3
+UPDATE accounts SET balance = balance + 10 WHERE id = 1 RETURNING *; -- 4, 锁住
+UPDATE accounts SET balance = balance - 10 WHERE id = 2 RETURNING *; -- 7, 解锁
+ROLLBACK; -- 8
+```
 
 
 
+## Lesson 9 深入理解 MySQL 和 PostgreSQL 中的事务隔离级别和读现象
 
+[数据库事务隔离级别](https://blog.csdn.net/jim_cainiaoxiaolang/article/details/72832217)
 
+&emsp;&emsp;**事务隔离（isolation）**定义了数据库系统中一个操作产生的影响什么时候以哪种方式可以对其他并发操作可见。隔离是事务 ACID (原子性、一致性性、隔离性、持久性) 四大属性中的一个重要属性。
 
 
 
