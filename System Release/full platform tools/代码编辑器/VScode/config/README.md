@@ -22,6 +22,20 @@
 
 ## 常用插件
 
+### 主题
+
+#### Material Theme
+
+![image-20210802130127257](.assets/image-20210802130127257.png)
+
+
+
+#### Material Icon Theme
+
+![image-20210802130053011](.assets/image-20210802130053011.png)
+
+
+
 ### 半透明
 
 #### Windows opacity
