@@ -45,19 +45,6 @@ yay -S octopi
 
 
 
-### man
-
-```shell
-sudu pacman -S man
-```
-
-```shell
-" 使用
-LANG=zh_CN.UTF8 man mplayer
-```
-
-
-
 ### yay
 
 ```shell
@@ -65,6 +52,19 @@ pacman -S --needed git
 git clone https://aur.archlinux.org/yay.git
 cd yay
 makepkg -si
+```
+
+
+
+### man
+
+```shell
+sudo pacman -S man
+```
+
+```shell
+" 使用
+LANG=zh_CN.UTF8 man mplayer
 ```
 
 
@@ -163,16 +163,6 @@ yay -S google-chrome
 
 
 
-### ranger 终端文件管理
-
-> 专门文章介绍
-
-![image-20210221001449932](.assets/image-20210221001449932.png)
-
-
-
-
-
 ### 壁纸管理
 
 #### nitrogen
@@ -237,6 +227,14 @@ sudo pacman -Sy htop
 
 
 ### 文件管理器
+
+#### ranger 终端文件管理
+
+> 专门文章介绍
+
+![image-20210221001449932](.assets/image-20210221001449932.png)
+
+
 
 #### pcmanfm
 
@@ -936,11 +934,21 @@ exit;
 
 
 
+#### mycli 
+
+```shell
+sudo pacman -S mycli
+```
+
+![image-20210809214253320](.assets/image-20210809214253320.png)
 
 
-### Navicat
 
-#### navicat12
+
+
+#### Navicat
+
+##### navicat12
 
 ```shell
 yay -S navicat121_premium_cs_x64
@@ -959,8 +967,6 @@ export LANG="zh_CN.UTF-8"
 rm -rf ～/.navicat64
 ```
 
-
-
 添加软链接
 
 ```shell
@@ -969,7 +975,7 @@ sudo ln -s /opt/navicat15-premium-cs/AppRun /usr/bin/navicat
 
 
 
-#### navicat15
+##### navicat15
 
 ```shell
 " 延期试用
@@ -979,20 +985,10 @@ rm -rf ~/.config/dconf ~/.config/navicat
 
 
 
-### workbench
+#### workbench
 
 ```shell
 sudo pacman -S mysql-workbench
-```
-
-
-
-
-
-### redis-manager
-
-```shell
-yay -S redis-desktop-manager
 ```
 
 
@@ -1004,6 +1000,18 @@ sudo pacman -S redis
 sudo systemctl start redis
 " sudo systemctl enable redis
 ```
+
+
+
+
+
+#### redis-manager
+
+```shell
+yay -S redis-desktop-manager
+```
+
+
 
 
 
