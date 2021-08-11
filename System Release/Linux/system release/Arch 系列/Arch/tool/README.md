@@ -942,6 +942,10 @@ sudo pacman -S mycli
 
 ![image-20210809214253320](.assets/image-20210809214253320.png)
 
+```shell
+mycli -u root -p 
+```
+
 
 
 
@@ -990,6 +994,26 @@ rm -rf ~/.config/dconf ~/.config/navicat
 ```shell
 sudo pacman -S mysql-workbench
 ```
+
+
+
+
+
+### postgres
+
+#### pgcli
+
+```shell
+sudo pacman -S pgcli
+```
+
+![image-20210811205407058](.assets/image-20210811205407058.png)
+
+```shell
+pgcli -h 127.0.0.1 -U root -d simple_bank
+```
+
+
 
 
 

@@ -595,9 +595,43 @@ ROLLBACK; -- 8
 
 ![image-20210808113313093](.assets/image-20210808113313093.png)
 
-#### 未提交读
+#### 读取未提交
 
 > 可以看到其他未提交事务写入的数据，从而允许脏读现象
+
+- 事务一
+
+    ```sql
+    -- 1: 开启事务
+    begin；
+    
+    -- 3: 查询数据
+    select * from account;
+    -- | 1  | one   | 100      | USD      | 2021-08-10 22:42:21 |
+    
+    -- 5： 更新表数据
+    update account set balance = balance - 10 where id = 1;
+    
+    -- 6: 查询数据
+    select * from account;
+    -- | 1  | one   |  90      | USD      | 2021-08-10 22:42:21 |
+    ```
+
+- 事务二
+
+    ```sql
+    -- 2: 开启事务
+    begin;
+    
+    -- 4: 查询数据
+    select * from account;
+    -- | 1  | one   | 100      | USD      | 2021-08-10 22:42:21 |
+    
+    
+    -- 7: 查询数据(脏读)
+    select * from account;
+    -- | 1  | one   |  90      | USD      | 2021-08-10 22:42:21 |
+    ```
 
 
 
@@ -605,17 +639,383 @@ ROLLBACK; -- 8
 
 > 只能看到其他事务已提交的数据
 
+- 事务一
+
+    ```sql
+    -- 1: 开启事务
+    begin；
+    
+    -- 3: 查询数据
+    select * from account;
+    -- | 1  | one   | 100      | USD      | 2021-08-10 22:42:21 |
+    
+    -- 5： 更新表数据
+    update account set balance = balance - 10 where id = 1;
+    
+    -- 6: 查询数据
+    select * from account;
+    -- | 1  | one   |  90      | USD      | 2021-08-10 22:42:21 |
+    
+    -- 8: 提交事务
+    commit;
+    
+    -- 9: 查询数据
+    select * from account;
+    -- | 1  | one   |  90      | USD      | 2021-08-10 22:42:21 |
+    ```
+
+- 事务二
+
+    ```sql
+    -- 2: 开启事务
+    begin;
+    
+    -- 4: 查询数据
+    select * from account where balance = 100;
+    -- | 1  | one   | 100      | USD      | 2021-08-10 22:42:21 |
+    
+    
+    -- 7: 查询数据(脏读不存在)
+    select * from account where balance = 100;
+    -- | 1  | one   | 100      | USD      | 2021-08-10 22:42:21 |
+    
+    -- 10: 查询数据（不可重复读）
+    select * from account;
+    -- | 1  | one   |  90      | USD      | 2021-08-10 22:42:21 |
+    
+    -- 11: 查询数据（幻读）
+    select * from account where balance = 100;
+    -- 之前返回 1 条， 现在返回 0 条
+    ```
+
+    
 
 
-#### 可重复读取隔离
+
+#### 可重复读取
 
 > 相同的选择查询将始终返回相同的结果，无论执行了多少次，即使一些并发事务的新更改满足查询
 
+- 事务一
 
+    ```sql
+    -- 1: 开启事务
+    begin；
+    
+    -- 3: 查询数据
+    select * from account;
+    -- | 1  | one   | 100      | USD      | 2021-08-10 22:42:21 |
+    
+    -- 5： 更新表数据
+    update account set balance = balance - 10 where id = 1;
+    
+    -- 6: 查询数据
+    select * from account;
+    -- | 1  | one   |  90      | USD      | 2021-08-10 22:42:21 |
+    
+    -- 8: 提交事务
+    commit;
+    
+    -- 9: 查询数据
+    select * from account;
+    -- | 1  | one   |  90      | USD      | 2021-08-10 22:42:21 |
+    ```
 
-### 可序列化
+- 事务二
+
+    ```sql
+    -- 2: 开启事务
+    begin;
+    
+    -- 4: 查询数据
+    select * from account where balance = 100;
+    -- | 1  | one   | 100      | USD      | 2021-08-10 22:42:21 |
+    
+    
+    -- 7: 查询数据(脏读不存在)
+    select * from account where balance = 100;
+    -- | 1  | one   | 100      | USD      | 2021-08-10 22:42:21 |
+    
+    -- 10: 查询数据（可重复读）
+    select * from account;
+    -- | 1  | one   | 100      | USD      | 2021-08-10 22:42:21 |
+    
+    -- 11: 查询数据（幻读不存在）
+    select * from account where balance = 100;
+    -- | 1  | one   | 100      | USD      | 2021-08-10 22:42:21 |
+    
+    -- 12： 更新表数据
+    update account set balance = balance - 10 where id = 1;
+    -- 更新数据后可重复性消失
+    
+    -- 13： 查询数据（不可重复读）
+    -- | 1  | one   |  80      | USD      | 2021-08-10 22:42:21 |
+    
+    -- 14: 查询数据（存在幻读）
+    select * from account where balance = 100;
+    -- 之前返回 1 条， 现在返回 0 条
+    ```
+
+    
+
+#### 序列化
 
 保证产生相同的结果，就好像它们以某种顺序依次执行，一个接着一个没有重叠。
+
+- 事务一
+
+    ```sql
+    -- 1: 开启事务
+    begin；
+    
+    -- 3: 查询数据
+    select * from account;
+    -- | 1  | one   | 100      | USD      | 2021-08-10 22:42:21 |
+    
+    -- 5： 更新表数据
+    update account set balance = balance - 10 where id = 1;
+    -- 阻塞中...
+    -- mysql 将所有的普通 select 查询隐式转换成 select for share 以及一个持有 select for share 的交易
+    -- 只允许其他事务读取行，不允许更新或删除它们
+    -- 此锁具有超时持续时间，如果第二个事务没有提交或回滚，会报错
+    -- (1205, 'Lock wait timeout exceeded; try restarting transaction')
+    
+    ```
+
+- 事务二
+
+    ```sql
+    -- 2: 开启事务
+    begin;
+    
+    -- 4: 查询数据
+    select * from account where balance = 100;
+    -- | 1  | one   | 100      | USD      | 2021-08-10 22:42:21 |
+    
+    -- 6： 结束事务
+    commit;
+    -- 事务一的阻塞结束，更新成功
+    ```
+
+    
+
+
+
+### 查看数据库事务隔离级别
+
+#### mysql
+
+> 默认为可重复读( repeatable read )
+
+- 开启事务
+
+    ```sql
+    -- 开启事务
+    start transaction;
+    begin;
+    ```
+
+- 查看数据隔离级别
+
+    ```sql
+    -- 该会话下的隔离级别
+    select @@transaction_isolation;
+    
+    -- 全局的隔离级别
+    select @@global.transaction_isolation;
+    ```
+
+- 修改事务隔离级别
+
+    ```sql
+    -- 改为读取未提交
+    set session transaction isolation level read uncommitted;
+    
+    -- 改为读取已提交
+    set session transaction isolation level read committed;
+    
+    -- 改为可重复读取
+    set session transaction isolation level repeatable read;
+    
+    -- 改为序列化
+    set session transaction isolation level serializable;
+    ```
+
+
+
+#### mariaDB
+
+> 默认为可重复读( repeatable read )
+
+- 开启事务
+
+    ```sql
+    -- 开启事务
+    start transaction;
+    begin;
+    ```
+
+- 查看数据隔离级别
+
+    ```sql
+    -- 该会话下的隔离级别
+    select @@tx_isolation;
+    
+    -- 全局的隔离级别
+    select @@global.tx_isolation;
+    ```
+
+- 修改事务隔离级别
+
+    ```sql
+    -- 改为读取未提交
+    set session transaction isolation level read uncommitted;
+    
+    -- 改为读取已提交
+    set session transaction isolation level read committed;
+    
+    -- 改为可重复读取
+    set session transaction isolation level repeatable read;
+    
+    -- 改为序列化
+    set session transaction isolation level serializable;
+    ```
+
+    
+
+#### postgres
+
+> 默认为读取已提交( read committed )
+>
+> 在 Mysql 中， 我们在启动事务之前设置了整个会话的隔离级别， 但是在 pg 中我们只能在事务内部设置隔离级别，它只会对那一个特定交易产生影响。
+
+- 查看数据隔离级别
+
+    ```sql
+    show transaction isolation level;
+    ```
+
+
+
+##### 读取未提交
+
+> PG 中的读取未提交( read uncommitted ) 和读取已提交是完全相同的( read committed )，所以基本上我们可以说 PG 只有 3 个隔离级别，最低级别是读取已提交。这是合理的，因为通常我们永远不想在任何情况下使用 read-uncommitted。
+
+- 事务一
+
+    ```sql
+    -- 1: 开启事务
+    begin；
+    
+    -- 3： 改为读取未提交
+    set session transaction isolation level read uncommitted;
+    
+    -- 5: 查询数据
+    select * from account;
+    -- | 1  | one   | 100      | USD      | 2021-08-10 22:42:21 |
+    
+    -- 7： 更新表数据
+    update account set balance = balance - 10 where id = 1 returning *;
+    -- | 1  | one   |  90      | USD      | 2021-08-10 22:42:21 |
+    
+    -- 9: 提交事务
+    commit;
+    ```
+
+- 事务二
+
+    ```sql
+    -- 2: 开启事务
+    begin;
+    
+    -- 4： 改为读取未提交
+    set session transaction isolation level read uncommitted;
+    
+    -- 6: 查询数据
+    select * from account;
+    -- | 1  | one   | 100      | USD      | 2021-08-10 22:42:21 |
+    
+    
+    -- 8: 查询数据(脏读不存在)
+    select * from account;
+    -- | 1  | one   | 100      | USD      | 2021-08-10 22:42:21 |
+    
+    -- 10: 查询数据
+    select * from account;
+    -- | 1  | one   |  90      | USD      | 2021-08-10 22:42:21 |
+    ```
+
+
+
+##### 读取已提交
+
+> 和 mysql 一致
+
+
+
+
+
+##### 可重复读
+
+- 事务一
+
+    ```sql
+    -- 1: 开启事务
+    begin；
+    
+    -- 3： 改为读取未提交
+    set session transaction isolation level repeatable read;
+    
+    -- 5: 查询数据
+    select * from account;
+    -- | 1  | one   | 100      | USD      | 2021-08-10 22:42:21 |
+    
+    -- 7： 更新表数据
+    update account set balance = balance - 10 where id = 1 returning;
+    -- | 1  | one   |  90      | USD      | 2021-08-10 22:42:21 |
+    
+    -- 9: 提交事务
+    commit;
+    
+    -- 10: 查询数据
+    select * from account;
+    -- | 1  | one   |  90      | USD      | 2021-08-10 22:42:21 |
+    ```
+
+- 事务二
+
+    ```sql
+    -- 2: 开启事务
+    begin;
+    
+    -- 4： 改为读取未提交
+    set session transaction isolation level repeatable read;
+    
+    -- 6: 查询数据
+    select * from account where balance = 100;
+    -- | 1  | one   | 100      | USD      | 2021-08-10 22:42:21 |
+    
+    
+    -- 8: 查询数据(脏读不存在)
+    select * from account where balance = 100;
+    -- | 1  | one   | 100      | USD      | 2021-08-10 22:42:21 |
+    
+    -- 11: 查询数据（可重复读）
+    select * from account;
+    -- | 1  | one   | 100      | USD      | 2021-08-10 22:42:21 |
+    
+    -- 12: 查询数据（幻读不存在）
+    select * from account where balance = 100;
+    -- | 1  | one   | 100      | USD      | 2021-08-10 22:42:21 |
+    
+    -- 13： 更新表数据
+    update account set balance = balance - 10 where id = 1 returning *;
+    -- 报错： Error: could not access due to concurrent update
+    ```
+
+    
+
+序列化异常 
 
 
 
