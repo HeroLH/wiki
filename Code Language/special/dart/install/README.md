@@ -51,6 +51,25 @@ sudo pacman -S dart
 
 
 
+### Windows 下
+
+wait …
+
+
+
+### Mac 下
+
+如果 mac 电脑没有安装 brew 这个工具首先第一步需要安装它：  https://brew.sh/
+
+```shell
+brew tap dart-lang/dart
+brew install dart
+```
+
+
+
+
+
 ## 编辑器
 
 ### vscode
