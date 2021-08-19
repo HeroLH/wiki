@@ -989,9 +989,87 @@ main() {
 
 
 
+#### 接口
+和 Java 一样，dart 也有接口，但是和Java还是有区别的。
+- dart 的接口没有 interface 关键字定义接口，而是普通类或抽象类都可以作为接口被实现。
+- 同样使用implements关键字进行实现。
+- 但是dart的接口有点奇怪，如果实现的类是普通类，会将普通类和抽象中的属性的方法全部需要覆写一遍。
+- 而因为抽象类可以定义抽象方法，普通类不可以，所以一般如果要实现像Java接口那样的方式，一般会使用抽象类。
+
+> 建议使用抽象类定义接口。
+
+```dart
+/*
+定义一个DB库 支持 mysql  mssql  mongodb
+mysql  mssql  mongodb三个类里面都有同样的方法
+*/
+
+abstract class Db {
+  //当做接口   接口：就是约定 、规范
+  late String uri; //数据库的链接地址
+  add(String data);
+  save();
+  delete();
+}
+
+class Mysql implements Db {
+  @override
+  String uri;
+
+  Mysql(this.uri);
+
+  @override
+  add(data) {
+    print('这是mysql的add方法' + data);
+  }
+
+  @override
+  delete() {
+    return null;
+  }
+
+  @override
+  save() {
+    return null;
+  }
+
+  remove() {}
+}
+
+class MsSql implements Db {
+  @override
+  late String uri;
+
+  @override
+  add(String data) {
+    print('这是mssql的add方法' + data);
+  }
+
+  @override
+  delete() {
+    // TODO: implement delete
+    return null;
+  }
+
+  @override
+  save() {
+    // TODO: implement save
+    return null;
+  }
+}
+
+main() {
+  Mysql mysql = new Mysql('xxxxxx');
+  mysql.add('1243214');
+}
+```
 
 
-#### 抽象类
+
+
+
+
+#### 抽象类 abstract
 
 > Dart 抽象类主要用于定义标准，子类可以继承抽象类，也可以实现抽象类接口。
 
@@ -1038,4 +1116,95 @@ main() {
   // Animal a=new Animal();   //抽象类没法直接被实例化
 }
 ```
+
+
+
+#### mixins
+
+> mixins 的中文意思是混入，就是在类中混入其他功能。在Dart中可以使用 mixins 实现类似多继承的功能
+
+因为mixins使用的条件，随着Dart版本一直在变，这里讲的是Dart2.x中使用mixins的条件：
+- 作为mixins的类只能继承自Object，不能继承其他类
+- 作为mixins的类不能有构造函数
+- 一个类可以 mixins 多个 mixins 类
+- mixins绝不是继承，也不是接口，而是一种全新的特性
+
+
+
+
+
+### 范型
+
+> 泛型就是解决类接口方法的复用性、以及对不特定数据类型的支持(类型校验)
+
+```dart
+T getData<T>(T value) {
+  return value;
+}
+
+void main() {
+  print(getData(21));
+  print(getData('xxx'));
+  print(getData<String>('你好'));
+  print(getData<int>(12));
+}
+```
+
+
+
+
+
+### 库
+
+> 在 Dart 中，库的使用时通过 import 关键字引入的。
+
+Dart中的库主要有三种：
+- 我们自定义的库   
+    ```dart
+    import 'lib/xxx.dart';
+    ```
+
+- 系统内置库
+
+    ```dart
+    import 'dart:math';
+    import 'dart:io';
+    import 'dart:convert';
+    ```
+
+- Pub包管理系统中的库
+
+    > https://pub.dev/packages
+    > https://pub.flutter-io.cn/packages
+    > https://pub.dartlang.org/flutter/
+
+​        1、需要在自己想项目根目录新建一个 `pubspec.yaml`
+
+​        2、在 `pubspec.yaml` 文件 然后配置名称 、描述、依赖等信息
+
+​        3、然后运行 `pub get` 获取包下载到本地
+
+​        4、项目中引入库 `import 'package:http/http.dart' as http;` 看文档使用
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
