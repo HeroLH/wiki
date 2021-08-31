@@ -607,6 +607,18 @@ sudo pacman -S flameshot
 
 ### 录屏软件
 
+#### OBS
+
+```shell
+sudo pacman -S obs-studio
+```
+
+![image-20210826222504642](.assets/image-20210826222504642.png)
+
+
+
+#### simplescreenrecorder
+
 ```shell
 pacman  -S  simplescreenrecorder
 ```
