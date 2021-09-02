@@ -628,8 +628,10 @@ pacman  -S  simplescreenrecorder
 ### 剪辑视频
 
 ```shell
-pacman -S kdenlive
+spacman -S kdenlive
 ```
+
+![image-20210831214443080](.assets/image-20210831214443080.png)
 
 
 
@@ -645,6 +647,18 @@ avidemux3_qt5
 ```
 
 ![image-20210524211534680](.assets/image-20210524211534680.png)
+
+
+
+### 音频处理工具
+
+#### audacity
+
+```shell
+sudo pacman -S audacity
+```
+
+![image-20210831214950683](.assets/image-20210831214950683.png)
 
 
 
