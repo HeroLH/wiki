@@ -96,9 +96,45 @@ http://idea.lanyus.com/
 
 ## Pycharm 插件：
 
-IdeaVim
+#### Chiness(Simplified)Language Pack
+
+> 中文语言包
+
+![image-20210905144518034](.assets/image-20210905144518034.png)
+
+
+
+### IdeaVim
 
 https://my.oschina.net/funcy/blog/1832719
+
+
+
+### 美化
+
+#### Dracula Theme
+
+![image-20210905144837353](.assets/image-20210905144837353.png)
+
+
+
+#### Background Image Plus +
+
+![image-20210905144921471](.assets/image-20210905144921471.png)
+
+
+
+#### Nyan Progress Bar
+
+![image-20210905145016651](.assets/image-20210905145016651.png)
+
+
+
+### GitToolBox
+
+![image-20210905144112113](.assets/image-20210905144112113.png)
+
+
 
 
 
