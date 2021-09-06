@@ -1019,6 +1019,78 @@ ROLLBACK; -- 8
 
 
 
+## Lesson 10 设置 Github Actions 以运行自动化测试
+
+```shell
+mkdir .github/workflows
+vim test.yml
+```
+
+```yaml
+name: Run unit tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+
+    # 指定外部服务列表
+    services:
+      postgres:
+        image: postgres:12-alpine
+        env:
+          POSTGRES_USER: root
+          POSTGRES_PASSWORD: secret
+          POSTGRES_DB: simple_bank
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Set up Go 1.x
+        uses: actions/setup-go@v2
+        with:
+          go-version: ^1.16
+        id: go
+
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v2
+
+      # 数据库迁移
+      - name: Install golang-migrate
+        # 垂直管道符执行多行命令
+        run: |
+          curl -L https://github.com/golang-migrate/migrate/releases/download/v4.14.1/migrate.linux-amd64.tar.gz | tar xvz
+          sudo mv migrate.linux-amd64 /usr/bin/migrate
+          which migrate
+
+      - name: Run migrations
+        run: make migrateup
+
+      - name: Test
+        run: make test
+```
+
+
+
+
+
+## Lesson 11 使用 Gin 在 Go 中实现 RESTful HTTP API
+
+
+
+
+
 ## Lesson 13 Mock DB 用于在 Go 中测试 HTTP API 并实现 100% 覆盖
 
 ### mock 的优势
