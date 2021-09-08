@@ -669,7 +669,7 @@ sudo pacman -S audacity
 > 较为专业的工具
 
 ```shell
-pacman -S gimp
+supacman -S gimp
 ```
 
 
