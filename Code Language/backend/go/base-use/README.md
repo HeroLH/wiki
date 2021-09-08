@@ -78,6 +78,33 @@ Go官方镜像站( 推荐 )：https://golang.google.cn/dl/。
 ### Windows 系统下安装
 &emsp;&emsp;Windows 下可以使用 `.msi` 后缀的安装包来安装。默认情况下 `.msi` 文件会安装在 `c:\Go` 目录下。你可以将 `c:\Go\bin` 目录添加到 `Path` 环境变量中。添加后你需要重启命令窗口才能生效。
 
+
+
+
+
+### Mac 下安装
+
+```shell
+brew install go
+```
+
+go语言安装好后，默认的安装路径是：	`/usr/local/go`，可以进去看看各种安装文件
+
+打开 `/etc/profile` 文件，在最后输入
+
+```shell
+# go
+export GOPATH=/usr/local/go
+export GOBIN=$GOPATH/bin
+export PATH=$PATH:$GOBIN
+```
+
+`source profile` 文件，使之生效
+
+
+
+
+
 ### 安装测试
 - **方法一：**
 

@@ -22,6 +22,21 @@
 
 ## 安装
 
+### Mac 下
+
+```shell
+brew install ranger
+
+# 软链接
+sudo ln -s /usr/local/bin/ranger /usr/local/bin/ra
+```
+
+
+
+
+
+### Linux 下
+
 ```shell
 git clone https://github.com/ranger/ranger
 pip3 install ranger-fm
