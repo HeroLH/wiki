@@ -1387,6 +1387,18 @@ yay -S typora
 
 
 
+### pandoc
+
+```shell
+sudo pacman -S pandoc
+# 安装 texlive 和 中文支持
+sudo pacman -S texlive-core texlive-langchinese
+```
+
+
+
+
+
 ### 思维导图
 
 #### mindmaster
