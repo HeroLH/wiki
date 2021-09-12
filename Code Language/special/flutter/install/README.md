@@ -85,3 +85,79 @@ export PUB_HOSTED_URL="https://pub.flutter-io.cn"
 
 
 
+## Mac 下
+
+- 安装最新的 Xcode
+- 安装 brew
+
+
+
+### 下载SDK
+
+[官方下载地址](https://flutter.dev/docs/get-started/install/macos)
+
+![截屏2021-09-12 15.26.59](.assets/截屏2021-09-12 15.26.59.png)
+
+### 配置环境变量
+
+```shell
+vim /etc/profile
+
+# flutter
+export PATH="$PATH:/Users/herolh/Develop/flutter/bin"
+export FLUTTER_STORAGE_BASE_URL="https://mirrors.tuna.tsinghua.edu.cn/flutter"
+export PUB_HOSTED_URL="https://mirrors.tuna.tsinghua.edu.cn/dart-pub"
+
+source /etc/profile
+```
+
+
+
+### 环境检查
+
+```shell
+flutter doctor
+```
+
+第一次运行会报错
+
+![截屏2021-09-12 19.11.12](.assets/截屏2021-09-12 19.11.12.png)
+
+
+
+```shell
+sudo xcodebuild -runFirstLaunch
+sudo xcode-select --switch /Applications/Xcode.app/Contents/Developer
+
+# 解决 cocoaPads not installad
+brew install cocoapods
+pod setup
+```
+
+
+
+### 命令行创建 Flutter 项目
+
+```shell
+sudo flutter create flutterdemo
+
+# 修改项目权限
+sudo chmod -R 777 ..pwd/flutter
+sudo chmod -R 777 ..pwd/flutterdemo
+
+```
+
+
+
+### Xcode 导入项目
+
+![截屏2021-09-12 19.33.56](.assets/截屏2021-09-12 19.33.56.png)
+
+
+
+### 编译运行
+
+![截屏2021-09-12 19.40.40](.assets/截屏2021-09-12 19.40.40.png)
+
+![截屏2021-09-12 19.51.28](.assets/截屏2021-09-12 19.51.28.png)
+

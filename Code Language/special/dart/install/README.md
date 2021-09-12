@@ -53,7 +53,7 @@ sudo pacman -S dart
 
 ### Windows 下
 
-wait …
+
 
 
 
