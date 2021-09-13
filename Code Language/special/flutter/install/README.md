@@ -161,3 +161,45 @@ sudo chmod -R 777 ..pwd/flutterdemo
 
 ![截屏2021-09-12 19.51.28](.assets/截屏2021-09-12 19.51.28.png)
 
+
+
+
+
+
+
+## window 下
+
+### 安装 java JDK
+
+下载地址: https://www.oracle.com/cn/java/technologies/javase/javase-jdk8-downloads.html
+
+![image-20210913130304553](.assets/image-20210913130304553.png)
+
+
+
+### 安装 android studio
+
+下载地址: https://developer.android.google.cn/studio/#downloads
+
+![image-20210913131718216](.assets/image-20210913131718216.png)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
