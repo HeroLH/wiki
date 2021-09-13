@@ -42,9 +42,11 @@
 
 
 
-## Linux 下
+## 安装
 
-### Arch 
+### Linux 下
+
+#### Arch 
 
 ```shell
 # 安装 android-sdk
@@ -85,20 +87,22 @@ export PUB_HOSTED_URL="https://pub.flutter-io.cn"
 
 
 
-## Mac 下
+### Mac 下
 
 - 安装最新的 Xcode
 - 安装 brew
 
 
 
-### 下载SDK
+#### 下载SDK
 
 [官方下载地址](https://flutter.dev/docs/get-started/install/macos)
 
 ![截屏2021-09-12 15.26.59](.assets/截屏2021-09-12 15.26.59.png)
 
-### 配置环境变量
+
+
+#### 配置环境变量
 
 ```shell
 vim /etc/profile
@@ -113,7 +117,7 @@ source /etc/profile
 
 
 
-### 环境检查
+#### 环境检查
 
 ```shell
 flutter doctor
@@ -136,7 +140,7 @@ pod setup
 
 
 
-### 命令行创建 Flutter 项目
+#### 命令行创建 Flutter 项目
 
 ```shell
 sudo flutter create flutterdemo
@@ -149,13 +153,13 @@ sudo chmod -R 777 ..pwd/flutterdemo
 
 
 
-### Xcode 导入项目
+#### Xcode 导入项目
 
 ![截屏2021-09-12 19.33.56](.assets/截屏2021-09-12 19.33.56.png)
 
 
 
-### 编译运行
+#### 编译运行
 
 ![截屏2021-09-12 19.40.40](.assets/截屏2021-09-12 19.40.40.png)
 
@@ -167,9 +171,9 @@ sudo chmod -R 777 ..pwd/flutterdemo
 
 
 
-## window 下
+### window 下
 
-### 安装 java JDK
+#### 安装 java JDK
 
 下载地址: https://www.oracle.com/cn/java/technologies/javase/javase-jdk8-downloads.html
 
@@ -177,7 +181,7 @@ sudo chmod -R 777 ..pwd/flutterdemo
 
 
 
-### 安装 android studio
+#### 安装 android studio
 
 下载地址: https://developer.android.google.cn/studio/#downloads
 
