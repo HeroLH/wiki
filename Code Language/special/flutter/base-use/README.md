@@ -82,6 +82,9 @@ void main() {
 
 
 ### 自定义组件
+
+> 在 Flutter 中，大多数东西都是 widget，包括对齐(alignment)、填充(padding)和布局(layout)
+
 &emsp;&emsp;在 Flutter 中自定义组件其实就是一个类，这个类需要继承 `StatelessWidget` 或 `StatefulWidget` 。
 - **StatelessWidget** 是无状态组件，状态不可变的 widget.
 - **StatefulWidget** 是有状态组件，持有的状态可能在 widget 生命周期改变.
@@ -93,7 +96,9 @@ void main() {
   runApp(MyApp());
 }
 
-class MyApp extends StatelessWidget {
+// 该应用程序继承了 StatelessWidget，这将会使应用本身也成为一个widget。 
+class MyApp extends StatelessWidget { 
+  // widget的主要工作是提供一个 build() 方法来描述如何根据其他较低级别的 widget 来显示自己。
   @override
   Widget build(BuildContext context) {
     var data = "Hello World!!";
@@ -143,6 +148,8 @@ class MyApp extends StatelessWidget {
 
 #### MaterialApp
 
+> [Material](https://material.io/guidelines/) 是一种标准的移动端和 web 端的视觉设计语言。 Flutter提供了一套丰富的 Material widgets。
+
 &emsp;&emsp;MaterialApp 是一个方便的 Widget，它封装了应用程序实现 Material Design 所需要的一些 Widget。==一般作为顶层 widget 使用==。
 
 
@@ -157,6 +164,8 @@ routes(路由) ...
 
 
 #### Scaffold
+
+> - Scaffold 是 Material library 中提供的一个 widget, 它提供了默认的导航栏、标题和包含主屏幕widget树的body属性。widget树可以很复杂。
 
 &emsp;&emsp;Scaffold 是 Material Design 布局结构的基本实现。此类提供了用于显示 drawer、snackbar 和底部 sheet 的 API。
 

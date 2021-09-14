@@ -189,21 +189,39 @@ sudo chmod -R 777 ..pwd/flutterdemo
 
 
 
+#### 安装Android SDK（如果有此环境请忽略）
+
+1. 去安卓工具网上面下载Android SDK安装包，[点我跳转](https://www.androiddevtools.cn/)。
+2. 选择 [Android SDK 工具] 菜单 -> [SDK Tools]菜单，选择适合自己的版本进行下载。
 
 
 
+#### 安装 Flutter SDK
+
+[官网下载地址](https://flutter.dev/docs/development/tools/sdk/releases#windows)
+
+![image-20210914162921207](.assets/image-20210914162921207.png)
+
+把 Flutter 安装目录的 bin 目录配置到环境变量。 `E:\flutter_windows\flutter\bin` 目录配置到 path 环境变量里面
 
 
 
+#### 配置 Flutter 国内镜像
+
+拉到 Flutter 中文网最下面有配置方式，把下面两句配置到环境变量里面
+
+```shell
+FLUTTER_STORAGE_BASE_URL: https://storage.flutter-io.cn
+PUB_HOSTED_URL: https://pub.flutter-io.cn
+```
+
+![Snipaste_2021-09-14_16-46-17](.assets/Snipaste_2021-09-14_16-46-17.png)
 
 
 
+#### 检测环境是否配置成功
 
-
-
-
-
-
-
-
+```shell
+flutter doctor
+```
 
