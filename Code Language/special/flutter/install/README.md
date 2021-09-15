@@ -194,6 +194,10 @@ sudo chmod -R 777 ..pwd/flutterdemo
 1. 去安卓工具网上面下载Android SDK安装包，[点我跳转](https://www.androiddevtools.cn/)。
 2. 选择 [Android SDK 工具] 菜单 -> [SDK Tools]菜单，选择适合自己的版本进行下载。
 
+![在这里插入图片描述](.assets/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQwOTMwNTk4,size_16,color_FFFFFF,t_70#pic_center.png)
+
+
+
 
 
 #### 安装 Flutter SDK

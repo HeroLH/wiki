@@ -224,3 +224,32 @@ class HomeContent extends StatelessWidget {
 ```
 
 ![image-20210913230139692](.assets/image-20210913230139692.png)
+
+
+
+
+
+## Widgets 
+
+&emsp;&emsp;使用 Flutter 的一套的视觉、结构、平台、和交互式的 widgets，快速创建漂亮的 APP.除了按类别浏览 widget 外，您还可以在 [Flutter widget 索引](https://flutterchina.club/widgets/widgetindex/) 浏览 Flutter 中的所有 widgets。
+
+https://flutterchina.club/widgets/
+
+
+
+### 基础组件
+
+[官方目录](https://flutterchina.club/widgets/basics/)
+
+
+
+#### Container 组件
+
+> [官方文档](https://api.flutter.dev/flutter/widgets/Container-class.html)
+
+
+
+#### Test 组件
+
+> [官方文档](https://api.flutter.dev/flutter/widgets/Text-class.html)
+

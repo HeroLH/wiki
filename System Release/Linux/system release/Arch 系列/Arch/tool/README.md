@@ -1226,6 +1226,104 @@ uxplay
 
 
 
+
+
+### scrcpy 
+
+> 手机投屏到 Linux
+
+```shell
+sudo pacman -S scrcpy
+```
+
+[scrcpy 项目主页](https://github.com/Genymobile/scrcpy)
+
+[原教程文章](https://segmentfault.com/a/1190000021390826?utm_source=tag-newest)
+
+
+
+#### 有线投屏
+
+- 在手机端的设置中把 android 手机调试模式打开
+
+- usb 接入电脑
+
+- 此时运行adb命令可以看到设备已连接
+
+    ```shell
+    db devices
+    # List of devices attached
+    # f7653476    device
+    ```
+
+- 启动 scrcpy
+
+```awk
+$ /snap/bin/scrcpy
+```
+
+- 可以看到会启动一个投屏窗口
+
+
+
+
+
+#### 无线连接：
+
+总插着线比较麻烦，官网也给出了[局域网无线连接方式](https://www.genymotion.com/blog/open-source-project-scrcpy-now-works-wirelessly/)
+
+- 在手机端的设置中把 android 手机调试模式打开
+
+- usb 接入电脑
+
+- 此时运行 adb 命令可以看到设备已连接
+
+    ```shell
+    db devices
+    # List of devices attached
+    # f7653476    device
+    ```
+
+- 通过 adb 命令获取手机 ip 地址
+
+    ```shell
+    adb shell ip a
+    ```
+
+    无线网卡为 wlan0, IP 地址为 inet 192 开头的地址
+
+- 通过 adb 命令启动手机上的 5555 端口 tcp 服务
+
+    ```shell
+    adb tcpip 5555
+    ```
+
+    提示“restarting in TCP mode port: 5555”
+
+- 连接到手机的 5555 端口
+
+    ```shell
+    adb connect 192.168.188.199:5555
+    ```
+
+- 提示连接成功
+
+- 此时拔掉usb线
+
+    > usb连接只是为了通过电脑输入控制命令，我们已经设置好了 5555 端口并连接上了，usb 线就没用了）
+
+- 在电脑上启动 scrcpy
+
+    ```shell
+    scrcpy
+    ```
+
+- 可以看到会启动一个投屏窗口
+
+
+
+
+
 ## 桌面工具
 
 ### oneko

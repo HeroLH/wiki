@@ -161,7 +161,41 @@ brew install iterm2
 
 
 
+##### 快捷键
 
+| 快捷键               | 备注                               |
+| -------------------- | ---------------------------------- |
+| command + d          | 垂直分屏                           |
+| command + shift + d  | 水平分屏                           |
+| command + shift + h  | 打开剪切板(复制历史)               |
+| command + ;          | 命令自动补全                       |
+| command + shift + ;  | 查看历史命令                       |
+| command + option + b | 按键回放(输入命令回放, 通过时间线) |
+
+
+
+##### 更换主题
+
+###### Dracula
+
+> [参考教程原文](https://blog.csdn.net/daiyuhe/article/details/88667875)
+
+```shell
+下载 item2 的 Dracula 主题
+git clone https://github.com/dracula/iterm.git
+```
+
+- 设置主题：
+
+    ```shell
+    - iTerm2 > Preferences > Profiles > Colors Tab
+    - Open the Color Presets... 
+    - 从列表中选择import
+    - 选择刚才下载主题中 Dracula.itermcolors 文件，确定
+    - 再次打开 Color Presets... ，选择Dracula 
+    ```
+
+    ![img](.assets/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2RhaXl1aGU=,size_16,color_FFFFFF,t_70.png)
 
 
 
