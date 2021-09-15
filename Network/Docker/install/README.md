@@ -178,6 +178,10 @@ rm -rf /var/lib/docker
 
 
 
+### Mac 下
+
+&emsp;&emsp;最初尝试[官网下载](https://docs.docker.com/desktop/mac/install/)，下载失败遂放弃。在 [阿里云镜像源](http://mirrors.aliyun.com/docker-toolbox/mac/docker-for-mac/) 成功下载, 下载成功后，打开docker，在终端输入 `docker info`、`docker version` 可查看基本信息。
+
 
 
 
