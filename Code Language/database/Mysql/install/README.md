@@ -144,3 +144,15 @@ sudo docker run -p 3306:3306 --name mysql5 -v /data/mysql-data:/var/lib/mysql -e
 chomd -R 777 mysql-data/
 ```
 
+
+
+## 核心目录
+
+```shell
+/var/lib/mysql 									# 数据库安装目录
+/var/lib/mysql/bigdata01.pid		# pid 文件目录
+/usr/share/mysql								# 配置文件目录
+/usr/bin												# 命令目录 (mysql、mysqldump 等)
+/etc/init.d/mysql								# 启停脚本
+```
+
