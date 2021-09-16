@@ -59,7 +59,7 @@
 - 运行容器
 
     ```shell
-    sudo docker run -p 3306:3306 --name mysql -e MYSQL_ROOT_PASSWORD=123456 -d mysql:5.7
+    sudo docker run -p 3306:3306 --name mysql57 -e MYSQL_ROOT_PASSWORD=123456 -d mysql:5.7
     
     # –name：容器名，此处命名为mysql
     # -e：配置信息，此处配置mysql的root用户的登陆密码
@@ -70,7 +70,7 @@
     一般来说数据库容器不需要建立目录映射，如果要建立目录映射：
 
     ```shell
-    duso docker run -p 3306:3306 --name mysql \
+    duso docker run -p 3306:3306 --name mysql57 \
     -v /usr/local/docker/mysql/conf:/etc/mysql \
     -v /usr/local/docker/mysql/logs:/var/log/mysql \
     -v /usr/local/docker/mysql/data:/var/lib/mysql \
@@ -93,7 +93,7 @@
 - 进入 docker 本地连接 mysql 客户端
 
     ```shell
-    sudo docker exec -it mysql bash
+    sudo docker exec -it mysql57 bash
     mysql -uroot -p123456
     ```
 
@@ -122,10 +122,25 @@
     - 需要进入 docker 本地客户端设置远程访问账号
 
         ```shell
-        $ sudo docker exec -it mysql bash
+        $ sudo docker exec -it mysql57 bash
         $ mysql -uroot -p123456
         mysql> grant all privileges on *.* to root@'%' identified by "password";
         ```
 
         
+
+#### 出现问题
+
+###### `/var/lib/mysql` 权限问题
+
+> mysqld: Can't create/write to file '/var/lib/mysql/is_writable' (Errcode: 13 - Permission denied)
+
+创建容器改为
+
+```shell
+sudo docker run -p 3306:3306 --name mysql5 -v /data/mysql-data:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=123456 -d mysql:5.7
+
+# cd /data 中添加权限
+chomd -R 777 mysql-data/
+```
 

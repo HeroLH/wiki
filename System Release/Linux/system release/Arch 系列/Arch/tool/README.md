@@ -1075,6 +1075,18 @@ yay -S lazygit
 
 
 
+### lazydocker
+
+> 一款终端下的 docker GUI 界面
+
+```shell
+sudo pacman -S lazydocker
+```
+
+![image-20210916142454830](.assets/image-20210916142454830.png)
+
+
+
 ### nodejs
 
 ```shell
@@ -1171,6 +1183,16 @@ echo 'source /usr/share/nvm/init-nvm.sh' >> ~/.zshrc
     ```shell
     sudo usermod -G vboxusers -a 用户名
     ```
+
+
+
+### docker
+
+```shell
+sudo pacman -S docker
+```
+
+
 
 
 
