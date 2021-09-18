@@ -196,57 +196,10 @@ JAVA是静态语言，是强类型定义语言( 类型安全的语言 )。
 
 
 
-## Python 安装和解释器选择
-
-### Python 安装
-
-#### Windows下安装
-
-> 访问<http://www.python.org/>，点击 download 链接，选择 pyhon3.x windows installer 下载，双击下载的文件一路 next 即可。                      
-
-#### Linux下安装python
-
-一般linux系统的桌面会自动安装python2.0，可以在提示符下输入 python 命令进行验证：
-
-```shell
-python                   			# 运行这个命令会启动交互式python解释器。
-# 若没有安装python解释器会报错：       bash:python:command not found
-```
+## Python 解释器选择	
 
 
 
-#### 特殊:从源文件编译
-
-&emsp;&emsp;如果没有包管理器，或者不愿意使用，也可以自己编译python。选择这个方法的另一个原因可能是没有正在使用的root权限。这个方法非常的灵活，你可以在任何位置安装python，甚至在用户的主目录下。
-- 访问下载网页( 参照window下载的前两步 )，按照说明下载源码。
-
-- 下载扩展名为 `.tgz` 或者 `.tar.xz` 的文件，将其保存在临时位置，假定读者想将 python 安装在自己的目录下，可以把它放在类似 `~/python` 的目录中。进入这个目录( 比如使用 `cd ~/python` 命令 )。
-
-- 在终端命令模式使用 `tar –xzvf Python-3.4.2.tgz` 解压缩文件。( 3.4.2是版本号 )。
-
-- 进入解压好的文件夹：
-    ```shell
-    cd python-3.4.2
-    ```
-
-- 如果提示安装错误或者缺少某个依赖库，请先行安装再执行下列命令：
-    ```shell
-    ./configure
-    Make install
-    Make
-    ```
-
-- 最后应该能在文件夹内找到一个名为python的可执行文件。将当前文件夹的路径加入到环境变量path里，安装完成。
-
-- 若要查看其他配置命令，执行以下命令：
-
-    ```shell
-    ./configure --help
-    ```
-
-    
-
-### Python解释器
 &emsp;&emsp;当我们编写 Python 代码时，我们得到的是一个包含 Python 代码的以 `.py` 为扩展名的文本文件。要运行代码，就需要 Python 解释器去执行 `.py` 文件。由于整个 Python 语言从规范到解释器都是开源的，所以理论上，只要水平够高，任何人都可以编写 Python 解释器来执行 Python 代码( 当然难度很大 )。事实上，确实存在多种 Python 解释器。
 
 - **CPython**
@@ -271,7 +224,7 @@ python                   			# 运行这个命令会启动交互式python解释�
 
     > &emsp;&emsp;IronPython和Jython类似，只不过IronPython是运行在微软.Net平台上的Python解释器，可以直接把Python代码编译成.Net的字节码。
 
-#### 小结
+### 小结
 &emsp;&emsp;Python的解释器很多，但使用最广泛的还是 CPython。如果要和 Java 或 .Net 平台交互，最好的办法不是用Jython或IronPython，而是通过网络调用来交互，确保各程序之间的独立性。
 
 
