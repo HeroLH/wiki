@@ -38,6 +38,23 @@
 
 
 ## 安装
+
+### Docker 
+
+```shell
+docker pull homeassistant/home-assistant
+```
+
+运行容器
+
+```shell
+docker run -d --name="hass" -v ${HOME}/hass/mac_config -p 8123:8123 homeassistant/home-assistant
+```
+
+
+
+
+
 ### Raspberry Pi 下
 
 #### 刷入系统
