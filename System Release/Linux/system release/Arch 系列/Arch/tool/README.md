@@ -489,7 +489,21 @@ patch:
 
 ## 办公工具
 
-### wps-office
+### office
+
+#### LibreOffice
+
+> 系统兼容性比较好
+
+```shell
+sudo pacman -S libreoffice-zh-CN
+```
+
+![image-20211110165153261](.assets/image-20211110165153261.png)
+
+
+
+#### wps-office
 
 ```shell
 yay -S wps-office-cn ttf-wps-fonts wps-office-mui-zh-cn
