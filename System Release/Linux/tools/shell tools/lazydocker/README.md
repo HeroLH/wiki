@@ -31,6 +31,24 @@
 
 
 
+## 安装
+
+### ubuntu 下
+
+```shell
+curl https://raw.githubusercontent.com/jesseduffield/lazydocker/master/scripts/install_update_linux.sh | bash
+```
+
+> 网络环境不好的可以直接去 [release](https://github.com/jesseduffield/lazydocker/releases) 下载对应版本解压安装
+>
+> ```shell
+> tar xzvf lazydocker.tar.gz lazydocker
+> sudo mv -f lazydocker /usr/local/bin
+> rm lazydocker.tar.gz
+> ```
+
+
+
 
 
 ## 快捷键

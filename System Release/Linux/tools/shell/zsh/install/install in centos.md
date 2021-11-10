@@ -51,6 +51,16 @@ Centos7默认情况下没安装zsh
 $ yum -y install zsh
 ```
 
+
+
+apt 下安装
+
+```shell
+sudo apt install zsh
+```
+
+
+
 ### 查看shell列表
 
 ```
@@ -85,7 +95,7 @@ su -
 切换账号后，相当于注销重新登录，再查看当前shell，
 
 ```
-$ echo $SHELL 
+$ 
 /bin/zsh
 ```
 
