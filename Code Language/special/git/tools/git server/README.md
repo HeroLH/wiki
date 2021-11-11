@@ -127,7 +127,7 @@ gitlab-ctl restart
 
 
 
-### 汉化 gitlab
+#### 汉化 gitl ab
 
 - **安装 git**
 
@@ -212,6 +212,76 @@ gitlab-ctl restart
     ```
 
     ![img](.assets/1264319-20180517225617062-992518553.png)
+
+
+
+
+
+### ubuntu 下
+
+#### 配置必要的依赖
+
+```shell
+ sudo apt-get install curl openssh-server ca-certificates postfix
+```
+
+执行完成后，出现邮件配置，选择 Internet 那一项（不带 Smarthost 的）
+
+![img](.assets/webp1.webp)
+
+
+
+#### 安装
+
+- 首先信任 GitLab 的 GPG 公钥:
+
+    ```shell
+    curl https://packages.gitlab.com/gpg.key 2> /dev/null | sudo apt-key add - &>/dev/null
+    ```
+
+- 利用 root 用户 `sudo su`，vim 打开文件 `/etc/apt/sources.list.d/gitlab-ce.list`，加入下面一行：
+
+    ```shell
+    deb https://mirrors.tuna.tsinghua.edu.cn/gitlab-ce/ubuntu xenial main
+    ```
+
+- 安装 gitlab-ce:
+
+    ```shell
+    sudo apt-get update
+    sudo apt-get install gitlab-ce
+    ```
+
+- 执行命令
+
+    ```shell
+    sudo gitlab-ctl reconfigure
+    ```
+
+- 打开 sshd 和 postfix 服务
+
+    ```shell
+    service sshd start
+    service postfix start
+    ```
+
+- 为了使 GitLab 社区版的 Web 界面可以通过网络进行访问，我们需要允许 80 端口通过防火墙，这个端口是 GitLab 社区版的默认端口。为此需要运行下面的命令
+
+    ```shell
+    sudo iptables -A INPUT -p tcp -m tcp --dport 80 -j ACCEPT
+    ```
+
+- 检查 GitLab 是否安装好并且已经正确运行，输入下面的命令，如果得到类似下面的结果，则说明 GitLab 运行正常：
+
+    ```shell
+    sudo gitlab-ctl status
+    ```
+
+    ![image-20211111214532405](.assets/image-20211111214532405.png)
+
+- 在浏览器地址栏中输入：http://127.0.0.1:8080，即可访问 GitLab 的 Web 页面。 首次使用时，浏览器 Web 页面会提示设置密码，如下图所示。
+
+    ![img](.assets/webp.webp)
 
 
 

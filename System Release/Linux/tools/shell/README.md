@@ -10,6 +10,7 @@
 
 
 # Shell的分类
+
 &emsp;&emsp;Linux/Unix 提供了很多种 Shell，不同的 shell 具备不同的功能，shell 还决定了脚本中函数的语法，Linux中默认的shell是 `/bin/bash`；
 &emsp;&emsp;想知道你的系统有几种shell，可以通过以下命令查看：
 
