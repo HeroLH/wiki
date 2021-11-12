@@ -1477,7 +1477,7 @@ git push origin --delete 分支名
 
 ### github 无法访问的解决方法
 
-> 问题描述：能联网但不能访问github.com
+> 问题描述：能联网但不能访问 github.com
 
 在 host 文件中添加两行记录：
 
@@ -1494,6 +1494,22 @@ http://github.global.ssl.fastly.net.ipaddress.com
 ```
 
 ![image-20210226173755499](.assets/image-20210226173755499.png)
+
+
+
+### Github Action
+
+> [知乎- 果冻虾仁 - 白嫖github的Action做定时任务](https://zhuanlan.zhihu.com/p/395044367)
+
+&emsp;&emsp;Github Action 应该是最近几年的版本中新加进来的功能，可以用于给项目做 CI/CD。原先你如果有这个需求，可能要借助 Travis 等三方网站。
+
+
+
+#### 新建目录和配置文件
+
+Github Action 使用 yaml 格式做配置。首先你要在你的 Github 仓库中建立一下目录：`.github/workflows/` 在workflows 目录中新增 yaml 配置文件，文件名任意。通过目录名可以看出 Github 将此类任务称为“工作流”。
+
+
 
 
 
