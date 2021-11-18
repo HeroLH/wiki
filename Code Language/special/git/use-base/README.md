@@ -1537,6 +1537,17 @@ GitHub Actions 有一些自己的术语。
 
 
 
+#### 使用限制
+
+- 每个仓库只能同时支持 20 个 workflow 并行。
+- 每小时可以调用 1000 次 GitHub API 。
+- 每个 job 最多可以执行 6 个小时。
+- 免费版的用户最大支持 20 个 job 并发执行，macOS 最大只支持 5 个。
+- 私有仓库每月累计使用时间为 2000 分钟，超过后$ 0.008/分钟，公共仓库则无限制。
+- 操作系统方面可选择 Win­dows server、Linux、ma­cOS，并预装了大量软件包和工具。
+
+
+
 #### workflow 文件
 
 &emsp;&emsp;GitHub Actions 的配置文件叫做 workflow 文件，存放在代码仓库的 `.github/workflows` 目录。workflow 文件采用 [YAML 格式](https://www.ruanyifeng.com/blog/2016/07/yaml.html)，文件名可以任意取，但是后缀名统一为 `.yml`，比如 `foo.yml`。一个库可以有多个 workflow 文件。GitHub 只要发现 `.github/workflows` 目录里面有 `.yml` 文件，就会自动运行该文件。workflow 文件的配置字段非常多，详见[官方文档](https://help.github.com/en/articles/workflow-syntax-for-github-actions)。下面是一些基本字段。
