@@ -342,7 +342,7 @@ show databases;
 ### 创建数据库
 
 ```mysql
-create database 库名;         # 这么写默认不能处理中文
+create database 库名;         	# 这么写默认不能处理中文
 create database 库名 charset utf8;	# 解决中文字符处理问题：
 ```
 

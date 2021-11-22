@@ -154,6 +154,16 @@ net stop mysql57
 
 
 
+#### 设置和修改root密码
+
+在 windows 系统中模块默认 root 账户是没有密码的，如果想要为账户设定密码，可以在利用 root 账户登录成功之后，执行：
+
+![image-20211121200516292](.assets/image-20211121200516292.png)
+
+
+
+
+
 #### 常见问题
 
 #####  msvcr120.dll不存在
@@ -399,4 +409,60 @@ chomd -R 777 mysql-data/
 /usr/bin								# 命令目录 (mysql、mysqldump 等)
 /etc/init.d/mysql								# 启停脚本
 ```
+
+
+
+## 常见问题
+
+### 忘记root密码
+
+- 修改配置文件，在 [mysqld] 节点下添加 `skip-grant-tables=1`
+
+    ```
+    [mysqld]
+    ...
+    skip-grant-tables=1
+    ...
+    ```
+
+- 重启MySQL，再次登录时，不需要密码直接可以进去了
+
+    - windows重启
+
+        ```
+        net stop mysql57
+        net start mysql57
+        ```
+
+    - mac重启
+
+        ```
+        sudo mysql.server restart
+        ```
+
+    重启后，无序密码就可以进入。
+
+    ```
+    >>> mysql -u root -p
+    ```
+
+- 进入数据库后执行修改密码命令
+
+    ```mysql
+    use mysql;
+    update user set authentication_string = password('新密码'),password_last_changed=now() where user='root';
+    ```
+
+- 退出并再次修改配置文件，删除 [mysqld] 节点下的 `skip-grant-tables=1`
+
+    ```
+    [mysqld]
+    ...
+    # skip-grant-tables=1
+    ...
+    ```
+
+- 再次重启，以后就可以使用新密码登录了。
+
+
 
