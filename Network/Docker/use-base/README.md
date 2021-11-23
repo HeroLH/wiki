@@ -18,19 +18,7 @@
 
 --------------------------------------------
 
-## Docker 介绍
-
-> &emsp;&emsp;Docker 是 [PaaS](https://baike.baidu.com/item/PaaS) 提供商 dotCloud 开源的一个基于 [LXC](https://baike.baidu.com/item/LXC) 的高级容器引擎，源代码托管在 Github 上，基于 go 语言并遵从 Apache2.0 协议开源。2013年开源。2014年4月9号， Docker 1.0 发布。
-
-![image-20200514192040435](.assets/aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL2NoZW5nY29kZXgvY2xvdWRpbWcvbWFzdGVyL2ltZy9pbWFnZS0yMDIwMDUxNDE5MjA0MDQzNS5wbmc)
-
-官网：https://www.docker.com/
-
-文档地址：https://docs.docker.com/ 很详细！
-
-仓库地址：https://hub.docker.com/
-
-
+## 前置内容
 
 ### 什么是容器
 
@@ -39,8 +27,6 @@
 ### 容器的前世
 
 > &emsp;&emsp;容器技术最早出现在 FreeBSD 上叫 jali(监狱)，将一个进程放入 jali 中运行，不管这个进程在其中发生怎样的错误都不会影响到系统上其他进程的运行
->
-> 
 >
 > FreeBASE jail    ---->    Linux Vserver
 
@@ -64,23 +50,48 @@ Namespaces  命名空间
 
 **虚拟机技术缺点**：
 
-资源占用十分多、冗余步骤多、启动很慢！
+- 资源占用十分多
+- 冗余步骤多
+- 启动很慢
 
 **容器化技术**
 
-容器化技术不是模拟一个完整的操作系统
+- 容器化技术不是模拟一个完整的操作系统
+
+![img](.assets/96374dce2f9e29a76d729f5c04faed72.png)
+
+> 注：现 GuestOS 已全部适用
 
 
 
-#### 比较Docker和虚拟机技术的不同：
-
-- 传统虚拟机，虚拟出一条硬件，运行一个完整的操作系统，然后在这个系统上安装和运行软件
-- 容器内的应用直接运行在宿主机的内容，容器是没有自己的内核的，也没有虚拟我们的硬件，所以就轻便了
-- 每个容器间是互相隔离，每个容器内都有一个属于自己的文件系统，互不影响
 
 
+## Docker 介绍
 
-#### 为什么 Docker 比 VM 快
+> &emsp;&emsp;Docker 是 [PaaS](https://baike.baidu.com/item/PaaS) 提供商 dotCloud 开源的一个基于 [LXC](https://baike.baidu.com/item/LXC) 的高级容器引擎，源代码托管在 Github 上，基于 go 语言并遵从 Apache2.0 协议开源。2013年开源。2014年4月9号， Docker 1.0 发布。
+
+![image-20200514192040435](.assets/aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL2NoZW5nY29kZXgvY2xvdWRpbWcvbWFzdGVyL2ltZy9pbWFnZS0yMDIwMDUxNDE5MjA0MDQzNS5wbmc)
+
+- [官网首页](https://www.docker.com/)
+- [官方文档地址](https://docs.docker.com/)： 很详细！
+- [官方镜像仓库地址](https://hub.docker.com/)
+
+
+
+
+
+### 为什么使用 Docker
+
+
+#### Docker和虚拟机技术的不同：
+
+- 传统虚拟机，虚拟出一条硬件，运行一个完整的操作系统，然后在这个系统上安装和运行软件。
+- 容器内的应用直接运行在宿主机的内容，容器是没有自己的内核的，也没有虚拟我们的硬件，所以就轻便了。
+- 每个容器间是互相隔离，每个容器内都有一个属于自己的文件系统，互不影响。
+
+
+
+#### 为什么 Docker 比 VM 快：
 
 - **docker 有着比虚拟机更少的抽象层。**
 
@@ -92,26 +103,76 @@ Namespaces  命名空间
 
 
 
+#### 在开发与运维效率上
+- **应用更快速的交付和部署**
+
+  > 避免出现开发环境和运维环境不一致的情况
+  >
+  > 传统：一堆帮助文档，安装程序, 可能会出像“我在我的电脑上可以运行， 在其他机器上报错”
+  > Docker：打包镜像、发布测试、一键运行；开发打包部署上线，一套流程做完
+
+- **更便捷的升级和扩缩容**
+
+    > 使用了 Docker 之后，我们部署应用就和搭积木一样！（SpringBoot 1.5 Redis 5 tomcat8）打包成一个镜像，扩展 服务器 A！服务器 B
+
+- **更简单的系统运维**
+
+    > 在容器化之后，我们的开发，测试环境都是高度一致的。
+
+- **更高效的计算资源利用**
+
+    >  Docker 是 内核级别的虚拟化，可以在一个物理机上可以运行很多的容器实例！服务器的性能可以被压榨到极致！
+
+
+
+### Docker 的历史
+
+- **2010 年**
+
+    > 几个搞 IT 的年轻人在美国成立了一家公司 dotCloud， 做一些 pass 的云计算服务！LXC 有关的容器技术！他们将自己的技术（容器化技术）命名 就是 Docker！
+
+- **2013 年**
+
+    > 开源–开发源代码！
+
+- **2014 年 4 月 9 日**
+
+    - Docker1.0 发布！
+
+
+
+
+
+## 基本使用
+
 ### Docker 的基本组成
 ![image-20200514195805400](.assets/image-20200514195805400.png)
 
 #### 镜像(image)
 
-&emsp;&emsp;docker 镜像就好比是一个模板，可以通过这个模板来创建容器服务，`tomcat镜像 ==> run ==>容器（提供服务器）`，通过这个镜像可以创建多个容器（最终服务运行或者项目运行就是在容器中的）。
+> docker 镜像就好比是一个==模板==，可以通过这个模板来创建相同的容器服务。
+
+`tomcat镜像 ==> run ==>容器（提供服务器）`，通过这个镜像可以创建多个容器（最终服务运行或者项目运行就是在容器中的）。
+
+
 
 #### 容器(container)：
 
+> 通过模板创建出来的应用。
+
 Docker利用容器技术，独立运行一个或者一组应用，通过镜像来创建的。
-容器的基本操作：启动，停止，删除，基本命令。可以把这个容器理解为就是一个简易的 Linux系统。
+容器的基本操作：启动，停止，删除，基本命令。可以把这个容器理解为就是一个简易的 Linux 系统。
+
+
 
 #### 仓库(repository)：
-仓库就是存放镜像的地方！仓库分为公有仓库和私有仓库。(很类似git)
-Docker Hub是国外的。
-阿里云…都有容器服务器(配置镜像加速!)
+> 仓库就是存放镜像的地方！仓库分为公有仓库和私有仓库。(很类似git)
+
+Docker Hub是国外的。阿里云…都有容器服务器(配置镜像加速!)
 
 
 
-### hello world
+### 运行第一个 docker 容器
 
 ```shell
 $ docker run hello-world
@@ -151,76 +212,23 @@ REPOSITORY            TAG                 IMAGE ID            CREATED           
 hello-world           latest              bf756fb1ae65        4 months ago        13.3kB
 ```
 
+启动一个容器，Docker 的运行流程如下图：
+
+![img](.assets/7f5dcc0185b170388087df7e14545d1c.png)
+
+&emsp;&emsp;Docker 是一个 Client-Server 结构的系统，Docker 的守护进程运行在主机上，通过 Socker 从客户端访问！Docker Server 接收到 Docker-Client 的指令，就会执行这个指令！
+
+![img](.assets/10b03a297aa93b136204fcf250da85f9.png)
 
 
-
-
-### 简单的底层原理
-
-
-
-
-
-## Docker 安装
-
-> 帮助文档：https://docs.docker.com/engine/install/
-
-单独文章介绍
-
-
-
-### 修改Docker数据目录位置，包含镜像位置
-
-[修改Docker数据目录位置，包含镜像位置](https://www.cnblogs.com/hellxz/p/docker-change-data-root.html)
-
-
-
-#### 为啥要改？
-
-Docker 安装后默认下载的位置在 `/var/lib/docker` ，如果 `/var` 分区没有独立分出来，Linux下默认是与 `/` 根分区在一起。一般我们装 Linux 系统的时候，除了做邮件服务器外，都不会把 /var分区独立分出来，而且 `/` 分区一般不会太大，比如我现在用的这台根分区30G的，在拉镜像的时候提示硬盘空间不足的问题，而其它分区还有很大空间。基于此情此景，我们都要把这个目录改一下。
-
-
-
-#### 查看当前Docker目录位置
-
-```shell
-#展示当前docker的配置信息
-docker info
--------------------------------------------------------------------
-#在信息找到Docker Root Dir，对应的就是了，默认为：
-Docker Root Dir: /var/lib/docker
-```
-
-
-
-#### 修改 `/etc/docker/daemon.json`
-
-```shell
-{
-  "registry-mirrors": ["http://hub-mirror.c.163.com"],
-  "data-root": "/home/hellxz/docker-home"
-}
-```
-
-保存退出，重启 docker 服务
-
-```shell
-sudo systemctl restart docker
-```
-
-
-
-#### 验证
-
-查看 `docker info`
-
-![img](.assets/1149398-20190704161019154-2144727749.png)
 
 
 
 
 
 ## Docker 的常用命令
+
+[命令的官方帮助文档地址](https://docs.docker.com/engine/reference/commandline/docker/)
 
 ![docker commands](.assets/01190232_02Qb.png)
 
@@ -233,8 +241,6 @@ sudo systemctl restart docker
 |   docker version   |            显示 docker 的版本信息            |
 |    docker info     | 显示 docker 的系统信息，包括镜像和容器的数量 |
 | docker 命令 --help |                   帮助命令                   |
-
-[官方命令帮助文档](https://docs.docker.com/reference/)
 
 
 
@@ -256,7 +262,7 @@ sudo systemctl restart docker
 ```shell
 " 参数可选项
 -a, --all      # 列出所有的镜像
--q, --quiet    # 只显示镜像的id, 删除时候会用到
+-q, --quiet    # 只显示镜像的 id, 删除时候会用到
 
 " 镜像的仓库源    镜像标签    镜像ID         镜像创建时间      镜像大小
 " REPOSITORY    TAG       IMAGE ID       CREATED         SIZE
@@ -292,7 +298,7 @@ docker search mysql -f=stars=5000
 " docker pull mysql
 Using default tag: latest 			# 如果不写tag,默认就是latest
 latest: Pulling from library/mysql 
-bf5952930446: Pull complete 		# 分层下载，docker image的核心 联合文件系统
+bf5952930446: Pull complete 		# 分层下载，docker image 的核心 联合文件系统
 8254623a9871: Pull complete 
 938e3e06dac4: Pull complete 
 ea28ebf28884: Pull complete 
@@ -336,7 +342,7 @@ docker.io/library/mysql:5.7
 
 #### docker rmi 
 
-> 删除镜像
+> 删除镜像， i 为 image
 
 ```shell
 # docker rmi -f 容器id                # 删除指定的容器
@@ -350,11 +356,11 @@ docker rmi -f $(docker images -aq)   # 删除全部容器
 
 ### 容器命令
 
-> 说明：我们有了镜像才可以创建容器
+> 说明：我们有了镜像后才可以创建容器
 
 |         命令          |                       说明                       |
 | :-------------------: | :----------------------------------------------: |
-|   docker run 镜像id   |                  新建容器并启动                  |
+|  docker run 镜像 id   |                  新建容器并启动                  |
 |       docker ps       |                列出所有运行的容器                |
 |   docker rm 容器id    |                     删除镜像                     |
 |  docker start 容器id  |                     启动容器                     |
@@ -382,11 +388,10 @@ docker run [可选参数] image
 --name = "Name"    		# 容器名字  tomcat01，tomcat02,用来区分容器
 -d                 		# 后台方式运行
 -it                		# 使用交互方式运行，进入容器查看区分
--p                 		# 指定容器的端口 -p 8080：8080
-    -p ip:主机端口：容器端口
-    -p 主机端口：容器端口(常用)
+-p                 		# 指定容器的端口 -p 8080:8080
+    -p ip:主机端口:容器端口
+    -p 主机端口:容器端口(常用)
     -p 容器端口
-    容器端口
 -P                 		# 随机指定端口
 ```
 
@@ -399,7 +404,7 @@ ls
 
 # 从容器中退回主机
 exit            			# 直接容器停止并退出
-Ctrl + P + Q    			# 容器不停止退出
+Ctrl + P + Q    			# 容器不停止退出,  p 就是 pause,q 是 quit。
 ```
 
 
@@ -412,7 +417,7 @@ Ctrl + P + Q    			# 容器不停止退出
 docker ps 
 
 " 参数说明
--a   		# 列出当前正在运行的容器+带出历史运行过的容器
+-a   		# 列出当前正在运行的容器 + 带出历史运行过的容器
 -n=num 		# 显示最近创建的容器 num 个
 -q   		# 只显示容器的编号
 ```
@@ -435,9 +440,9 @@ docker ps -aq|xargs docker rm    # 删除所有的容器
 
 ```shell
 # 参数说明
--t				   # 动态显示
+-t	--timestamps   	# 动态显示
 -f                 # 时间戳
---tail number      # 初始要显示的日志条数
+-n --tail number      # 初始要显示的日志条数
 
 
 docker logs -f -t --tail num 容器id 		# 查看最近的 10 条日志
@@ -560,7 +565,7 @@ Ctrl + P + Q    				# 容器不停止退出
 
 
 
-## 实际操作
+## 场景操作
 
 ### Docker 部署 Nginx
 

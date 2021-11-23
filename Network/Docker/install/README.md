@@ -2,7 +2,7 @@
 > *Made By Herolh*
 ----------------------------------------------
 
-# {Title} {#index}
+# Docker 安装文档 {#index}
 
 [TOC]
 
@@ -28,6 +28,12 @@
 
 
 ## 安装
+
+帮助文档：https://docs.docker.com/engine/install/
+
+
+
+
 
 ### Arch 下
 
@@ -147,7 +153,7 @@ yum-config-manager --add-repo http://mirrors.aliyun.com/docker-ce/linux/centos/d
 " 更新yum软件包索引
 yum makecache fast
 
-" 4、安装docker相关的源 docker-ce 社区 ee 企业版
+" 4、安装docker相关的源，docker-ce 是社区版，docker-ee 企业版
 yum install docker-ce docker-ce-cli containerd.io
 
 " 5、启动docker
@@ -278,6 +284,55 @@ rm -rf /var/lib/docker
 ### Window 下
 
 
+
+## 常见问题
+
+### 修改Docker数据目录位置，包含镜像位置
+
+[修改Docker数据目录位置，包含镜像位置](https://www.cnblogs.com/hellxz/p/docker-change-data-root.html)
+
+
+
+#### 为啥要改？
+
+Docker 安装后默认下载的位置在 `/var/lib/docker` ，如果 `/var` 分区没有独立分出来，Linux下默认是与 `/` 根分区在一起。一般我们装 Linux 系统的时候，除了做邮件服务器外，都不会把 /var分区独立分出来，而且 `/` 分区一般不会太大，比如我现在用的这台根分区30G的，在拉镜像的时候提示硬盘空间不足的问题，而其它分区还有很大空间。基于此情此景，我们都要把这个目录改一下。
+
+
+
+#### 查看当前Docker目录位置
+
+```shell
+#展示当前docker的配置信息
+docker info
+-------------------------------------------------------------------
+#在信息找到Docker Root Dir，对应的就是了，默认为：
+Docker Root Dir: /var/lib/docker
+```
+
+
+
+#### 修改 `/etc/docker/daemon.json`
+
+```shell
+{
+  "registry-mirrors": ["http://hub-mirror.c.163.com"],
+  "data-root": "/home/hellxz/docker-home"
+}
+```
+
+保存退出，重启 docker 服务
+
+```shell
+sudo systemctl restart docker
+```
+
+
+
+#### 验证
+
+查看 `docker info`
+
+![img](.assets/1149398-20190704161019154-2144727749.png)
 
 
 
