@@ -393,7 +393,7 @@ docker run [可选参数] image
     -p 主机端口:容器端口(常用)
     -p 容器端口
 -P                 		# 随机指定端口
---rm 									# 用完即删除，镜像都会删掉，一般用来测试
+--rm 									# 用完即删除，镜像都会删掉，一般用来测试; ps -a 都找不到
 ```
 
 ```shell
@@ -785,7 +785,7 @@ Ctrl + P + Q    				# 容器不停止退出
 
 ## 场景操作
 
-### Docker 部署 Nginx
+### 部署 Nginx
 
 ```shell
 # 1. 搜索镜像 search 建议大家去 dockerhub 搜索，可以看到帮助文档
@@ -815,11 +815,11 @@ curl localhost:8080
 
 
 
-### Tomcat 部署
+### 部署 Tomcat
 
 ```shell
 # 官网的使用  用完即删
-docker run -it  --rm  tomcat：9.0
+docker run -it  --rm  tomcat:9.0
 
 # 下载并运行
 docker pull tomcat
@@ -828,20 +828,22 @@ docker run -d -p 3355:8080 --name tomcat01 tomcat
 
 访问测试没有问题， 但是报 404
 
-![img](.assets/351bc114a5a997b0eb1cdf47aa003fa2.png)
+> 因为官方镜像是个阉割版本， 默认下载的是最小的镜像，保证最小的运行环境。
+
+![image-20211202212054553](.assets/image-20211202212054553.png)
 
 ```shell
 # 进入容器
 docker exec -it tomcat01 /bin/bash
 
-# webapps 为空
+# webapps 为空, 将内容拷贝进去即可展示
+cd webapps
+cp -r ../webapps.dist/* ./
 ```
 
+![image-20211202212929227](.assets/image-20211202212929227.png)
 
-
-
-
-![img](.assets/aee98ab23dcc15b00f4f23a0e82b1300.png)
+![image-20211202213206166](.assets/image-20211202213206166.png)
 
 
 
@@ -854,43 +856,67 @@ docker exec -it tomcat01 /bin/bash
 # --net somework ? 网络配置
 
 # 启动 elasticsearch
-docker run -d --name elasticsearch -p 9200:9300 -e "discovery.type=single-node" elasticsearch:7.6.2
+docker run -d --name elasticsearch -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" elasticsearch:7.6.2
 
-# 启动了 linux就卡住了
-
-# 赶紧关闭，增加内存的限制，修改配置文件 -e 环境配置修改
-docker run -d --name elasticsearch02 -p 9200:9300 -e "discovery.type=single-node" -e ES_JAVA_OPTS="-Xms64m -Xmx512m" elasticsearch:7.6.2
-
-# 查看 docker stats
+# 启动了 性能不够的 linux 就卡住了，1.xG 1核2G 卡了
+# 测试一下es是否成功
 ```
 
+![image-20211202214736103](.assets/image-20211202214736103.png)
+
+![image-20211202215111947](.assets/image-20211202215111947.png)
+
+```shell
+# 赶紧关闭，增加内存的限制，修改配置文件 -e 环境配置修改
+docker stop 容器 ID
+docker run -d --name elasticsearch02 -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" -e ES_JAVA_OPTS="-Xms128m -Xmx512m" elasticsearch:7.6.2
+
+# 添加 ’-e ES_JAVA_OPTS="-Xms128m -Xmx512m" 
+# 配置 ElasticSearch 的虚拟机占用的内存大小。
+```
+
+![image-20211202215708167](.assets/image-20211202215708167.png)
+
+
+
+#### 如何使用 kibana 连接 es？
+
+> 网络如何才能来连接过去。
+
+![img](.assets/fe8fae07ae521db0f255073de8a29ca2.png)
 
 
 
 
 
 
-## docker 可视化
+
+## docker 图形化
 
 ### portainer
-
-#### 什么是 portainer ?
 
 Docker 图形化管理工具，提供一个后台面板供我们操作！
 
 ```shell
-docker run -d -p 8088:9000 --restart=always -v /var/run/docker.sock:/var/run/docker.sock --privileged=true portainer/portainer
+docker run -d -p 9000:9000 --restart=always -v /var/run/docker.sock:/var/run/docker.sock --privileged=true portainer/portainer
+
+#  -v /var/run/docker.sock:/var/run/docker.sock 
+# --privileged=true 
 ```
 
-- 刚开始要创建初始管理员用户
+- 登陆 `http://127.0.0.1:9000`，设置管理员账号和密码。
 
-    ![image-20210131232141546](.assets/image-20210131232141546.png)
+    > 单机版在新页面选择本地即可完成安装，选择远程然后输入 SWARM 的 IP 地址，单击连接完成安装。浏览器访问 http://127.0.0.1:9000，设置一个密码即可，点击创建用户:
+
+![image-20210131232141546](.assets/image-20210131232141546.png)
 
 - 选择要管理的 docker 环境
 
+    > 我们建造的是单机版，直接选择 Local，点击连接
+
     ![image-20210131232436744](.assets/image-20210131232436744.png)
 
-- 进入管理界面
+- 进入管理界面, 仪表盘主页面:
 
     ![image-20210131232537610](.assets/image-20210131232537610.png)
 
