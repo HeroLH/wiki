@@ -29,6 +29,24 @@
 
 
 
+## 必备工具
+
+### FlyKey
+
+> 快捷键是提升Mac使用效率的重要手段，键指如飞为你展现App所有快捷键，助你快速掌握App快捷操作。默认使用双击 Command 显示当前 App 的所有快捷键，当然你也可以设置 Control、Shift 进行双击打开。[官方网址](https://www.better365.cn/FlyKey.html)
+
+![Mac快捷键大全](.assets/ABUIABACGAAgqIujgQYo2PW9iQQwwBY4kQ0.jpg)
+
+
+
+### 自动切换输入法
+
+> 自动切换中英文、输入法，畅快输入， AppStore 可下载。
+
+![截屏2021-12-05 18.39.52](.assets/截屏2021-12-05 18.39.52.png)
+
+
+
 ## 包管理工具
 
 ### Homebrew
