@@ -155,11 +155,33 @@ fc-match -a | grep "SC"
 
 
 
-### google 浏览器
+### 浏览器
+
+#### google 浏览器
 
 ```shell
 yay -S google-chrome
 ```
+
+
+
+#### chromium
+
+```shell
+sudo pacman -S chromium
+```
+
+
+
+#### brave
+
+> 内置去广告防隐私
+
+```shell
+sudo pacman -S brave
+```
+
+![2021-12-01_10-45](.assets/2021-12-01_10-45.png)
 
 
 
