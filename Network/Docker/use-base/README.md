@@ -817,112 +817,6 @@ Ctrl + P + Q    				# 容器不停止退出
 
 
 
-## 场景操作
-
-### 部署 Nginx
-
-```shell
-# 1. 搜索镜像 search 建议大家去 dockerhub 搜索，可以看到帮助文档
-docker search nginx
-
-# 2. 下载镜像 pull
-docker pull nginx
-
-# 3. 运行测试
-docker run -d --name nginx01 -p 8080:80 nginx
-# 本机测试
-curl localhost:8080
-
-
-# -d 后台运行
-# --name 给容器命名
-# -p 8080:80 将宿主机的端口 8080 映射到该容器的 80 端口 
-```
-
-
-
-端口暴露的概念：
-
-![image-20210131170249544](.assets/image-20210131170249544.png)
-
-&emsp;&emsp;我们每次改动 nginx 配置文件，都需要进入容器内部，十分的麻烦。我们可以在容器外部提供一个映射路径，达到在容器外修改文件，容器内部都可以修改。(\- v 数据卷技术！)
-
-
-
-### 部署 Tomcat
-
-```shell
-# 官网的使用  用完即删
-docker run -it  --rm  tomcat:9.0
-
-# 下载并运行
-docker pull tomcat
-docker run -d -p 3355:8080 --name tomcat01 tomcat
-```
-
-访问测试没有问题， 但是报 404
-
-> 因为官方镜像是个阉割版本， 默认下载的是最小的镜像，保证最小的运行环境。
-
-![image-20211202212054553](.assets/image-20211202212054553.png)
-
-```shell
-# 进入容器
-docker exec -it tomcat01 /bin/bash
-
-# webapps 为空, 将内容拷贝进去即可展示
-cd webapps
-cp -r ../webapps.dist/* ./
-```
-
-![image-20211202212929227](.assets/image-20211202212929227.png)
-
-![image-20211202213206166](.assets/image-20211202213206166.png)
-
-
-
-### 部署 ES + Kibana
-
-```shell
-# es 暴露的端口很多
-# es 十分的耗内存
-# es 的数据一般需要放置到安全目录！ 挂载
-# --net somework ? 网络配置
-
-# 启动 elasticsearch
-docker run -d --name elasticsearch -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" elasticsearch:7.6.2
-
-# 启动了 性能不够的 linux 就卡住了，1.xG 1核2G 卡了
-# 测试一下es是否成功
-```
-
-![image-20211202214736103](.assets/image-20211202214736103.png)
-
-![image-20211202215111947](.assets/image-20211202215111947.png)
-
-```shell
-# 赶紧关闭，增加内存的限制，修改配置文件 -e 环境配置修改
-docker stop 容器 ID
-docker run -d --name elasticsearch02 -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" -e ES_JAVA_OPTS="-Xms128m -Xmx512m" elasticsearch:7.6.2
-
-# 添加 ’-e ES_JAVA_OPTS="-Xms128m -Xmx512m" 
-# 配置 ElasticSearch 的虚拟机占用的内存大小。
-```
-
-![image-20211202215708167](.assets/image-20211202215708167.png)
-
-
-
-#### 如何使用 kibana 连接 es？
-
-> 网络如何才能来连接过去。
-
-![img](.assets/fe8fae07ae521db0f255073de8a29ca2.png)
-
-
-
-
-
 
 
 ## docker 图形化
@@ -1028,6 +922,120 @@ docker run -it -v /Users/admin/docker/test:/home --name v_test centos /bin/sh
 
 - 如果容器目录有数据， 本地目录也有数据， 那么容器目录内数据会被本地目录数据覆盖。
 - 如果容器目录有数据， 本地目录没有数据， 那么容器目录内数据也会被本地目录数据覆盖， 即清空。
+
+
+
+
+
+## 场景操作
+
+### 部署 Nginx
+
+```shell
+# 1. 搜索镜像 search 建议大家去 dockerhub 搜索，可以看到帮助文档
+docker search nginx
+
+# 2. 下载镜像 pull
+docker pull nginx
+
+# 3. 运行测试
+docker run -d --name nginx01 -p 8080:80 nginx
+# 本机测试
+curl localhost:8080
+
+
+# -d 后台运行
+# --name 给容器命名
+# -p 8080:80 将宿主机的端口 8080 映射到该容器的 80 端口 
+```
+
+
+
+端口暴露的概念：
+
+![image-20210131170249544](.assets/image-20210131170249544.png)
+
+&emsp;&emsp;我们每次改动 nginx 配置文件，都需要进入容器内部，十分的麻烦。我们可以在容器外部提供一个映射路径，达到在容器外修改文件，容器内部都可以修改。(\- v 数据卷技术！)
+
+
+
+### 部署 Tomcat
+
+```shell
+# 官网的使用  用完即删
+docker run -it  --rm  tomcat:9.0
+
+# 下载并运行
+docker pull tomcat
+docker run -d -p 3355:8080 --name tomcat01 tomcat
+```
+
+访问测试没有问题， 但是报 404
+
+> 因为官方镜像是个阉割版本， 默认下载的是最小的镜像，保证最小的运行环境。
+
+![image-20211202212054553](.assets/image-20211202212054553.png)
+
+```shell
+# 进入容器
+docker exec -it tomcat01 /bin/bash
+
+# webapps 为空, 将内容拷贝进去即可展示
+cd webapps
+cp -r ../webapps.dist/* ./
+```
+
+![image-20211202212929227](.assets/image-20211202212929227.png)
+
+![image-20211202213206166](.assets/image-20211202213206166.png)
+
+
+
+### 部署 ES + Kibana
+
+```shell
+# es 暴露的端口很多
+# es 十分的耗内存
+# es 的数据一般需要放置到安全目录！ 挂载
+# --net somework ? 网络配置
+
+# 启动 elasticsearch
+docker run -d --name elasticsearch -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" elasticsearch:7.6.2
+
+# 启动了 性能不够的 linux 就卡住了，1.xG 1核2G 卡了
+# 测试一下es是否成功
+```
+
+![image-20211202214736103](.assets/image-20211202214736103.png)
+
+![image-20211202215111947](.assets/image-20211202215111947.png)
+
+```shell
+# 赶紧关闭，增加内存的限制，修改配置文件 -e 环境配置修改
+docker stop 容器 ID
+docker run -d --name elasticsearch02 -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" -e ES_JAVA_OPTS="-Xms128m -Xmx512m" elasticsearch:7.6.2
+
+# 添加 ’-e ES_JAVA_OPTS="-Xms128m -Xmx512m" 
+# 配置 ElasticSearch 的虚拟机占用的内存大小。
+```
+
+![image-20211202215708167](.assets/image-20211202215708167.png)
+
+
+
+#### 如何使用 kibana 连接 es？
+
+> 网络如何才能来连接过去。
+
+![img](.assets/fe8fae07ae521db0f255073de8a29ca2.png)
+
+
+
+### 部署 Mysql
+
+
+
+在 Linux 下的 MySQL 默认的数据文档存储目录为 `/var/lib/mysql`，默认的配置文件的位置 `/etc/mysql/conf.d`，为了确保 MySQL 镜像或容器删除后，造成的数据丢失，下面建立数据卷保存 MySQL 的数据和文件。
 
 
 
