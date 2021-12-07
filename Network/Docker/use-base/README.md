@@ -1035,7 +1035,7 @@ docker run -d --name elasticsearch02 -p 9200:9200 -p 9300:9300 -e "discovery.typ
 
 
 
-在 Linux 下的 MySQL 默认的数据文档存储目录为 `/var/lib/mysql`，默认的配置文件的位置 `/etc/mysql/conf.d`，为了确保 MySQL 镜像或容器删除后，造成的数据丢失，下面建立数据卷保存 MySQL 的数据和文件。
+&emsp;&emsp;在 Linux 下的 MySQL 默认的数据文档存储目录为 `/var/lib/mysql`，默认的配置文件的位置 `/etc/mysql/conf.d`，为了确保 MySQL 镜像或容器删除后，造成的数据丢失，下面建立数据卷保存 MySQL 的数据和文件。
 
 
 
