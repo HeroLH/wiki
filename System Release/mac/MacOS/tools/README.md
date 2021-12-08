@@ -63,6 +63,39 @@
 
 
 
+### 桌面管理工具
+
+#### slate
+
+![img](.assets/45215.png)
+
+[Slate](https://github.com/jigish/slate/blob/master/README.md) 是一个类似于 Divvy 和 SizeUp 的窗口管理应用程序（除了更好和免费！）。 由于每个工作方式的一些限制，最初编写它们是为了替换它们，它试图通过简单的可配置来克服它们。 因此，进行配置可能有点令人生畏，但一旦完成，好处是巨大的。
+
+- 高度可定制
+- 将击键绑定到:
+    - 移动和/或调整窗口大小
+    - 定向聚焦窗口
+    - 启动预设布局
+    - 创建、删除和激活窗口当前状态的快照
+- 为不同的监视器配置设置默认布局，当检测到该配置时将激活该配置
+- 窗口提示: 改变窗口焦点的直观方法
+- 更好、更可定制的应用程序切换器
+
+
+
+##### 安装
+
+```shell
+# 只要在你的终端上运行这个:
+cd /Applications && curl http://www.ninjamonkeysoftware.com/slate/versions/slate-latest.tar.gz | tar -xz
+```
+
+
+
+##### 配置 
+
+可以使用 `~/.slate.js` 或 `~/.slate` 文件来使用 JavaScript 配置 slate。还可以使用状态菜单上的“ Load Config”菜单选项重新加载配置。
+
 
 
 
@@ -265,11 +298,13 @@ brew install anaconda
 
 
 
+### IDE
 
+#### Vscode
 
+[下载地址](https://code.visualstudio.com/)
 
-
-
+![image-20211208222716750](.assets/image-20211208222716750.png)
 
 
 
