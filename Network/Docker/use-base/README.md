@@ -14,9 +14,18 @@
 
 
 
-> [docker 入门 ](https://blog.csdn.net/xiaozecheng/article/details/106145593)
+
 
 --------------------------------------------
+
+## 教程材料
+
+- [CSDN - docker 入门 - 狂神说Java](https://blog.csdn.net/xiaozecheng/article/details/106145593)
+- [专为新手准备的 Docker 教程 - 英文版](https://docker-curriculum.com/)
+
+
+
+
 
 ## 前置内容
 
