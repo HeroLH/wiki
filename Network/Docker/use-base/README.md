@@ -437,6 +437,8 @@ docker run [可选参数] image
     -p 容器端口
 -P                 		# 随机指定端口
 --rm 									# 用完即删除，镜像都会删掉，一般用来测试; ps -a 都找不到
+-v 										# 卷挂载
+-e 										# 环境配置
 ```
 
 ```shell
@@ -868,9 +870,7 @@ wait…
 
 
 
-## 容器数据卷
-
-
+## 数据卷
 
 ### What is This？
 
@@ -933,6 +933,194 @@ docker run -it -v /Users/admin/docker/test:/home --name v_test centos /bin/sh
 - 如果容器目录有数据， 本地目录没有数据， 那么容器目录内数据也会被本地目录数据覆盖， 即清空。
 
 
+
+### 常用命令
+
+&emsp;&emsp;数据卷是被设计用来持久化数据的，它的生命周期独立于容器，Docker 不会在容器被删除后自动删除数据卷，并且也不存在垃圾回收这样的机制来处理没有任何容器引用的数据卷 。如果需要在删除容器的同时移除数据卷。可以在删除容器的时候使用 `docker rm -v` 这个命令。
+
+
+
+#### 创建数据卷
+
+```shell
+docker volume create my-vol 
+```
+
+
+
+##### 使用 `--mount` 创建数据卷
+
+挂载一个主机目录作为数据卷。使用 --mount 标记可以指定挂载一个本地主机的目录到容器中去。
+
+```shell
+docker run -d -P \
+--name web \
+# -v /src/webapp:/opt/webapp \
+--mount type=bind,source=/src/webapp,target=/opt/webapp \
+training/webapp 
+python app.py
+
+# 上面的命令挂载主机的 /src/webapp 目录到容器的 /opt/webapp 目录
+# 用户可以放置一些程序到本地目录中，来查看容器是否正常工作。本地目录的路径必须是绝对路径，如果目录不存在 Docker 会自动为你创建它。
+```
+
+
+
+##### 卷权限
+
+==Docker 挂载主机目录的默认权限是读写 ，用户也可以通过添加 readonly 参数指定为只读 。==
+
+```shell
+docker run -d -P \
+--name web \
+# -v /src/webapp:/opt/webapp:ro \
+--mount type=bind,source=/src/webapp,target=/opt/webapp,readonly \
+training/webapp \
+python app.py
+
+# 加了readonly之后，就挂载为只读了。如果你在容器内/src/webapp目录新建文件，会显示如下错误
+/src/webapp # touch new.txt
+touch: new.txt: Read-only file system
+```
+
+- ro —— readonly 只读。
+
+    >  设置了只读则该路径只能从宿主机操作，不能操作容器内部中对应的路径。
+
+- rw ----- readwrite 可读可写。
+
+```shell
+docker run -d -P --name nginx02 -v juming-nginx:/etc/nginx:ro nginx
+docker run -d -P --name nginx02 -v juming-nginx:/etc/nginx:rw nginx
+```
+
+
+
+#### 查看所有的数据卷
+
+```shell
+docker volume ls 
+```
+
+
+
+#### 查看指定数据卷的信息
+
+```shell
+docker volume inspect my-vol
+```
+
+
+
+#### 删除数据卷
+
+```shell
+docker volume rm my-vol
+```
+
+无主的数据卷可能会占据很多空间，要清理请使用以下命令：
+
+```shell
+docker volume prune
+```
+
+
+
+### 具名挂载和匿名挂载
+
+Docker所有的数据卷默认在 `/var/lib/docker/volumes/` 目录下。
+
+
+
+#### 匿名挂载
+
+&emsp;&emsp;匿名挂载就是在指定数据卷的时候，不指定容器路径对应的主机路径，这样对应映射的主机路径就是默认的路径 `/var/lib/docker/volumes/` 中自动生成一个随机命名的文件夹。如下运行并匿名挂载Nginx容器：
+
+```shell
+docker run -d -P --name nginx01 -v /etc/nginx nginx               
+# 3d7cea96607f7ae29c95e723216913ca56a156efe570d6f3dcf572bc14c0e3eb
+```
+
+查看所有的数据卷 volume 的情况, VOLUME NAME 这里的值是真实存在的目录。
+
+```shell
+docker volume ls
+```
+
+![截屏2021-12-12 20.16.41](.assets/截屏2021-12-12 20.16.41.png)
+
+
+
+#### 具名挂载
+
+&emsp;&emsp;具名挂载，就是指定文件夹名称，区别于指定路径挂载，这里的指定文件夹名称是在 Docker 指定的默认数据卷路径下的。通过 `docker volume ls` 命令可以查看当前数据卷的目录情况。
+
+```shell
+docker run -d -P --name nginx02 -v aTestName:/etc/nginx nginx
+```
+
+![截屏2021-12-12 20.24.08](.assets/截屏2021-12-12 20.24.08.png)
+
+
+
+#### 总结
+
+```shell
+# 匿名挂载
+-v 容器内路径 
+
+# 具名挂载
+-v 卷名:容器内路径 
+
+# 指定路径挂载
+-v /宿主机路径:容器内路径 
+```
+
+
+
+### 容器数据卷
+
+容器数据卷是指建立数据卷，来同步多个容器间的数据，实现容器间的数据同步。
+
+![img](.assets/a9fe39fcd974b3ff9a872d72b0030694.png)
+
+```shell
+# 首先启动容器1，volume01、volume02为挂载目录。
+docker run -it --name volume01 zecan/centos:1.0
+
+# 然后启动容器2，通过参数 –volumes-from，设置容器2和容器1建立数据卷挂载关系。
+docker run -it --name docker02 --volumes-from docker01 zecan/centos:1.0
+
+# 首先在容器2中的 volume01 中添加文件
+cd volume01
+touch 456.txt
+
+# 然后就可以看到容器1的文件也会添加上了。
+```
+
+![image-20211212232438875](.assets/image-20211212232438875.png)
+
+![image-20211212232526502](.assets/image-20211212232526502.png)
+
+![image-20211212232557617](.assets/image-20211212232557617.png)
+
+实际上第三个容器加进来也一样，因为他们用的是同一个数据卷。
+
+![image-20211212232900661](.assets/image-20211212232900661.png)
+
+下面同步两个MySQL的数据库和配置文件，与上面的操作相同，首先建立数据卷，然后给另一个MySQL容器建立容器数据卷挂载，示例：
+
+```shell
+docker run -d -p 6603:3306 -v /home/mysql/conf:/etc/mysql/conf.d -v /home/mysql/data:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=123456 --name mysql01 mysql:5.7
+
+docker run -d -p 6604:3306 -e MYSQL_ROOT_PASSWORD=123456 --name mysql02 --volumes-from mysql01 mysql:5.7
+```
+
+容器之间配置信息的传递，数据卷容器的生命周期一直持续到没有容器使用为止。但是一旦你持久化到了本地，这个时候，本地的数据是不会删除的。
+
+
+
+ 
 
 
 
@@ -1042,9 +1230,24 @@ docker run -d --name elasticsearch02 -p 9200:9200 -p 9300:9300 -e "discovery.typ
 
 ### 部署 Mysql
 
-
-
 &emsp;&emsp;在 Linux 下的 MySQL 默认的数据文档存储目录为 `/var/lib/mysql`，默认的配置文件的位置 `/etc/mysql/conf.d`，为了确保 MySQL 镜像或容器删除后，造成的数据丢失，下面建立数据卷保存 MySQL 的数据和文件。
+
+```shell
+docker run -d -p 3310:3306 -v /home/mysql/conf:/etc/mysql/cinf.d -v /home/mysql/data:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=123456 --name mysql01 mysql:5.7
+```
+
+
+
+## Dockerfile
+
+&emsp;&emsp;Dockerfile 是用来构建 Docker 镜像的文本文件，也可以说是命令参数脚本。
+&emsp;&emsp;`docker build` 命令用于从 Dockerfile 构建镜像。可以在 `docker build` 命令中使用 `-f` 标志指向文件系统中任何位置的Dockerfile。
+
+
+
+ 
+
+
 
 
 
@@ -1119,7 +1322,6 @@ boots (boot file system）主要包含 `bootloader` 和 `Kernel`,  `bootloader` 
 ![img](.assets/20200905204732895.png)
 
 &emsp;&emsp;这种情況下，上层镜像层中的文件覆盖了底层镜像层中的文件。这样就使得文件的更新版本作为一个新镜像层添加到镜像当中。==Docker 通过存储引擎（新版本采用快照机制）的方式来实现镜像层堆栈，并保证多镜像层对外展示为统一的文件系统==
-
 &emsp;&emsp;Linux 上可用的存储引撃有 AUFS、 Overlay2、 Device Mapper、Btrfs 以及 ZFS。顾名思义，每种存储引擎都基于 Linux 中对应的件系统或者块设备技术，井且每种存储引擎都有其独有的性能特点。Docker 在 Windows 上仅支持 windowsfilter 一种存储引擎，该引擎基于 NTFS 文件系统之上实现了分层和 CoW [1]。下图展示了与系统显示相同的三层镜像。所有镜像层堆并合井，对外提供统一的视图：
 
 ![img](.assets/20200905204745980.png)
