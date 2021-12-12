@@ -1241,9 +1241,13 @@ docker run -d -p 3310:3306 -v /home/mysql/conf:/etc/mysql/cinf.d -v /home/mysql/
 ## Dockerfile
 
 &emsp;&emsp;Dockerfile 是用来构建 Docker 镜像的文本文件，也可以说是命令参数脚本。
-&emsp;&emsp;`docker build` 命令用于从 Dockerfile 构建镜像。可以在 `docker build` 命令中使用 `-f` 标志指向文件系统中任何位置的Dockerfile。
+&emsp;&emsp;`docker build` 命令用于从 Dockerfile 构建镜像。可以在 `docker build` 命令中使用 `-f` 标志指向文件系统中任何位置的 Dockerfile。
 
-
+Docker镜像发布的步骤：
+- 编写一个dockerfile 文件
+- docker build 构建成为一个镜像
+- docker run 镜像
+- docker push 镜像（发布镜像到DockerHub、阿里云镜像仓库）
 
  
 
