@@ -1249,11 +1249,61 @@ Docker镜像发布的步骤：
 - docker run 镜像
 - docker push 镜像（发布镜像到DockerHub、阿里云镜像仓库）
 
- 
+ 先从 [DockerHub](https://registry.hub.docker.com) 官网进来 [CentOS](https://registry.hub.docker.com/_/centos) 里面看看：
+
+![截屏2021-12-13 22.17.08](.assets/截屏2021-12-13 22.17.08.png)
+
+![image-20211213221812789](.assets/image-20211213221812789.png)
+
+很多官方镜像都是基础包，很多功能都没有，我们通常会主机搭建自己的镜像！官方既然可以制作镜像，那我们也可以！示例一个镜像的结构图：
+
+![img](.assets/b33f18ebe3dededcd1791e295eede77d.png)
+
+Dockerfile 是面向开发的，以后发布项目，做镜像，就要编写 dockerfile 文件，这个文件非常简单！Docker 镜像逐渐成为企业交付的标准，必须要掌握！
 
 
 
 
+
+### Dockerfile 指令说明
+
+Dockerfile指令介绍的[官方文档](https://docs.docker.com/engine/reference/builder/) 
+
+|    指令    | 说明                                                         |
+| :--------: | ------------------------------------------------------------ |
+|    FROM    | 指定基础镜像                                                 |
+| MAINTAINER | 镜像是谁写的，姓名+邮箱                                      |
+|    RUN     | 镜像构建的时候需要运行的命令                                 |
+|    ADD     | 将本地文件添加到容器中，tar 类型文件会自动解压(网络压缩资源不会被解压)，可以访问网络资源，类似 wget |
+|  WORKDIR   | 镜像的工作目录                                               |
+|   VOLUME   | 挂载的目录                                                   |
+|   EXPOSE   | 保留端口配置                                                 |
+|    CMD     | 指定这个容器启动的时候要运行的命令（只有最后一个会生效），可被替代 |
+| EMTRYPOINT | 指定这个容器启动的时候要运行的命令，可以追加命令             |
+|  ONBUILD   | 当构建一个被继承DockerFile，这个时候就会运行ONBUILD的指令，触发指令 |
+|    COPY    | 功能类似ADD，但是是不会自动解压文件，也不能访问网络资源      |
+|    ENV     | 构建的时候设置环境变量                                       |
+
+一个形象的解释各个指令作用的图：
+
+![img](.assets/b641c2114d75953e422e0327b569fbf0.png)
+
+
+
+#### 注意事项
+
+- 每个保留关键字（指令）都必须是大写字母
+- 文件中的指令从上到下顺序执行，第一个指令必须是FROM
+- `#` 号表示注释
+- 每一个指令都会创建提交一个新的镜像层，并提交！
+
+
+
+
+
+### 示例： 制作Centos镜像
+
+Docker Hub 中 99% 镜像都是从这个基础镜像过来的 `FROM scratch`88888888
 
 
 
