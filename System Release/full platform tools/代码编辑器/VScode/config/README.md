@@ -405,4 +405,4 @@ Ctrl + Shitf + p，输入 settings，选择打开那个 JSON 的系统配置文�
     ![2021-12-13_15-43](.assets/2021-12-13_15-43.png)
 
 - 这里有一点，不能像上面最初配置的一样直接点SKIP跳过，这里要手动选择跟上面生成的令牌对应的选项。（这里我第一个选项是对应刚才sync提示的令牌）
-- 配置好sync扩展后，接下来就是下载我们的配置，全局命令快捷键“Ctrl+Shift+P”输入 sync，点击 Sync: Download Settings进行下载同步。
+- 配置好sync扩展后，接下来就是下载我们的配置，全局命令快捷键“Ctrl+Shift+P”输入 sync，点击 Sync: Download Settings进行下载同步。 K
