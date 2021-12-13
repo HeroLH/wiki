@@ -996,6 +996,28 @@ exit;
 
 
 
+### redis
+
+```shell
+sudo pacman -S redis
+sudo systemctl start redis
+" sudo systemctl enable redis
+```
+
+
+
+#### redis-manager
+
+```shell
+yay -S redis-desktop-manager
+```
+
+
+
+
+
+### 数据库管理工具
+
 #### mycli 
 
 ```shell
@@ -1009,6 +1031,18 @@ mycli -u root -p
 ```
 
 
+
+#### pgcli
+
+```shell
+sudo pacman -S pgcli
+```
+
+![image-20210811205407058](.assets/image-20210811205407058.png)
+
+```shell
+pgcli -h 127.0.0.1 -U root -d simple_bank
+```
 
 
 
@@ -1059,43 +1093,26 @@ sudo pacman -S mysql-workbench
 
 
 
-
-
-### postgres
-
-#### pgcli
+#### datagrip
 
 ```shell
-sudo pacman -S pgcli
+yay -S datagrip-jre datagrip
 ```
 
-![image-20210811205407058](.assets/image-20210811205407058.png)
-
-```shell
-pgcli -h 127.0.0.1 -U root -d simple_bank
-```
+![img](.assets/1-16393598378812.png)
 
 
 
+##### 遇到问题
 
+> Failed
+> [08S01] Communications link failure The last packet sent successfully to the server was 0 milliseconds ago. The driver has not received any packets from the server. javax.net.ssl.SSLHandshakeException: No appropriate protocol (protocol is disabled or cipher suites are inappropriate).
 
-### redis
+![image-20211213114741530](.assets/image-20211213114741530.png)
 
-```shell
-sudo pacman -S redis
-sudo systemctl start redis
-" sudo systemctl enable redis
-```
+解决办法，更换连接驱动，使用Amazon的：
 
-
-
-
-
-#### redis-manager
-
-```shell
-yay -S redis-desktop-manager
-```
+![2021-12-13_11-48](.assets/2021-12-13_11-48.png)
 
 
 
@@ -1843,7 +1860,7 @@ https://gitee.com/jq-code/chfs-network-disk
 [github](https://gitlab.com/screenkey/screenkey)
 
 ```shell
-sudo pacman  -S  screenkey
+sudo pacman -S screenkey
 ```
 
 要在录制时（例如，在密码提示时）禁用屏幕按键，请同时按两个控制键或两个 Shift 键或两个 alt 键。再次按相同的组合以恢复它。
@@ -1876,13 +1893,13 @@ sudo pacman -S keepassxc
 
 ## electerm
 
-> 类似 xshell，
+> 类似 xshell
 
 ```shell
 sudo pacman -Rs electerm
 ```
 
-
+![2021-12-13_15-00](.assets/2021-12-13_15-00.png)
 
 
 
