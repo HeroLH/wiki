@@ -1267,18 +1267,18 @@ Dockerfile 是面向开发的，以后发布项目，做镜像，就要编写 do
 
 ### Dockerfile 指令说明
 
-Dockerfile指令介绍的[官方文档](https://docs.docker.com/engine/reference/builder/) 
+Dockerfile指令介绍的 [官方文档](https://docs.docker.com/engine/reference/builder/) 
 
 |    指令    | 说明                                                         |
 | :--------: | ------------------------------------------------------------ |
-|    FROM    | 指定基础镜像                                                 |
+|    FROM    | 指定基础镜像, 一切从这里开始构建， 一般用 `scratch  `        |
 | MAINTAINER | 镜像是谁写的，姓名+邮箱                                      |
 |    RUN     | 镜像构建的时候需要运行的命令                                 |
 |    ADD     | 将本地文件添加到容器中，tar 类型文件会自动解压(网络压缩资源不会被解压)，可以访问网络资源，类似 wget |
 |  WORKDIR   | 镜像的工作目录                                               |
 |   VOLUME   | 挂载的目录                                                   |
 |   EXPOSE   | 保留端口配置                                                 |
-|    CMD     | 指定这个容器启动的时候要运行的命令（只有最后一个会生效），可被替代 |
+|    CMD     | 指定这个容器启动的时候要运行的命令（一行只有最后一个会生效），可被替代 |
 | EMTRYPOINT | 指定这个容器启动的时候要运行的命令，可以追加命令             |
 |  ONBUILD   | 当构建一个被继承DockerFile，这个时候就会运行ONBUILD的指令，触发指令 |
 |    COPY    | 功能类似ADD，但是是不会自动解压文件，也不能访问网络资源      |
@@ -1293,17 +1293,151 @@ Dockerfile指令介绍的[官方文档](https://docs.docker.com/engine/reference
 #### 注意事项
 
 - 每个保留关键字（指令）都必须是大写字母
-- 文件中的指令从上到下顺序执行，第一个指令必须是FROM
+- 文件中的指令从上到下顺序执行，第一个指令必须是 `FROM`
 - `#` 号表示注释
 - 每一个指令都会创建提交一个新的镜像层，并提交！
 
 
 
+#### RUN，CMD 和 ENTRYPOINT 的区别  
+##### RUN 与 CMD 的区别在哪里？  
+>  简单说，RUN 命令在  image 文件的构建阶段执行，执行结果都会打包进入 image 文件。
+> CMD 命令则是在容器启动后执行。
+> 另外，一个 Dockerfile 可以包含多个 RUN 命令，但是只能有一个 CMD 命令。
 
 
-### 示例： 制作Centos镜像
 
-Docker Hub 中 99% 镜像都是从这个基础镜像过来的 `FROM scratch`88888888
+#####  CMD 和 ENTRYPOINT 的区别在哪里？
+> CMD ：指定容器启动的时候要运行的命令，只有最后一个会生效
+> ENTRYPOINT ：指定容器启动的时候要运行的命令,命令可以追加
+
+- CMD 测试
+
+    ```dockerfile
+    FROM centos
+    CMD ["ls" "-a"]
+    
+    # build...
+    # docker run -it ...
+    # 	--> 执行 ls -a
+    
+    # docker run -it -l ...
+    #   --> 报错， 因为使用的是 CMD 指令，命令无追加，-l 取代了原本的 ls -a，而 -l 命令不存在所以报错。
+    #   --> 如果需要用，只能加完整命令: docker run -it ls -al ...
+    ```
+
+- ENTRYPOINT 测试
+
+    ```dockerfile
+    FROM centos
+    ENTRYPOINT ["ls" "-a"]
+    
+    # build...
+    # docker run -it ...
+    # 	--> 执行 ls -a
+    
+    # docker run -it -l ...
+    # 	--> 执行 ls -a -l
+    # 可以追加命令 
+    ```
+
+    
+
+
+
+
+
+### 示例： 制作自己的 Centos 镜像
+
+Docker Hub 中 99% 镜像都是从这个基础镜像过来的 `FROM scratch`
+
+- 编写 dockerfile 
+
+    ```dockerfile
+    # 文件名：my-centos-dockerfile
+    
+    # 该 image 文件继承官方的 centos，后面加冒号如 centos:7，用于指定镜像的版本
+    FROM centos
+    MAINTAINER editor<wait@qq.com>
+    
+    # 设置环境变量MYPATH
+    ENV MYPATH /usr/local
+    # 指定工作目录
+    WORKDIR $MYPATH
+    
+    # 在 /usr/local 目录下，运行命令，注意安装后的所有依赖和工具都会打包到 image 文件中
+    RUN yum -y install vim
+    RUN yum -y install net-tools 
+    
+    # 将容器80端口暴露出来，允许外部连接这个端口
+    EXPOSE 80
+    
+    # 指定容器启动的时候运行命令， 其他的被覆盖， 只有最后一个执行
+    CMD echo $MYPATH
+    CMD echo "---- Enjoy Youself ----"
+    CMD /bin/bash
+    ```
+
+- 构建 dockerfile
+
+    ```shell
+    # docker build -f dockerfile文件 -t 镜像名:[tag] PATH
+    # -->`PATH`参数既用于查找Dockerfile，又用于指定构建上下文。如果在PATH参数中没有找到Dockerfile(注意大小写)，就必须使用 -f 选项来具体给出Dockerfile文件
+    docker build -f my-centos-dockerfile -t my-centos:0.0.1-alpha.1 .
+    ```
+
+    ![截屏2021-12-19 14.21.09](.assets/截屏2021-12-19 14.21.09.png)
+
+- 可以通过 `history` 查看构历史
+
+    ```shell
+    docker history my-centos:0.0.1-alpha.1
+    ```
+
+    ![image-20211219225045228](.assets/image-20211219225045228.png)
+
+
+
+### 示例： 制作 Tomcat 镜像并发布镜像
+
+#### 制作Tomcat镜像
+
+- 准备镜像文件 tomcat、jdk 压缩包
+
+- 编写 dockerfile 文件，文件名使用官方命名：`Dockerfile` ，build 的时候会默认寻找当前目录下的文件，不需要使用 -f 参数指定
+
+    ```dockerfile
+    FROM centos
+    MAINTAINER zecan<861328011@qq.com>
+    
+    COPY readme.txt /usr/local/readme.txt
+    
+    ADD jdk-8u211-linux-x64.tar.gz /usr/local/
+    ADD apache-tomcat-9.0.55.tar.gz /usr/local/
+    
+    RUN yum -y install vim
+    
+    ENV MYPATH /usr/local
+    WORKDIR $MYPATH
+    
+    ENV JAVA_HOME /usr/local/jdk1.8.0_211
+    ENV CLASSPATH $JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar
+    ENV CATALINA_HOME /usr/local/apache-tomcat-9.0.55
+    ENV CATALINA_BASH /usr/local/apache-tomcat-9.0.55
+    ENV PATH $PATH:$JAVA_HOME/bin:$CATALINA_HOME/lib:$CATALINA_BASH/bin
+    
+    EXPOSE 8080
+    
+    CMD /usr/local/apache-tomcat-9.0.55/bin/startup.sh && tail -F /usr/local/apache-tomcat-9.0.55/bin/logs/catalina.out
+    ```
+
+    
+
+
+
+
+
+
 
 
 
