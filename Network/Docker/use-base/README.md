@@ -1410,10 +1410,10 @@ Docker Hub 中 99% 镜像都是从这个基础镜像过来的 `FROM scratch`
     FROM centos
     MAINTAINER zecan<861328011@qq.com>
     
-    COPY readme.txt /usr/local/readme.txt
+    COPY README.md /usr/local/README.md
     
     ADD jdk-8u211-linux-x64.tar.gz /usr/local/
-    ADD apache-tomcat-9.0.55.tar.gz /usr/local/
+    ADD apache-tomcat-9.0.56.tar.gz /usr/local/
     
     RUN yum -y install vim
     
@@ -1422,20 +1422,74 @@ Docker Hub 中 99% 镜像都是从这个基础镜像过来的 `FROM scratch`
     
     ENV JAVA_HOME /usr/local/jdk1.8.0_211
     ENV CLASSPATH $JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar
-    ENV CATALINA_HOME /usr/local/apache-tomcat-9.0.55
-    ENV CATALINA_BASH /usr/local/apache-tomcat-9.0.55
+    ENV CATALINA_HOME /usr/local/apache-tomcat-9.0.56
+    ENV CATALINA_BASH /usr/local/apache-tomcat-9.0.56
     ENV PATH $PATH:$JAVA_HOME/bin:$CATALINA_HOME/lib:$CATALINA_BASH/bin
     
     EXPOSE 8080
     
-    CMD /usr/local/apache-tomcat-9.0.55/bin/startup.sh && tail -F /usr/local/apache-tomcat-9.0.55/bin/logs/catalina.out
+    CMD /usr/local/apache-tomcat-9.0.56/bin/startup.sh && tail -F /usr/local/apache-tomcat-9.0.56/logs/catalina.out
+    ```
+
+    ```shell
+    docker build -t java-tomcat .
+    ```
+    
+    ![image-20211220212639102](.assets/image-20211220212639102.png)
+
+```shell
+docker run -it -d -p 8080:8080 --name java-tomcat -v /Users/herolh/docker/test/:/usr/local/apache-tomcat-9.0.56/webapps/test -v /Users/herolh/docker/test/tomcatlogs/:/usr/local/apache-tomcat-9.0.56/logs java-tomcat
+```
+
+
+
+### 发布镜像
+
+#### 发布到 DockerHub
+
+- 登录 [DockerHub](https://hub.docker.com/) 官网进行注册
+
+- 本地进行登录
+
+    ```shell
+    docker login -u 用户名
+    ```
+
+- 使用 `docker push` 命令推送镜像到 DockerHub 上的仓库
+
+    ```shell
+    docker push java-tomcat
+    ```
+
+    因为push的时候，镜像名前面需要加上用户名（如果用户名不是当前登录用户则会拒绝push请求），所以需要使用命令 `docker tag 镜像名 新的镜像名` 复制出一份镜像重新打个Tag。
+
+
+
+#### 发布到阿里云容器服务
+
+- 登录阿里云，找到容器镜像服务
+
+    ![img](.assets/e1bbdad0334eda28af02734a9a2d83d5.png)
+
+- 创建命名空间
+
+    > 登录[容器镜像服务控制台](https://cr.console.aliyun.com/)，在左侧导航栏选择**实例列表**，在**实例列表**页面单击个人版，在个人版管理页面左侧导航栏中选择**仓库管理 > 命名空间**。在**命名空间**页面左上角单击**创建命名空间**，输入命名空间名称，然后单击**确定**。目前一个账号可以创建3个命名空间。
+
+    ![img](.assets/c8768c9d3ecc7afea17522f8634bb52f.png)
+
+    ![img](.assets/6f7c52ed37d1d99fbe6fc52478db381f.png)
+
+- 与 DockerHub 的操作类似，按官方提供的操作指南操作即可。
+
+    ```shell
+    docker login --username=username registry.cn-xxxx.aliyuncs.com
+    
+    docker push namespace/java-tomcat:1.0
     ```
 
     
 
-
-
-
+    
 
 
 
