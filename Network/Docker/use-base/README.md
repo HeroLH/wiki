@@ -154,6 +154,10 @@ Namespaces  命名空间
 
 ## 基本使用
 
+![img](.assets/46e9393c33e9d8e0445771a7b8ce1411.png)
+
+
+
 ### Docker 的基本组成
 ![image-20200514195805400](.assets/image-20200514195805400.png)
 
@@ -394,6 +398,30 @@ cp -r ../webapps.dist/* ./
 ![image-20211205213238963](.assets/image-20211205213238963.png) 
 
 如果想保存当前容器的状态， 就可以通过 commit 来获得一个当前容器的镜像。
+
+
+
+#### docker save
+
+导出镜像
+
+```shell
+docker save centos:0.0.1-alpha.1 -o ./mycentos.tar
+```
+
+![截屏2021-12-23 22.02.39](.assets/截屏2021-12-23 22.02.39.png)
+
+
+
+#### docker load
+
+导入镜像
+
+```shell
+docker load -i mycentos.tar
+```
+
+![截屏2021-12-23 22.11.43](.assets/截屏2021-12-23 22.11.43.png)
 
 
 
@@ -1398,7 +1426,7 @@ Docker Hub 中 99% 镜像都是从这个基础镜像过来的 `FROM scratch`
 
 
 
-### 示例： 制作 Tomcat 镜像并发布镜像
+### 示例： 制作 Tomcat 镜像
 
 #### 制作Tomcat镜像
 
@@ -1458,10 +1486,24 @@ docker run -it -d -p 8080:8080 --name java-tomcat -v /Users/herolh/docker/test/:
 - 使用 `docker push` 命令推送镜像到 DockerHub 上的仓库
 
     ```shell
-    docker push java-tomcat
+    docker push centos
+    
+    # 失败，输出结果：
+    # The push refers to repository [docker.io/library/centos]
+    # 5f70bf18a086: Preparing
+    # ...
+    # 74ddd0ec08fa: Waiting
+    # denied: requested access to the resource is denied
     ```
-
-    因为push的时候，镜像名前面需要加上用户名（如果用户名不是当前登录用户则会拒绝push请求），所以需要使用命令 `docker tag 镜像名 新的镜像名` 复制出一份镜像重新打个Tag。
+    
+    因为 push 的时候，镜像名前面需要加上用户名（如果用户名不是当前登录用户则会拒绝 push 请求），所以需要使用命令 `docker tag 镜像名 新的镜像名` 复制出一份镜像重新打个Tag。
+    
+    ```shell
+    docker tag centos 用户名/centos:0.0.1
+    docker push 用户名/centos:0.0.1
+    ```
+    
+    ![截屏2021-12-23 21.43.28](.assets/截屏2021-12-23 21.43.28.png)
 
 
 
@@ -1484,12 +1526,29 @@ docker run -it -d -p 8080:8080 --name java-tomcat -v /Users/herolh/docker/test/:
     ```shell
     docker login --username=username registry.cn-xxxx.aliyuncs.com
     
-    docker push namespace/java-tomcat:1.0
+    docker push namespace/centos:0.0.1
     ```
 
     
 
-    
+
+
+
+### 镜像优化
+
+wait
+
+
+
+
+
+## Docker 网络
+
+### docker0
+
+
+
+
 
 
 
