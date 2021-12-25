@@ -856,6 +856,98 @@ Ctrl + P + Q    				# 容器不停止退出
 
 
 
+## Docker 简单底层原理
+
+### docker run 流程图
+
+![image-20200515102637246](.assets/aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL2NoZW5nY29kZXgvY2xvdWRpbWcvbWFzdGVyL2ltZy9pbWFnZS0yMDIwMDUxNTEwMjYzNzI0Ni5wbmc)
+
+
+
+### Docker 是怎么工作的？
+
+>  Docker 是一个 Client-Server 结构的系统，Docker 的守护进程运行在主机上。通过Socket从客户端访问！Docker-Server 接收到Docker-Client 的指令，就会执行这个命令！
+
+![image-20200515102949558](.assets/image-20200515102949558.png)
+
+
+
+### Docker 镜像讲解
+
+#### 镜像是什么？
+
+&emsp;&emsp;镜像是一种轻量级、可执行的==独立软件包==，用来打包软件运行环境和基于运行环境开发的软件，他包含运行某个软件所需的所有内容，包括代码、运行时库、环境变量和配置文件。所有的应用，直接打包 docker 镜像，就可以直接跑起来！
+
+ 
+
+**如何得到镜像：**
+
+- 从远程仓库下载
+- 拷贝
+- 自己制作一个镜像 DockerFile
+
+
+
+#### Docker 镜像加载原理
+
+##### UnionFs （联合文件系统)
+
+> &emsp;&emsp;Union 文件系统（UnionFs）是一种分层、轻量级并且高性能的文件系统，他支持对文件系统的修改作为一次提交来一层层的叠加，同时可以将不同目录挂载到同一个虚拟文件系统下（ unite several directories into a single virtual filesystem)。
+> ==Union 文件系统是 Docker 镜像的基础==。镜像可以通过分层来进行继承，基于基础镜像（没有父镜像），可以制作各种具体的应用镜像
+>
+> **特性**：一次同时加载多个文件系统，但从外面看起来，只能看到一个文件系统，联合加载会把各层文件系统叠加起来，这样最终的文件系统会包含所有底层的文件和目录
+
+&emsp;&emsp;docker 的镜像实际上由一层一层的文件系统组成，这种层级的文件系统 UnionFS。
+boots (boot file system）主要包含 `bootloader` 和 `Kernel`,  `bootloader` 主要是引导加载 `kernel`。
+&emsp;&emsp;Linux 刚启动时会加载 bootfs 文件系统，==在 Docker 镜像的最底层是 bootfs==。这一层与我们典型的 Linux/Unix 系统是一样的，包含 boot 加载器和内核。当 boot 加载完成之后整个内核就都在内存中了，此时**内存的使用权**已由 bootfs 转交给内核，此时系统也会卸载 bootfs。
+&emsp;&emsp;rootfs（root file system), 在 bootfs 之上。 包含的就是典型 Linux 系统中的 `/dev,/proc,/bin,/etc` 等标准目录和文件。 rootfs 就是各种不同的操作系统发行版，比如 Ubuntu, Centos 等等。
+
+![在这里插入图片描述](.assets/20200905204625990.png)
+
+- 平时我们安装进虚拟机的 CentOS 都是好几个 G，为什么 Docker 这里才 200M？
+
+    > 对于一个精简的 OS, rootfs 可以很小，只需要包合最基本的命令，工具和程序库就可以了，因为==底层直接用 Host 的 kernel==，自己只需要提供 rootfs 就可以了。
+
+**由此可见对于不同的 Linux 发行版， boots 基本是一致的， rootfs 会有差別，因此不同的发行版可以公用 bootfs.**
+
+虚拟机是分钟级别，容器是秒级！
+
+
+
+#### 分层理解
+
+&emsp;&emsp;所有的 Docker 镜像都起始于一个基础镜像层，当进行修改或培加新的内容时，就会在当前镜像层之上，创建新的镜像层。
+&emsp;&emsp;举一个简单的例子，假如基于 Ubuntu Linux16.04 创建一个新的镜像，这就是新镜像的第一层；如果在该镜像中添加 Python 包，就会在基础镜像层之上创建第二个镜像层；如果继续添加一个安全补丁，就会创健第三个镜像层该像当前已经包含 3 个镜像层，如下图所示（这只是一个用于演示的很简单的例子）。
+
+![img](.assets/2020090520471054.png)
+
+&emsp;&emsp;在添加额外的镜像层的同时，镜像始终保持是当前所有镜像的组合，理解这一点非常重要。下图中举了一个简单的例子，每个镜像层包含 3 个文件，而镜像包含了来自两个镜像层的 6 个文件。
+
+![在这里插入图片描述](.assets/20200905204721901.png)
+
+&emsp;&emsp;上图中的镜像层跟之前图中的略有区別，主要目的是便于展示文件。下图中展示了一个稍微复杂的三层镜像，在外部看来整个镜像只有 6 个文件，这是因为最上层中的文件 7 是文件 5 的一个更新版
+
+![img](.assets/20200905204732895.png)
+
+&emsp;&emsp;这种情況下，上层镜像层中的文件覆盖了底层镜像层中的文件。这样就使得文件的更新版本作为一个新镜像层添加到镜像当中。==Docker 通过存储引擎（新版本采用快照机制）的方式来实现镜像层堆栈，并保证多镜像层对外展示为统一的文件系统==
+&emsp;&emsp;Linux 上可用的存储引撃有 AUFS、 Overlay2、 Device Mapper、Btrfs 以及 ZFS。顾名思义，每种存储引擎都基于 Linux 中对应的件系统或者块设备技术，井且每种存储引擎都有其独有的性能特点。Docker 在 Windows 上仅支持 windowsfilter 一种存储引擎，该引擎基于 NTFS 文件系统之上实现了分层和 CoW [1]。下图展示了与系统显示相同的三层镜像。所有镜像层堆并合井，对外提供统一的视图：
+
+![img](.assets/20200905204745980.png)
+
+
+
+#### 特点
+
+- **Docker 镜像都是只读的**
+
+    当容器启动时，一个新的可写层加载到镜像的顶部！这一层就是我们通常说的容器层，容器之下的都叫镜像层！
+
+    ![在这里插入图片描述](.assets/2020090520475731.png)
+
+
+
+
+
 
 
 ## docker 图形化
@@ -1838,89 +1930,165 @@ docker exec -it ubuntu-net-01 ping ubuntu-net-02
 
 
 
+## Docker Compose
+
+&emsp;&emsp;Compose 是一个用于定义和运行多容器 Docker 应用程序的工具。 借助 Compose，您可以使用 YAML 文件来配置应用程序的服务。 然后，使用单个命令，从配置中创建并启动所有服务。使用 Compose 基本上有三个步骤:
+
+- Dockerfile 保证我们的项目在任何地方可以运行。
+- 用 `docker-compose. yml` 定义组成应用程序的服务，这样它们就可以在一个独立的环境中一起运行。
+- 运行 `docker compose up` 启动并运行整个应用程序。
+
+Compose 是 Docker 官方的开源项目，需要安装！
 
 
 
+Compose：重要概念
 
-## Docker 简单底层原理
-
-### docker run 流程图
-
-![image-20200515102637246](.assets/aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL2NoZW5nY29kZXgvY2xvdWRpbWcvbWFzdGVyL2ltZy9pbWFnZS0yMDIwMDUxNTEwMjYzNzI0Ni5wbmc)
+- 服务services， 容器、应用（web、redis、mysql…）
+- 项目project。 一组关联的容器
 
 
 
-### Docker 是怎么工作的？
+### 安装
 
->  Docker 是一个 Client-Server 结构的系统，Docker 的守护进程运行在主机上。通过Socket从客户端访问！Docker-Server 接收到Docker-Client 的指令，就会执行这个命令！
+#### Linux 下
 
-![image-20200515102949558](.assets/image-20200515102949558.png)
+##### 下载
 
-
-
-### Docker 镜像讲解
-#### 镜像是什么？
-&emsp;&emsp;镜像是一种轻量级、可执行的==独立软件包==，用来打包软件运行环境和基于运行环境开发的软件，他包含运行某个软件所需的所有内容，包括代码、运行时库、环境变量和配置文件。所有的应用，直接打包 docker 镜像，就可以直接跑起来！
-
+```shell
+# 官网提供 （没有下载成功）
+curl -L "https://github.com/docker/compose/releases/download/1.26.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
  
-
-**如何得到镜像：**
-- 从远程仓库下载
-- 拷贝
-- 自己制作一个镜像 DockerFile
+# 国内地址
+curl -L https://get.daocloud.io/docker/compose/releases/download/1.25.5/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose
+```
 
 
 
-#### Docker 镜像加载原理
+##### 授权
 
-##### UnionFs （联合文件系统)
-> &emsp;&emsp;Union 文件系统（UnionFs）是一种分层、轻量级并且高性能的文件系统，他支持对文件系统的修改作为一次提交来一层层的叠加，同时可以将不同目录挂载到同一个虚拟文件系统下（ unite several directories into a single virtual filesystem)。
-> ==Union 文件系统是 Docker 镜像的基础==。镜像可以通过分层来进行继承，基于基础镜像（没有父镜像），可以制作各种具体的应用镜像
-> 
-> **特性**：一次同时加载多个文件系统，但从外面看起来，只能看到一个文件系统，联合加载会把各层文件系统叠加起来，这样最终的文件系统会包含所有底层的文件和目录
-
-&emsp;&emsp;docker 的镜像实际上由一层一层的文件系统组成，这种层级的文件系统 UnionFS。
-boots (boot file system）主要包含 `bootloader` 和 `Kernel`,  `bootloader` 主要是引导加载 `kernel`。
-&emsp;&emsp;Linux 刚启动时会加载 bootfs 文件系统，==在 Docker 镜像的最底层是 bootfs==。这一层与我们典型的 Linux/Unix 系统是一样的，包含 boot 加载器和内核。当 boot 加载完成之后整个内核就都在内存中了，此时**内存的使用权**已由 bootfs 转交给内核，此时系统也会卸载 bootfs。
-&emsp;&emsp;rootfs（root file system), 在 bootfs 之上。 包含的就是典型 Linux 系统中的 `/dev,/proc,/bin,/etc` 等标准目录和文件。 rootfs 就是各种不同的操作系统发行版，比如 Ubuntu, Centos 等等。
-
-![在这里插入图片描述](.assets/20200905204625990.png)
-
-- 平时我们安装进虚拟机的 CentOS 都是好几个 G，为什么 Docker 这里才 200M？
-
-    > 对于一个精简的 OS, rootfs 可以很小，只需要包合最基本的命令，工具和程序库就可以了，因为==底层直接用 Host 的 kernel==，自己只需要提供 rootfs 就可以了。
-
-**由此可见对于不同的 Linux 发行版， boots 基本是一致的， rootfs 会有差別，因此不同的发行版可以公用 bootfs.**
-
-虚拟机是分钟级别，容器是秒级！
+```shell
+chmod +x /usr/local/bin/docker-compose4e33mkkk
+```
 
 
 
-#### 分层理解
-&emsp;&emsp;所有的 Docker 镜像都起始于一个基础镜像层，当进行修改或培加新的内容时，就会在当前镜像层之上，创建新的镜像层。
-&emsp;&emsp;举一个简单的例子，假如基于 Ubuntu Linux16.04 创建一个新的镜像，这就是新镜像的第一层；如果在该镜像中添加 Python 包，就会在基础镜像层之上创建第二个镜像层；如果继续添加一个安全补丁，就会创健第三个镜像层该像当前已经包含 3 个镜像层，如下图所示（这只是一个用于演示的很简单的例子）。
+#### 安装测试
 
-![img](.assets/2020090520471054.png)
+```shell
+docker-compose version
+```
 
-&emsp;&emsp;在添加额外的镜像层的同时，镜像始终保持是当前所有镜像的组合，理解这一点非常重要。下图中举了一个简单的例子，每个镜像层包含 3 个文件，而镜像包含了来自两个镜像层的 6 个文件。
-
-![在这里插入图片描述](.assets/20200905204721901.png)
-
-&emsp;&emsp;上图中的镜像层跟之前图中的略有区別，主要目的是便于展示文件。下图中展示了一个稍微复杂的三层镜像，在外部看来整个镜像只有 6 个文件，这是因为最上层中的文件 7 是文件 5 的一个更新版
-
-![img](.assets/20200905204732895.png)
-
-&emsp;&emsp;这种情況下，上层镜像层中的文件覆盖了底层镜像层中的文件。这样就使得文件的更新版本作为一个新镜像层添加到镜像当中。==Docker 通过存储引擎（新版本采用快照机制）的方式来实现镜像层堆栈，并保证多镜像层对外展示为统一的文件系统==
-&emsp;&emsp;Linux 上可用的存储引撃有 AUFS、 Overlay2、 Device Mapper、Btrfs 以及 ZFS。顾名思义，每种存储引擎都基于 Linux 中对应的件系统或者块设备技术，井且每种存储引擎都有其独有的性能特点。Docker 在 Windows 上仅支持 windowsfilter 一种存储引擎，该引擎基于 NTFS 文件系统之上实现了分层和 CoW [1]。下图展示了与系统显示相同的三层镜像。所有镜像层堆并合井，对外提供统一的视图：
-
-![img](.assets/20200905204745980.png)
+![截屏2021-12-25 17.43.36](.assets/截屏2021-12-25 17.43.36.png)
 
 
 
-#### 特点
 
-- **Docker 镜像都是只读的**
 
-    当容器启动时，一个新的可写层加载到镜像的顶部！这一层就是我们通常说的容器层，容器之下的都叫镜像层！
+### hello world
 
-    ![在这里插入图片描述](.assets/2020090520475731.png)
+[官网示例](https://docs.docker.com/compose/gettingstarted/)
+
+&emsp;&emsp;在此您将构建一个在 Docker Compose 上运行的简单的 Python Web 应用程序。该应用程序使用 Flask 框架，并在 Redis 中维护一个点击计数器。虽然示例使用 Python，但即使您不熟悉，这里演示的概念也是可以理解的。
+
+
+
+#### 定义应用程序依赖项
+
+- 为项目创建一个目录：
+
+    ```shell
+    mkdir composetest
+    cd composetest
+    ```
+
+- 在项目目录中创建一个名为 `app.py` 的文件，并将以下代码粘贴进 `app.py`：
+
+    ```shell
+    import time
+    
+    import redis
+    from flask import Flask
+    
+    app = Flask(__name__)
+    cache = redis.Redis(host='redis', port=6379)
+    
+    def get_hit_count():
+        retries = 5
+        while True:
+            try:
+                return cache.incr('hits')
+            except redis.exceptions.ConnectionError as exc:
+                if retries == 0:
+                    raise exc
+                retries -= 1
+                time.sleep(0.5)
+    
+    @app.route('/')
+    def hello():
+        count = get_hit_count()
+        return 'Hello World! I have been seen {} times.\n'.format(count)
+    ```
+
+- 在你的项目目录中创建另一个叫 `requirements.txt` 的文件，然后粘贴:
+
+    ```shell
+    flask
+    redis
+    ```
+
+    
+
+#### 创建一个 Dockerfile
+
+在项目目录中，创建一个名为 `Dockerfile` 的文件，并粘贴以下内容:
+
+```shell
+FROM python:3.7-alpine
+
+# 设置工作目录
+WORKDIR /code
+
+# 设置环境变量
+ENV FLASK_APP=app.py
+ENV FLASK_RUN_HOST=0.0.0.0
+
+# 安装 gcc 和其他依赖项
+RUN apk add --no-cache gcc musl-dev linux-headers
+
+# 安装 Python 依赖项
+COPY requirements.txt requirements.txt
+RUN pip install -r requirements.txt
+
+# 监听端口5000
+EXPOSE 5000
+
+# 复制工作目录
+COPY . .
+CMD ["flask", "run"]
+```
+
+
+
+#### 创建 docker-conpose
+
+```yaml
+version: "3.9"
+# 定义了两个服务: web 和 redis。
+services:
+  web:
+    # 这个服务使用的镜像来自当前工作目录的 Dockerfile。
+    build: .
+    # 然后将容器和主机绑定到公开端口5000。
+    ports:
+      - "5000:5000"
+  redis:
+    # 使用从 dockerhub 注册表中提取的公共 redis 映像。
+    image: "redis:alpine"
+```
+
+
+
+#### Compose 构建
+
+在项目目录中，通过运行 `docker-compose up` 启动应用程序。
