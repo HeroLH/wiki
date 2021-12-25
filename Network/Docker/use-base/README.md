@@ -1544,9 +1544,47 @@ wait
 
 ## Docker 网络
 
+![截屏2021-12-24 22.18.58](.assets/截屏2021-12-24 22.18.58.png)
+
+- **lo**
+
+    > 本地回环地址 `127.0.0.1`
+
+- **eth0**
+
+    > 主机 ip 地址
+
+- **docker0**
+
+    > docker0地址: `172.17.0.1`
+
+
+
 ### docker0
 
+ 我们每启动一个 docker 容器， docker 就会给 docker 容器分配一个 ip， 我们只要安装了 docker，就会有一个网卡 docker0 桥接模式，使用的技术是**veth-pair技术**, <u>每起一个容器， 就会多==一对==网卡</u>：
 
+![截屏2021-12-24 22.32.15](.assets/截屏2021-12-24 22.32.15.png)
+
+veth-pair 就是一对的虚拟设备接口，他们都是成对出现的，一端连着协议，一端彼此相连，只要容器删除，对应的网桥一对就没有了。正因为有这个特性，veth-pair 充当一个桥梁， 连接各种虚拟网络设备，OpenStack， Docker 容器之间的链接，OVS 的链接， 都是使用 veth-pair 技术。
+
+
+
+![img](.assets/2e65984b83e070ad34551922c8f452c6.png) 
+
+- Docker 使用的是 Linux 的桥接，宿主机中是一个 Docker 容器的网桥 docker0.
+- `172.17.0.1/16` 最多配 66535 个。
+- Docker 中的所有的网络接口都是虚拟的，虚拟的转发效率高！（内网传递文件！）
+
+
+
+
+
+#### 注意事项
+
+- Docker For Mac 没有 docker0 网桥
+
+    > 在使用Docker时，要注意平台之间实现的差异性，如 Docker For Mac 的实现和标准 Docker 规范有区别，Docker For Mac 的Docker Daemon是 运行于虚拟机(xhyve)中的, 而不是像 Linux 上那样作为进程运行于宿主机，因此 ==Docker For Mac 没有 docker0 网桥，不能实现 host 网络模式==，host 模式会使 Container 复用 Daemon 的网络栈(在xhyve虚拟机中)，而不是与 Host 主机网络栈，这样虽然其它容器仍然可通过 xhyve 网络栈进行交互，但却不是用的 Host 上的端口(在Host上无法访问)。==bridge 网络模式 -p 参数不受此影响，它能正常打开 Host 上的端口并映射到 Container 的对应 Port==。文档在这一点上并没有充分说明，容易踩坑。
 
 
 

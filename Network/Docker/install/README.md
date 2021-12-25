@@ -274,10 +274,22 @@ rm -rf /var/lib/docker
 
 ### Mac 下
 
-- [官网下载](https://docs.docker.com/desktop/mac/install/).
+- [官网下载](https://docs.docker.com/desktop/mac/install/)
 -  [阿里云镜像源](http://mirrors.aliyun.com/docker-toolbox/mac/docker-for-mac/) 
 
 下载成功后双击打开安装, 打开docker，在终端输入 `docker info`、`docker version` 可查看基本信息。
+
+
+
+#### 注意事项
+
+&emsp;&emsp;Mac 版 Docker 是由 Docker 公司基于社区版的 Docker 提供的一个产品。这意味着在笔记本上安装单引擎版本的 Docker 是非常简单的。但是同时，这也意味着 Mac 版 Docker 并不是为生产环境而设计的。如果你听说过 boot2docker，那么 Mac 版 Docker 就是一个流畅、简单并且稳定版的 boot2docker。
+
+&emsp;&emsp;对于 Mac 版 Docker 来说，提供基于 Mac 原生操作系统中 Darwin 内核的 Docker 引擎没有什么意义。所以==在 Mac 版 Docker 当中，Docker daemon 是运行在一个轻量级的 Linux VM 之上的==。Mac 版 Docker 通过对外提供 daemon 和 API 的方式与 Mac 环境实现无缝集成。尽管在 Mac 上实现了无缝集成，还是要谨记 Mac 版 Docker 底层是基于 Linux VM 运行的，所以说 Mac 版 Docker 只能运行基于 Linux 的 Docker 容器。不过这样已经很好了，因为大部分容器实际上都是基于 Linux 的。下图展示了 Mac 版 Docker 的抽象架构：
+
+![Mac版Docker的抽象架构](.assets/4-1Z415163GW42.gif)
+
+Mac 版 Docker 采用 HyperKit9 实现了一个极其轻量级的 Hypervisor。HyperKit 是基于 Xhyve Hypervisor 的。Mac 版 Docker 也利用了 DataKit 的某些特性，并运行了一个高度优化后的 Linux 发行版 Moby（基于 Alpine Linux）。
 
 
 
