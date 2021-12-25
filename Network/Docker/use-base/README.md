@@ -1266,6 +1266,103 @@ docker run -d -p 3310:3306 -v /home/mysql/conf:/etc/mysql/cinf.d -v /home/mysql/
 
 
 
+### 部署 Redis 集群
+
+![image-20211225142653624](.assets/image-20211225142653624.png)
+
+
+
+#### 创建一个自定义网络
+
+```shell
+docker network create redis --subnet 172.18.0.0/16 
+```
+
+
+
+#### 通过脚本创建六个 redis 配置
+
+```shell
+# ! /bin/bash
+
+for port in $(seq 1 6);
+do
+mkdir -p /mydata/redis/node-${port}/conf
+touch /mydata/redis/node-${port}/conf/redis.conf
+cat << EOF >//mydata/redis/node-${port}/conf/redis.conf
+port 6379
+bind 0.0.0.0
+cluster-enabled yes
+cluster-config-file nodes.conf
+cluster-node-timeout 5000
+cluster-announce-ip 172.18.0.1${port}
+cluster-announce-port 6379
+cluster-announce-bus-port 16379
+appendonly yes
+EOF
+done
+```
+
+
+
+#### 启动 redis 容器
+
+```shell
+# ! /bin/bash
+
+for port in $(seq 1 6);
+do
+docker run -p 637${port}:6379 -p 1637${port}:16379 --name redis-${port} -v /mydata/redis/node-${port}/data:/data -v /mydata/redis/node-${port}/conf/redis.conf:/etc/redis/redis.conf -d --net redis --ip 172.18.0.1${port} redis:5.0.9-alpine3.11 redis-server /etc/redis/redis.conf
+done
+# sudo docker run -p 6371:6379 -p 16371:16379 --name redis-1 -v /mydata/redis/node-1/data:/data -v /mydata/redis/node-1/conf/redis.conf:/etc/redis/redis.conf -d --net redis --ip 172.18.0.11 redis:5.0.9-alpine3.11 redis-server /etc/redis/redis.conf
+```
+
+
+
+#### 配置集群
+
+```shell
+# 任意进入一个 redis 容器执行：
+redis-cli --cluster create 172.18.0.11:6379 172.18.0.12:6379 172.18.0.13:6379 172.18.0.14:6379 172.18.0.15:6379 172.18.0.15:6379 172.18.0.16:6379 --cluster-replicas 1
+```
+
+![image-20211225150102087](.assets/image-20211225150102087.png)
+
+
+
+#### 测试
+
+```shell
+redis-cli -c
+cluster info
+cluster nodes
+```
+
+![image-20211225150729765](.assets/image-20211225150729765.png)
+
+
+
+#### 高可用测试
+
+```shell
+redis-cli -c
+set key value
+# 下图可以看到是 172.18.0.13 处理了这个消息
+```
+
+![image-20211225151649989](.assets/image-20211225151649989.png)
+
+```shell
+# 停止 13 再进行请求, 发现是备机 15 在处理消息
+get key value
+```
+
+![image-20211225151920635](.assets/image-20211225151920635.png)
+
+
+
+
+
 ## Dockerfile
 
 &emsp;&emsp;Dockerfile 是用来构建 Docker 镜像的文本文件，也可以说是命令参数脚本。
@@ -1466,7 +1563,7 @@ Docker Hub 中 99% 镜像都是从这个基础镜像过来的 `FROM scratch`
     ![image-20211220212639102](.assets/image-20211220212639102.png)
 
 ```shell
-docker run -it -d -p 8080:8080 --name java-tomcat -v /Users/herolh/docker/test/:/usr/local/apache-tomcat-9.0.56/webapps/test -v /Users/herolh/docker/test/tomcatlogs/:/usr/local/apache-tomcat-9.0.56/logs java-tomcat
+docker run -it -d -p 8080:8080 --name java-tomcat -v /Users/admin/docker/test/:/usr/local/apache-tomcat-9.0.56/webapps/test -v /Users/admin/docker/test/tomcatlogs/:/usr/local/apache-tomcat-9.0.56/logs java-tomcat
 ```
 
 
@@ -1560,7 +1657,7 @@ wait
 
 
 
-### docker0
+### What is docker0 ?
 
  我们每启动一个 docker 容器， docker 就会给 docker 容器分配一个 ip， 我们只要安装了 docker，就会有一个网卡 docker0 桥接模式，使用的技术是**veth-pair技术**, <u>每起一个容器， 就会多==一对==网卡</u>：
 
@@ -1574,7 +1671,7 @@ veth-pair 就是一对的虚拟设备接口，他们都是成对出现的，一�
 
 - Docker 使用的是 Linux 的桥接，宿主机中是一个 Docker 容器的网桥 docker0.
 - `172.17.0.1/16` 最多配 66535 个。
-- Docker 中的所有的网络接口都是虚拟的，虚拟的转发效率高！（内网传递文件！）
+- Docker 中的所有的网络接口都是虚拟的，虚拟的转发效率高！
 
 
 
@@ -1585,6 +1682,159 @@ veth-pair 就是一对的虚拟设备接口，他们都是成对出现的，一�
 - Docker For Mac 没有 docker0 网桥
 
     > 在使用Docker时，要注意平台之间实现的差异性，如 Docker For Mac 的实现和标准 Docker 规范有区别，Docker For Mac 的Docker Daemon是 运行于虚拟机(xhyve)中的, 而不是像 Linux 上那样作为进程运行于宿主机，因此 ==Docker For Mac 没有 docker0 网桥，不能实现 host 网络模式==，host 模式会使 Container 复用 Daemon 的网络栈(在xhyve虚拟机中)，而不是与 Host 主机网络栈，这样虽然其它容器仍然可通过 xhyve 网络栈进行交互，但却不是用的 Host 上的端口(在Host上无法访问)。==bridge 网络模式 -p 参数不受此影响，它能正常打开 Host 上的端口并映射到 Container 的对应 Port==。文档在这一点上并没有充分说明，容易踩坑。
+
+
+
+#### –link
+
+> docker0 特点，默认不能通过容器名相互访问， `--link` 可以做到通过容器名打通连接！
+
+```shell
+docker exec -it centos01 ping 172.17.0.3
+# PING 172.17.0.3(172.17.0.3) 56(84) bytes of data.
+# 64 bytes from centos02 (172.17.0.3): icmp_seq=1 ttl=64 time=0.129 ms
+# 64 bytes from centos02 (172.17.0.3): icmp_seq=2 ttl=64 time=0.100 ms
+
+docker exec -it centos01 ping centos02
+# ping: centos01: Name or service not known
+# 如何可以解决呢？
+# 通过 --link 可以解决网络连通问题
+docker run -d -P  --name centos03 --link centos02 centos
+docker exec -it centos03 ping centos02
+# PING centos02 (172.17.0.3) 56(84) bytes of data.
+# 64 bytes from centos02 (172.17.0.3): icmp_seq=1 ttl=64 time=0.129 ms
+# 64 bytes from centos02 (172.17.0.3): icmp_seq=2 ttl=64 time=0.100 ms
+
+# 反向不可以 ping 通
+docker exec -it centos02 ping centos03
+# ping: centos03: Name or service not known
+```
+
+`–link` 就是我们在 hosts 配置中增加了一个 `172.17.0.3 centos02 f322c3f86f49`, 所以如果 centos02 的地址变了， 就找不到了。
+
+![image-20211225125614509](.assets/image-20211225125614509.png)
+
+
+
+### docker network
+
+#### ls
+
+> 列出docker 所有网络
+
+```shell
+docker network ls
+```
+
+![image-20211225124519512](.assets/image-20211225124519512.png)
+
+
+
+#### inspect
+
+> 显示一个或多个网络的详细信息
+
+```shell
+docker network inspect
+```
+
+![image-20211225124800035](.assets/image-20211225124800035.png)
+
+
+
+#### create
+
+> 创建一个网络
+
+```shell
+docker network create --driver bridge --subnet 192.168.0.0/16 --gateway 192.168.0.1 net-test
+
+# --driver 管理网络的驱动程序（默认为“bridge”）
+# --subnet CIDR 格式的子网，表示一个网段
+# --gateway 主子网的 IPv4 或 IPv6 网关
+```
+
+![截屏2021-12-25 13.16.34](.assets/截屏2021-12-25 13.16.34.png)
+
+
+
+#### rm
+
+> 删除一个网络
+
+```shell
+docker network rm net-test
+```
+
+![image-20211225131828942](.assets/image-20211225131828942.png)
+
+
+
+#### connect
+
+> 将容器连接到网络
+
+```shell
+docker network connect net-test centos01
+# 连通之后就是讲 centos01 放到了 net-test 网路下
+# 一个容器两个 ip 地址：
+```
+
+![image-20211225142014343](.assets/image-20211225142014343.png)
+
+![image-20211225142041006](.assets/image-20211225142041006.png)
+
+
+
+### 自定义网络
+
+#### 网络模式
+
+- **bridge**： 桥接模式，docker 默认
+- **none**： 不配置网络
+- **host**： 和宿主机共享网络
+- **container**：容器网络连通！（用的少， 局限很大）
+
+```shell
+# 我们直接启动的命令默认有一个 --net bridge，而这个 bridge 就是我们的 docker0
+docker run -d -P --name ubuntu01 ubuntu 
+# 实际上是： docker run -d -P --name ubuntu01 --net bridge ubuntu01
+
+# 创建一个自定义网络
+docker network create --driver bridge --subnet 192.168.0.0/16 --gateway 192.168.0.1 net-test
+# 查看自定义网络详情
+```
+
+
+
+#### 创建一个自定义网络
+
+```shell
+docker network create --driver bridge --subnet 192.168.0.0/16 --gateway 192.168.0.1 net-test
+```
+
+![image-20211225132735185](.assets/image-20211225132735185.png)
+
+
+
+#### 在自定义网络里启动容器:
+
+```shell
+docker run -it -d --name ubuntu-net-01 --net net-test ubuntu
+docker run -it -d --name ubuntu-net-02 --net net-test ubuntu
+```
+
+![截屏2021-12-25 13.32.10](.assets/截屏2021-12-25 13.32.10.png)
+
+
+
+#### 测试自定义网络
+
+```shell
+# 以下方式都能 ping 通
+docker exec -it ubuntu-net-01 ping 192.168.0.3
+docker exec -it ubuntu-net-01 ping ubuntu-net-02
+```
 
 
 
