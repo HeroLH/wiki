@@ -1968,7 +1968,7 @@ curl -L https://get.daocloud.io/docker/compose/releases/download/1.25.5/docker-c
 ##### 授权
 
 ```shell
-chmod +x /usr/local/bin/docker-compose4e33mkkk
+chmod +x /usr/local/bin/docker-compose
 ```
 
 
@@ -2011,6 +2011,7 @@ docker-compose version
     from flask import Flask
     
     app = Flask(__name__)
+    # 通过域名访问 redis
     cache = redis.Redis(host='redis', port=6379)
     
     def get_hit_count():
@@ -2092,3 +2093,55 @@ services:
 #### Compose 构建
 
 在项目目录中，通过运行 `docker-compose up` 启动应用程序。
+
+```shell
+docker-compose up
+docker-compose up --build # 重新构建
+-d 		# 后台运行 
+```
+
+
+
+![image-20220103114623716](.assets/image-20220103114623716.png)
+
+![image-20220103121625562](.assets/image-20220103121625562.png)
+
+生成的镜像文件
+
+![image-20220103122018279](.assets/image-20220103122018279.png)
+
+生成的网络
+
+![截屏2022-01-03 12.25.27](.assets/截屏2022-01-03 12.25.27.png)
+
+
+
+#### 停止
+
+```shell
+docker-compose down
+# 或
+Ctrl + C
+```
+
+
+
+### 编写规则
+
+[官方规则文档](https://docs.docker.com/compose/compose-file/compose-file-v3/)
+
+```shell
+# 3层!
+version:'' 		# 版本
+services 			# 服务
+	web:				# 服务2
+    # 服务配置
+  	images
+  	build
+  	network
+  server_name	# 服务1
+volumes
+networks
+configs
+```
+
