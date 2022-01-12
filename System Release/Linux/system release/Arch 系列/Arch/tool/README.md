@@ -1282,7 +1282,11 @@ pacman -S remmina freerdp libvncserver telepathy-glib gnome-keyring nxproxy spic
 
 
 
-### UxPlay
+
+
+### 投屏到主机
+
+#### UxPlay
 
 > iPad 和 iPhone 投屏到 Linux
 
@@ -1301,9 +1305,7 @@ uxplay
 
 
 
-
-
-### scrcpy 
+#### scrcpy 
 
 > 手机投屏到 Linux
 
@@ -1317,7 +1319,7 @@ sudo pacman -S scrcpy
 
 
 
-#### 有线投屏
+##### 有线投屏
 
 - 在手机端的设置中把 android 手机调试模式打开
 
@@ -1341,9 +1343,7 @@ $ /snap/bin/scrcpy
 
 
 
-
-
-#### 无线连接：
+##### 无线连接：
 
 总插着线比较麻烦，官网也给出了[局域网无线连接方式](https://www.genymotion.com/blog/open-source-project-scrcpy-now-works-wirelessly/)
 
@@ -1394,6 +1394,20 @@ $ /snap/bin/scrcpy
     ```
 
 - 可以看到会启动一个投屏窗口
+
+
+
+### 投屏到其他设备
+
+#### Deskreen
+
+> 将任何带有网络浏览器的设备变成计算机的第二个屏幕
+
+```shell
+yay -S deskreen
+```
+
+![2022-01-07_14-07](../../../../../../../../../2022-01-07_14-07.png)
 
 
 

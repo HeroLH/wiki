@@ -1934,7 +1934,7 @@ docker exec -it ubuntu-net-01 ping ubuntu-net-02
 
 &emsp;&emsp;Compose 是一个用于定义和运行多容器 Docker 应用程序的工具。 借助 Compose，您可以使用 YAML 文件来配置应用程序的服务。 然后，使用单个命令，从配置中创建并启动所有服务。使用 Compose 基本上有三个步骤:
 
-- Dockerfile 保证我们的项目在任何地方可以运行。
+- 使用 Dockerfile 定义应用程序的环境，这样它就可以在任何地方复制。
 - 用 `docker-compose. yml` 定义组成应用程序的服务，这样它们就可以在一个独立的环境中一起运行。
 - 运行 `docker compose up` 启动并运行整个应用程序。
 
