@@ -1519,6 +1519,26 @@ sudo pacman -Ss korganizer
 
 ## 下载工具
 
+### 阿里云 oss-browser
+
+[下载地址](https://help.aliyun.com/document_detail/209974.htm?spm=a2c4g.11186623.0.0.4cd67a4748OjpA#task-2065478)
+
+![2022-01-24_16-48](.assets/2022-01-24_16-48.png)
+
+```shell
+# 解决找不到 libgconf-2.so.4 的问题
+sudo pacman -S gconf
+
+# 建立软链接
+sudo ln -s /home/admin/software/oss-browser-linux-x64/oss-browser /usr/bin/oss-browser
+```
+
+![img](https://help-static-aliyun-doc.aliyuncs.com/assets/img/zh-CN/6227056161/p40359.png)
+
+
+
+
+
 ### 百度网盘
 
 #### BaiduPCS-Go
