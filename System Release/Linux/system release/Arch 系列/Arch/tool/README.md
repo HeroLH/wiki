@@ -772,6 +772,16 @@ env WINEPREFIX="$HOME/.deepinwine/Spark-WeChat" winecfg
 
 
 
+原生微信桌面版
+
+```shell
+sudo pacman -Ss com.tencent.weixin
+```
+
+
+
+
+
 
 
 ### Tim
