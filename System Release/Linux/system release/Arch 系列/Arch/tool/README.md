@@ -292,6 +292,34 @@ sudo pacman -S qt5ct
 
 
 
+### 分区工具
+
+#### gparted
+
+```shell
+sudo pacman -S gparted
+```
+
+![2022-02-11_10-01](.assets/2022-02-11_10-01.png)
+
+
+
+
+
+### 系统清理
+
+#### bleachbit
+
+```shell
+sudo pacman -S bleachbit
+```
+
+![2022-02-11_10-06](../../../../../../../../../2022-02-11_10-06.png)
+
+
+
+
+
 ## 输入法工具
 
 ###  安装字体和Emoji
@@ -1722,6 +1750,18 @@ sudo pacman -S zathura zathura-pdf-mupdf
 ```shell
 sudo pacman -S evince 
 ```
+
+
+
+### calibre
+
+> 电子书阅读器
+
+```shell
+sudo pacman -S calibre
+```
+
+![2022-02-11_09-58](.assets/2022-02-11_09-58.png)
 
 
 
