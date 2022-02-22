@@ -27,6 +27,12 @@
 
 
 
+## 你可能想知道的
+
+- [Discord：为什么我们从 Go 切换到 Rust](https://markdowner.net/article/170278545065926656)
+
+
+
 ## 简介
 
 
@@ -209,27 +215,85 @@ cargo check
 
 
 
+## 变量与可变性
+
+### 不可变的变量
+
+==变量默认是不可改变的。==
+
+> 这是 Rust 提供给你的众多优势之一，让你得以充分利用 Rust 提供的安全性和简单并发性来编写代码。不过，你仍然可以使用可变变量。
+
+```shell
+fn main() {
+    let x = 5;
+    println!("The value of x is: {}", x);
+    x = 6;
+    println!("The value of x is: {}", x);
+}
+```
+
+保存并使用 `cargo run` 运行程序。应该会看到一条错误信息，如下输出所示：
+
+> cargo run
+>    Compiling variables v0.1.0 (file:///projects/variables)
+> error[E0384]: cannot assign twice to immutable variable `x`
+>  --> src/main.rs:4:5
+>   |
+> 2 |     let x = 5;
+>   |         -
+>   |         |
+>   |         first assignment to `x`
+>   |         help: consider making this binding mutable: `mut x`
+> 3 |     println!("The value of x is: {}", x);
+> 4 |     x = 6;
+>   |     ^^^^^ cannot assign twice to immutable variable
+>
+> For more information about this error, try `rustc --explain E0384`.
+> error: could not compile `variables` due to previous error
+
+错误信息指出错误的原因是 **不能对不可变变量 x 二次赋值**（`cannot assign twice to immutable variable `x` `），因为你尝试对不可变变量 `x` 赋第二个值。
+
+为什么要这么处理？
+
+> 在尝试改变预设为不可变的值时，产生编译时错误是很重要的，因为这种情况可能导致 bug。如果一部分代码假设一个值永远也不会改变，而另一部分代码改变了这个值，第一部分代码就有可能以不可预料的方式运行。不得不承认这种 bug 的起因难以跟踪，尤其是第二部分代码只是 **有时** 会改变值。
+> Rust 编译器保证，如果声明一个值不会变，它就真的不会变，所以你不必自己跟踪它。这意味着你的代码更易于推导。
+
+
+
+### 可变变量
+
+你可以在变量名之前加 `mut` 来使其可变。`mut` 也向读者表明了其他代码将会改变这个变量值的意图。
+
+```shell
+fn main () {
+    let mut x = 5;
+    println!("The value of x is {}", x);
+    x = 6;
+    println!("The value of x is {}", x);
+}
+```
+
+> $ cargo run
+>    Compiling variables v0.1.0 (file:///projects/variables)
+>     Finished dev [unoptimized + debuginfo] target(s) in 0.30s
+>      Running `target/debug/variables`
+> The value of x is: 5
+> The value of x is: 6
+
+通过 `mut`，允许把绑定到 `x` 的值从 `5` 改成 `6`。
+除了防止出现 bug 外，还有很多地方需要权衡取舍。例如，使用大型数据结构时，适当地使用可变变量，可能比复制和返回新分配的实例更快。对于较小的数据结构，总是创建新实例，采用更偏向函数式的编程风格，可能会使代码更易理解，为可读性而牺牲性能或许是值得的。
 
 
 
 
 
+## 提出问题
 
+rust 为什么更加安全?
 
+rust 性能如何?为什么性能好?
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+rust 得变量为什么不可变?
 
 
 
