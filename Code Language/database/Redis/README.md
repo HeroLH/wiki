@@ -288,6 +288,27 @@ redis-benchmark -h localhost -p 6379 -c 100 -n 100000
 
 
 
+edis 性能测试工具可选参数如下所示：
+
+| 选项                   | 描述                                       | 默认值    |
+| :--------------------- | :----------------------------------------- | :-------- |
+| **-h**                 | 指定服务器主机名                           | 127.0.0.1 |
+| **-p**                 | 指定服务器端口                             | 6379      |
+| **-s**                 | 指定服务器 socket                          |           |
+| **-c**                 | 指定并发连接数                             | 50        |
+| **-n**                 | 指定请求数                                 | 10000     |
+| **-d**                 | 以字节的形式指定 SET/GET 值的数据大小      | 2         |
+| **-k**                 | 1=keep alive 0=reconnect                   | 1         |
+| **-r**                 | SET/GET/INCR 使用随机 key, SADD 使用随机值 |           |
+| **-P**                 | 通过管道传输 <numreq> 请求                 | 1         |
+| **-q**                 | 强制退出 redis。仅显示 query/sec 值        |           |
+| **--csv**              | 以 CSV 格式输出                            |           |
+| **-l（L 的小写字母）** | 生成循环，永久执行测试                     |           |
+| **-t**                 | 仅运行以逗号分隔的测试命令列表。           |           |
+| **-I（i 的大写字母）** | Idle 模式。仅打开 N 个 idle 连接并等待。   |           |
+
+
+
 
 
 # 基础知识
@@ -300,28 +321,44 @@ redis-benchmark -h localhost -p 6379 -c 100 -n 100000
 
 
 ## Redis 是单线程的
+&emsp;&emsp;官方表示，Redis 是基于内存操作，CPU 不是 Redis 性能瓶颈，==Redis 的瓶颈是根据机器的内存和网络带宽==，既然可以使用单线程来实现，就使用单线程了！
+&emsp;&emsp;Redis 是C 语言写的，官方提供的数据为 100000+ 的QPS，完全不比同样是使用 key-vale的 Memecache差！ 
 
-明白Redis是很快的，官方表示，Redis是基于内存操作，CPU不是Redis性能瓶颈，Redis的瓶颈是根据机器的内存和网络带宽，既然可以使用单线程来实现，就使用单线程了！所有就使用了单线程了！ Redis 是C 语言写的，官方提供的数据为 100000+ 的QPS，完全不比同样是使用 key-vale的 Memecache差！ Redis 为什么单线程还这么快？ 1、误区1：高性能的服务器一定是多线程的？ 2、误区2：多线程（CPU上下文会切换！）一定比单线程效率高！ 先去CPU>内存>硬盘的速度要有所了解！ 核心：redis 是将所有的数据全部放在内存中的，所以说使用单线程去操作效率就是最高的，多线程 （CPU上下文会切换：耗时的操作！！！），对于内存系统来说，如果没有上下文切换效率就是最高 的！多次读写都是在一个CPU上的，在内存情况下，这个就是最佳的方案！
+
+
+### 为什么单线程还这么快？ 
+
+- 误区1：高性能的服务器一定是多线程的？
+- 误区2：多线程（CPU上下文会切换！）一定比单线程效率高！ 
+
+>  先去 CPU > 内存 > 硬盘的速度要有所了解！ 
+
+
+
+核心：
+
+redis 是将所有的数据全部放在内存中的，所以说使用单线程去操作效率就是最高的，使用多线程时 CPU 上下文会切换：是耗时的操作！！！），**对于内存系统来说，如果没有上下文切换效率就是最高的！**多次读写都是在一个CPU上的，在使用内存情况下，这个就是最佳的方案！
 
 
 
 ## Redis 常用命令
 
-|       命令行        |                 说明                  | 示例          |
-| :-----------------: | :-----------------------------------: | ------------- |
-|      redis-cli      |           打开 redis 客户端           |               |
-|       flushdb       |            清空当前数据库             |               |
-|      flushall       |     清空全部数据库，==慎用！！==      |               |
-|      help 命令      |               获取帮助                | `help set`    |
-|       select        |              切换数据库               | `select 3`    |
-|       DBSIZE        |          查看当前数据库大小           |               |
-|       keys *        |          查看数据库所以的key          |               |
-|      exists 键      |        检测数据库是否存在该键         | `exists key1` |
-|      type name      |         获取name对应值的类型          |               |
-| rename name newname |          对redis的name重命名          |               |
-|  expire name time   | 为某个 redis 的某个 name 设置超时时间 |               |
-|    move name db     |    将redis的某个值移动到指定的db下    |               |
-|      del name       | 根据 name 删除 redis 中的任意数据类型 |               |
+|      命令行       |                   说明                    |        示例        |
+| :---------------: | :---------------------------------------: | :----------------: |
+|     redis-cli     |             打开 redis 客户端             |                    |
+|      flushdb      |              清空当前数据库               |                    |
+|     flushall      |       清空全部数据库，==慎用！！==        |                    |
+|     help 命令     |                 获取帮助                  |     `help set`     |
+|      select       |                切换数据库                 |     `select 3`     |
+|      DBSIZE       |            查看当前数据库大小             |                    |
+|      keys *       |            查看数据库所以的key            |      `keys *`      |
+|     exists 键     |          检测数据库是否存在该键           |   `exists key1`    |
+|      type 键      |            获取键对应值的类型             |    `type key1`     |
+| rename 键 newname |            对redis的name重命名            | `rename key1 key2` |
+|  expire 键 time   | 为某个 redis 的某个 name 设置超时时间(秒) |  `expire key1 10`  |
+|      ttl 键       |           查看当前 key 剩余时间           |     `ttl key1`     |
+|    move 键 db     |      将redis的某个值移动到指定的db下      |   `move name 1`    |
+|      del 键       |   根据 name 删除 redis 中的任意数据类型   |     `del key1`     |
 
 ```shell
 # 设置值
@@ -345,6 +382,794 @@ randomkey()
 scan(cursor=0, match=None, count=None)
 scan_iter(match=None, count=None)
 ```
+
+
+
+
+
+## 五大数据类型
+
+![image-20220224205249940](.assets/image-20220224205249940.png)
+
+
+
+### 字符串(String)
+
+#### 设置值
+
+##### set
+
+> 设置键来保存字符串值。如果 key 已经保存了一个值，那么不管它的类型如何，它都会被==覆盖==。
+
+```shell
+set(name, value, ex=None, px=None, nx=False, xx=False)
+```
+
+
+
+在Redis中设置值，默认不存在则创建，存在则修改，参数：
+
+```shell
+SET key value [expiration EX seconds|PX milliseconds] [NX|XX]
+
+ex，过期时间（秒）
+px，过期时间（毫秒）
+nx，如果设置为 True，则只有 name 不存在时，当前set操作才执行
+xx，如果设置为 True，则只有 name 存在时，岗前set操作才执行
+```
+
+
+
+###### 返回值
+
+- OK
+
+    > 如果 SET 正确执行，确定。
+
+- nil
+
+    > 如果 SET 操作没有执行。（因为用户指定了 NX 或 XX 选项，但没有满足条件。）
+
+
+
+###### 示例：
+
+```shell
+set name1 "lin"				# 不会自动过期
+set name "lin" ex 5			# 5 秒后过期
+set name "lin" px 5000		# 5 秒后过期
+set name1 "lin" nx			# name1 有值时无法执行
+set name1 "lin1" xx			# name1 有值时可以执行(修改值)
+```
+
+![image-20200706210309433](.assets/image-20200706210309433.png)
+
+##### setnx
+
+> **SET** if **N**ot e**X**ists
+
+```shell
+setnx(name, value)
+```
+
+设置值，只有 name 不存在时，执行设置操作（添加）
+
+
+
+##### setex
+> SET mykey value **EX**PIRE mykey seconds
+
+```shell
+setex(name, value, time)
+```
+
+设置值以及值的过期时间（数字秒 或 timedelta 对象）
+
+
+
+#####  psetex
+
+![image-20220224211647744](.assets/image-20220224211647744.png)
+
+```shell
+psetex(name, time_ms, value)
+```
+
+设置值，time_ms，毫秒级过期时间（数字毫秒 或 timedelta 对象）
+
+
+
+##### mset
+
+> **M**ulti set
+
+![image-20220224212122416](.assets/image-20220224212122416.png)
+
+```shell
+mset(*args, **kwargs)
+```
+
+- **批量设置值**。用新值替换现有值，就像常规的 SET 一样.
+
+    ```shell
+    # 如：
+    mset(k1='v1', k2='v2')
+    # 或
+    mget({'k1': 'v1', 'k2': 'v2'})
+    ```
+
+- **MSET 是原子的**，因此所有给定的键都是同时设置的。
+
+    > 客户机不可能看到一些密钥已经更新，而其他密钥没有更新。
+
+
+
+###### 返回值
+
+简总是`OK`因为 MSET 不能失败。
+
+
+
+###### 示例：
+
+```shell
+mset name lin age 18
+```
+
+<img src=".assets/image-20200706210716355.png" alt="image-20200706210716355" style="zoom:150%;" />
+
+
+
+##### msetnx
+
+> **M**ulti set value is **N**ot **E**xist
+
+- 当所有给定 key 都不存在时，同时设置一个或多个 key-value 对。
+
+```shell
+MSETNX key1 value1 key2 value2 .. keyN valueN 
+```
+
+
+
+###### 返回值
+
+当所有 key 都成功设置，返回 1 。 
+
+如果所有给定 key 都设置失败(至少有一个 key 已经存在)，那么返回 0 。
+
+
+
+###### 示例
+
+```shell
+# 对不存在的 key 进行 MSETNX
+127.0.0.1:6379> msetnx key1 val1 key2 val2
+(integer) 1
+
+# 给定 key 当中有已存在的 key
+127.0.0.1:6379> msetnx key2 val2 key3 val3
+(integer) 0
+127.0.0.1:6379> mget key1 key2 key3
+1) "val1"
+2) "val2"
+3) (nil)
+```
+
+![image-20220224213041348](.assets/image-20220224213041348.png)
+
+
+
+##### setbit
+
+> 用于对 key 所储存的字符串值，设置或清除指定偏移量上的位(bit)。
+
+```shell
+setbit(name, offset, value)
+```
+
+```shell
+# 参数：
+name:		redis的name
+offset:		位的索引（将值变换成二进制后再进行索引）
+value:		值只能是 1 或 0
+
+# 注：如果在Redis中有一个对应： n1 = "foo"，
+  那么字符串foo的二进制表示为：01100110 01101111 01101111
+所以，如果执行 setbit('n1', 7, 1)，则就会将第7位设置为1，
+  那么最终二进制则变成 01100111 01101111 01101111，即："goo"
+```
+
+示例：
+
+```shell
+setbit name 7 1
+```
+
+![image-20200706212954442](.assets/image-20200706212954442.png)
+
+
+
+
+
+#### 获取值
+
+##### get
+
+获取键的值。
+
+```shell
+GET key
+```
+
+
+
+###### 返回值
+
+- 键的值
+
+- nil
+
+    > 如果键不存在，则返回特殊值 nil。
+
+- Error
+
+    > 如果键存储的值不是字符串，则返回错误，因为 GET 只处理字符串值。
+
+
+
+###### 示例
+
+```shell
+get key1
+```
+
+![image-20220225214335193](.assets/image-20220225214335193.png)
+
+
+
+##### getdel
+
+> **get** the value of key and **del**ete the key.
+
+```shell
+GETDEL key
+```
+
+获取键的值并删除键。这个命令类似于 GET，只是它在成功时也会删除键(当且仅当键的值类型是字符串)。
+
+
+
+###### 返回值
+
+- 键的值
+
+- nil
+
+    > 如果键不存在，则返回特殊值 nil。
+
+- Error
+
+    > 如果键存储的值不是字符串，则返回错误。
+
+
+
+###### 示例
+
+```shell
+getdel key1
+```
+
+![image-20220225214847062](.assets/image-20220225214847062.png)
+
+
+
+
+
+##### mget
+
+```shell
+mget(keys, *args)
+```
+
+
+
+批量获取
+
+```shell
+# 如：
+mget('ylr', 'wupeiqi')
+# 或
+r.mget(['ylr', 'wupeiqi'])
+```
+
+示例：
+
+```shell
+mget name age
+```
+
+<img src=".assets/image-20200706211036839.png" alt="image-20200706211036839" style="zoom:150%;" />
+
+
+
+##### getrange
+
+> 获取子序列(根据字节获取，非字符)。
+
+```shell
+GETRANGE key start end
+
+start，起始位置（字节）
+end，结束位置（字节）
+```
+
+- 可以使用负偏移量来提供从字符串末尾开始的偏移量。
+
+    > 所以-1表示最后一个字符,-2表示倒数第二个字符等等。
+
+- 该函数通过将结果范围限制为字符串的实际长度来处理超出范围的请求。
+
+
+
+###### 返回值
+
+截取得到的子字符串。
+
+
+
+示例
+
+```shell
+getrange name1 0 2  
+getrange name1 0 -1			# 取到最后一位数  
+```
+
+![image-20220225221205306](.assets/image-20220225221205306.png)
+
+
+
+##### getbit
+
+> getbit(name, offset)
+
+获取name对应的值的二进制表示中的某位的值 （0或1）
+
+```shell
+getbit name 7
+# 字符串 goo 的二进制表示为：01100111 01101111 01101111
+# 所以，第7位为1, 第0位为0
+```
+
+![image-20200706213237373](.assets/image-20200706213237373.png)
+
+
+
+##### bitcount
+
+> bitcount(key, start=None, end=None)
+
+获取name对应的值的二进制表示中 1 的个数
+
+```shell
+key:		Redis的name
+start:		位起始位置
+end:		位结束位置
+```
+
+示范：
+
+```shell
+bitcount name
+bitcount name 0 0
+bitcount name 0 1
+```
+
+![image-20200706213723645](.assets/image-20200706213723645.png)
+
+
+
+#### 更新值
+
+##### getset
+
+设置指定 key 的值，并返回 key 旧的值。
+
+```shell
+GETSET key val
+```
+
+
+
+###### 返回值
+
+- 返回给定 key 的旧值。
+
+-  nil
+
+    > 当 key 没有旧值时，即 key 不存在时，返回 nil 。
+
+- error
+
+    > 当 key 存在但不是字符串类型时，返回一个错误。
+
+
+
+###### 示例
+
+```shell
+getset age 19
+```
+
+![image-20220225215910901](.assets/image-20220225215910901.png)
+
+
+
+##### getex
+
+> **get** the value of key and optionally set its **ex**piration.
+
+```shell
+GETEX key [EX seconds|PX milliseconds|EXAT timestamp|PXAT milliseconds-timestamp|PERSIST]
+
+# EX seconds：                设置指定的过期时间(秒)
+# PX milliseconds：           设置指定的过期时间，以毫秒为单位
+# EXAT timestamp-seconds      设置指定的密钥过期的 Unix 时间，以秒为单位
+# PXAT timestamp-milliseconds 设置指定的密钥过期的 Unix 时间，以毫秒为单位
+# PERSIST                      删除与钥匙相关的居住时间
+```
+
+获取键的值并可以选择设置其过期时间。
+
+
+
+###### 返回值
+
+- 鍵的值
+
+- nil
+
+    > key 不存在时为 nil
+
+
+
+示例
+
+```shell
+getex key1 ex 20    # 获取 key1 的值并设置 key1 20 秒后过期
+```
+
+![image-20220225223430759](.assets/image-20220225223430759.png)
+
+
+
+##### append
+
+> 在 redis 键对应的值后面追加内容
+
+```shell
+APPEND key value
+# key:			redis 的 key
+# value:		要追加的字符串
+```
+
+- 如果 key 已经存在并且是一个字符串，则该命令将该值追加到字符串的末尾。
+
+- 如果键不存在，则创建该键并将其设置为空字符串
+
+    > 在这种特殊情况下，APPEND 类似于 SET。
+
+
+
+###### 返回值
+
+追加指定值之后， key 中字符串的长度。
+
+
+
+###### 示例：
+
+```shell
+append key1 val1
+```
+
+![image-20220225201333808](.assets/image-20220225201333808.png)
+
+
+
+##### setrange
+
+> 修改字符串内容，从指定字符串索引开始向后替换（新值太长时，则向后添加）
+
+```shell
+SETRANGE key offset value 
+
+# offset:		字符串的索引，字节（一个汉字三个字节）
+# value:		要设置的值
+```
+
+- 从指定的偏移量开始，覆盖存储在键处的字符串的一部分，覆盖整个值的长度。
+- 如果偏移量大于按键处字符串的当前长度，则用==零字节填充字符串==，以使偏移量适合。
+- 不存在的键被认为是空字符串，所以这个命令将确保它保存的字符串足够大，可以在偏移量处设置值。
+- 请注意，您可以设置的最大偏移量为229-1(536870911) ，因为 Redis string 限制为512兆字节。如果您需要增长超过这个大小，您可以使用多个键。
+
+
+
+###### 返回值
+
+字符串被命令修改后的长度。
+
+
+
+###### 示例：
+
+```shell
+setrange name1 3 2
+setrange name1 3 22222222
+```
+
+![image-20220225222148223](.assets/image-20220225222148223.png)
+
+
+
+
+
+#### 特殊
+
+##### strlen
+
+```shell
+STRLEN key
+```
+
+- 返回 name 对应值的字节长度（一个汉字3个字节）
+- 当 key 储存的不是字符串值时，返回一个错误。
+
+
+
+###### 返回值
+
+字符串值的长度。 当 key 不存在时，返回 0。
+
+
+
+###### 示例
+
+```shell
+strlen key1
+```
+
+![image-20220225202657748](.assets/image-20220225202657748.png)
+
+
+
+##### incr
+
+> Increments the number stored at `key` by one.
+
+- 将 key 中储存的数字值增一。
+
+- 如果 key 不存在，那么 key 的值会先被初始化为 0 ，然后再执行 INCR 操作。
+
+- 如果值包含错误的类型，或字符串类型的值不能表示为数字，那么返回一个错误。
+
+```shell
+INCR key
+```
+
+
+
+###### 返回值
+
+- 执行命令之后 key 的值。
+
+- ERROR
+
+    > 值包含错误的类型， 如字符串等等
+
+
+
+###### 示例：
+
+```shell
+incr age
+```
+
+![image-20220225204957776](.assets/image-20220225204957776.png)
+
+
+
+##### incrby
+
+> **Incr**ements the number stored at key **by** increment
+
+- 将 key 所储存的值加上指定的增量值。
+
+- 未设置减量值时也会报错，其余与 DECR 无差别。
+
+```shell
+INCRBY key AMOUNT
+```
+
+
+
+
+
+###### 返回值
+
+- 执行命令之后 key 的值。
+
+- ERROR
+
+    > 值包含错误的类型， 如字符串等等
+    >
+    > 未设置增量值时也会报错
+
+
+
+###### 示例
+
+```shell
+incrby key1 2
+```
+
+![image-20220225211026726](.assets/image-20220225211026726.png)
+
+
+
+
+
+##### incrbyfloat
+
+> **Incr**ement the string representing a **float**ing point number stored at key **by** the specified increment.
+
+- 为 key 中所储存的值加上指定的浮点数增量值。
+
+- 如果 key 不存在，会先将 key 的值设为 0 ，再执行加法操作。
+
+
+
+###### 返回值
+
+- 执行命令之后 key 的值。
+
+- ERROR
+
+    > 值包含错误的类型， 如字符串等等
+    >
+    > 未设置增量值时也会报错
+
+
+
+###### 示例：
+
+```shell
+incrbyfloat age 5
+incrbyfloat age 1.1
+incrbyfloat age -2.1
+incrbyfloat age 5.0e3
+```
+
+![image-20220225211718351](.assets/image-20220225211718351.png)
+
+
+
+##### decr
+
+> Decrements the number stored at `key` by one
+
+```shell
+DECR key
+```
+
+- 将 key 中储存的数字值减一。
+
+- 如果 key 不存在，那么 key 的值会先被初始化为 0 ，然后再执行 DECR 操作。
+
+- 如果值包含错误的类型，或字符串类型的值不能表示为数字，那么返回一个错误。
+
+- 本操作的值限制在 64 位(bit)有符号数字表示之内。
+
+
+
+###### 返回值
+
+- 执行命令之后 key 的值。
+
+- ERROR
+
+    > 值包含错误的类型， 如字符串等等
+
+
+
+###### 示例：
+
+```shell
+decr age
+```
+
+![image-20220225205654373](.assets/image-20220225205654373.png)
+
+
+
+
+
+##### decrby
+
+> **Decr**ements the number stored at key **by** decrement.
+
+```shell
+DECRBY key amount
+
+# amount 减量值
+```
+
+- 将 key 所储存的值减去指定的减量值。
+
+- 未设置减量值时也会报错，其余与 DECR 无差别。
+
+
+
+###### 返回值
+
+- 执行命令之后 key 的值。
+
+- ERROR
+
+    > 值包含错误的类型， 如字符串等等
+    >
+    > 未设置减量值时也会报错
+
+
+
+###### 示例
+
+```shell
+decrby key1 2
+```
+
+![image-20220225210547420](.assets/image-20220225210547420.png)
+
+
+
+##### lcs
+
+> **L**ongest **C**ommon **S**ubsequence
+
+- LCS 命令实现最长公共子序列算法。
+
+    > 注意，这不同于最长的公共字符串算法，因为字符串中的匹配字符不需要是连续的。例如:
+    >
+    > `foo` 和 ` fao` 之间的 LCS 是 ` fo`，因为从左向右扫描两个字符串，最长的公共字符集由第一个 `f` 和第二个 `o` 组成。
+
+- LCS 对于评估两个字符串的相似程度非常有用。字符串可以代表很多东西。
+
+    > 例如，如果两个字符串是 DNA 序列，LCS 将提供两个 DNA 序列之间的相似性度量。如果字符串表示某个用户编辑的某个文本，那么 LCS 可以表示新文本与旧文本之间的差异，等等。
+
+
+
+###### 时间复杂度
+
+```shell
+O(N*M)
+```
+
+其中 n 是第一个字符串的长度，m 是第二个字符串的长度。因此，要么选择另一个 Redis 实例以运行此算法，要么确保以非常小的字符串运行它。
+
+
+
+###### 示例
+
+==未使用成功==
+
+```shell
+> MSET key1 ohmytext key2 mynewtext
+OK
+> LCS key1 key2
+(error) ERR unknown command `LCS`, with args beginning with: `key1`, `key2`,
+```
+
+
 
 
 
