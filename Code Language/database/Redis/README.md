@@ -395,6 +395,11 @@ scan_iter(match=None, count=None)
 
 ### 字符串(String)
 
+- [String 命令中文官网链接](https://www.redis.net.cn/order/3544.html)
+- [String 命令官网链接](https://redis.io/commands/append)
+
+
+
 #### 设置值
 
 ##### set
@@ -731,7 +736,11 @@ getrange name1 0 -1			# 取到最后一位数
 
 ##### getbit
 
-> getbit(name, offset)
+```shell
+GETBIT key offset
+
+# offset：  偏移量
+```
 
 获取name对应的值的二进制表示中的某位的值 （0或1）
 
@@ -1168,6 +1177,517 @@ OK
 > LCS key1 key2
 (error) ERR unknown command `LCS`, with args beginning with: `key1`, `key2`,
 ```
+
+
+
+
+
+
+
+### 列表(List)
+
+- [List 命令中文官网链接](https://www.redis.net.cn/order/3577.html)
+- 
+
+
+
+List操作，redis 中的 List 在内存中按照一个 name 对应一个 List 来存储。如图：
+
+<img src=".assets/720333-20161224164119620-243246367.png" alt="720333-20161224164119620-243246367" style="zoom:50%;" />
+
+- Redis列表是简单的字符串列表，按照插入顺序排序。
+- 你可以添加一个元素导列表的头部（左边）或者尾部（右边）
+- 一个列表最多可以包含 232 - 1 个元素 (4294967295, 每个列表超过40亿个元素)。
+
+
+
+#### 设置值
+
+##### lpush
+
+在 name 对应的 list 中添加元素，每个新的元素都添加到列表的最左边
+
+```shell
+LPUSH key value1 value2 ... valueN
+
+# 保存顺序为： 第一个 value 会被先放进列表头
+# valueN ... value2 value1
+```
+
+- 将一个或多个值插入到列表头部。 
+- 如果 key 不存在，一个空列表会被创建并执行 LPUSH 操作。
+-  当 key 存在但不是列表类型时，返回一个错误。
+
+
+
+###### 返回值
+
+- 执行 LPUSH 命令后，列表的长度。
+
+
+
+######  示例：
+
+```shell
+lpush list1 1 2 3 4 5 6 7 8 9
+```
+
+![image-20220226225103007](.assets/image-20220226225103007.png)
+
+
+
+
+
+##### lpushx
+
+> Ionly if `key` already e**x**ists and holds a list. In contrary to **LPUSH**
+
+在 name 对应的 list 中添加元素，只有 name 已经存在时，值添加到列表的最左边；否则什么都不干
+
+```shell
+LPUSHX key value1 value2 ... valueN
+
+# 保存顺序为： 第一个 value 会被先放进列表头
+# valueN ... value2 value1
+```
+
+
+
+###### 返回值
+
+执行之后，返回列表的长度。
+
+
+
+###### 示例
+
+```shell
+lpushx list2 10
+```
+
+![image-20220226232437265](.assets/image-20220226232437265.png)
+
+
+
+
+
+
+
+##### rpush
+
+在 name 对应的 list 中添加元素，每个新的元素都添加到列表的最右边
+
+```shell
+RPUSH key value1 value2 ... valueN
+
+# 保存顺序为： 第一个 value 会被先放进列表尾
+# value1 value2 ... valueN
+```
+
+- 将一个或多个值插入到列表的尾部(最右边)。
+
+- 如果列表不存在，一个空列表会被创建并执行 RPUSH 操作。
+-  当列表存在但不是列表类型时，返回一个错误。
+
+**注意：**在 Redis 2.4 版本以前的 RPUSH 命令，都只接受单个 value 值。
+
+
+
+###### 返回值
+
+执行 RPUSH 操作后，列表的长度。
+
+
+
+######  示例：
+
+```shell
+rpush list2 1 2 3 4 5 6 7 8 9
+```
+
+![image-20220226225813007](.assets/image-20220226225813007.png)
+
+
+
+
+
+##### rpushx
+
+> Ionly if `key` already e**x**ists and holds a list. In contrary to **RPUSH**
+
+在 name 对应的 list 中添加元素，只有 name 已经存在时，值添加到列表的最右边；否则什么都不干
+
+```shell
+RPUSHX key value1 value2 ... valueN
+
+# 保存顺序为： 第一个 value 会被先放进列表尾
+# value1 value2 ... valueN
+```
+
+
+
+###### 返回值
+
+执行之后，返回列表的长度。
+
+
+
+###### 示例
+
+```shell
+> exists key1
+(integer) 0
+> rpushx key1 val1			# 不存在的key不会操作， 返回空列表长度 0
+(integer) 0
+> lrange key1 0 -1
+(empty array)
+> rpush key1 val1 val2
+(integer) 2
+> rpushx key1 val3
+(integer) 3
+> lrange key1 0 -1
+1) "val1"
+2) "val2"
+3) "val3"
+```
+
+![image-20220226233144020](.assets/image-20220226233144020.png)
+
+<img src=".assets/image-20200719160646481.png" alt="image-20200719160646481" style="zoom:150%;" />
+
+
+
+##### linsert
+
+在 name 对应的列表的某一个值前或后插入一个新值
+
+```shell
+LINSERT key [BEFORE|AFTER] existing_value new_value
+
+# [BEFORE|AFTER]：    在 existing_value 之前或之后插入值
+# existing_value:     已存在的值(标杆值)，（会在它前面或后面插入数据）
+# new_value： 		 待插入的值
+```
+
+如果列表内有多个 existing_value 值， 每次 linsert 只会在左边第一个插入
+
+
+
+###### 返回值
+
+- 如果命令执行成功，返回插入操作完成之后，列表的长度。
+-  如果没有找到指定元素 ，返回 -1 。
+- 如果 key 不存在或为空列表，返回 0 。
+
+
+
+###### 示例
+
+```shell
+> exists key1
+(integer) 0
+> linsert key1 before 0 0    # key 不存在或为空列表，返回 0 
+(integer) 0
+> rpush key1 1 2 2 3
+(integer) 4
+> lrange key1 0 -1
+1) "1"
+2) "2"
+3) "2"
+4) "3"
+> linsert key1 before 2 0  
+(integer) 5
+> linsert key1 before 2 0
+(integer) 6
+> lrange key1 0 -1          # 列表内有多个标杆值， 每次只会在左边第一个插入
+1) "1"
+2) "0"
+3) "0"
+4) "2"
+5) "2"
+6) "3"
+> linsert key1 after 4 0   # 没有找到指定元素 ，返回 -1 
+(integer) -1
+```
+
+![image-20220226234443704](.assets/image-20220226234443704.png)
+
+
+
+
+
+#### 获取值
+
+##### lrange
+
+返回列表中指定区间内的元素
+
+```shell
+LRANGE key start end
+
+# 参数：
+# start:		索引的起始位置
+# end:			索引结束位置
+```
+
+- 返回列表中指定区间内的元素，区间以偏移量 START 和 END 指定。 
+- 其中 0 表示列表的第一个元素， 1 表示列表的第二个元素，以此类推。 
+- 你也可以使用负数下标，以 -1 表示列表的最后一个元素， -2 表示列表的倒数第二个元素，以此类推。
+
+
+
+###### 返回值
+
+一个列表，包含指定区间内的元素。
+
+
+
+###### 示例
+
+```shell
+lrange list1 0 -1
+lrange list1 -9 -1
+lrange list1 -2 -1
+```
+
+![image-20200719155738238](.assets/image-20200719155738238.png)
+
+
+
+##### lindex
+
+通过索引获取列表中的元素。
+
+```shell
+LINDEX key index
+
+# index: 列表下标
+```
+
+
+
+###### 返回值
+
+- 列表中下标为指定索引值的元素。 
+
+- nil
+
+    > 如果指定索引值不在列表的区间范围内，返回 nil 
+
+
+
+###### 示例
+
+```shell
+ lindex list3 1
+```
+
+![image-20220227000911007](.assets/image-20220227000911007.png)
+
+
+
+
+
+#### 更新值
+
+##### lset
+
+> list set
+
+对 name 对应的 list 中的某一个索引位置重新赋值
+
+```shell
+LSET key index value
+
+# 参数：
+# index：		list 的索引位置
+# value：		要设置的值
+```
+
+当索引参数超出范围，或对一个空列表进行 LSET 时，返回一个错误。
+
+
+
+###### 返回值
+
+- ok
+
+    > 操作成功
+
+- Error
+
+    > 当索引参数超出范围，或对一个空列表进行 LSET 时，返回一个错误。
+
+
+
+###### 示例
+
+```shell
+lrange list3 0 -1
+```
+
+![image-20220227000153125](.assets/image-20220227000153125.png)
+
+
+
+
+
+#### 删除值
+
+##### lrem
+
+> lrem(name, value, num)
+
+在 name 对应的 list 中删除指定的值
+
+```shell
+# 参数：
+name，redis 的 name
+value，要删除的值
+num，  	num=0，删除列表中所有的指定值；
+		num=2,从前到后，删除2个；
+		num=-2,从后向前，删除2个
+```
+
+示例：
+
+```shell
+lrem list3 2 X
+```
+
+![image-20200719162233883](.assets/image-20200719162233883.png)
+
+
+
+##### lpop
+
+> lpop(name)
+
+在 name 对应的列表的左侧获取第一个元素并在列表中移除，返回值则是第一个元素
+
+示例：
+
+```shell\
+lpop list3
+```
+
+![image-20200719162333699](.assets/image-20200719162333699.png)
+
+
+
+##### rpop
+
+> rpop(name)
+
+在 name 对应的列表的右侧侧获取第一个元素并在列表中移除，返回值则是第一个元素
+
+示例：
+
+```shell\
+rpop list3
+```
+
+
+
+##### blpop
+
+> blpop(keys, timeout)
+
+将多个列表排列，按照从左到右去 pop 对应列表的元素
+
+```shell
+# 参数：
+keys，redis 的 name 的集合
+timeout，超时时间，当元素所有列表的元素获取完之后，阻塞等待列表内有数据的时间（秒）, 0 表示永远阻塞
+```
+
+ 
+
+##### brpop
+
+> brpop(keys, timeout)
+
+将多个列表排列，按照从右到左去 pop 对应列表的元素
+
+```shell
+# 参数：
+keys，redis 的 name 的集合
+timeout，超时时间，当元素所有列表的元素获取完之后，阻塞等待列表内有数据的时间（秒）, 0 表示永远阻塞
+```
+
+
+
+#### 特殊
+
+##### llen
+
+> llen(name)
+
+name 对应的 list 元素的个数
+
+示例：
+
+```shell
+llen list1
+```
+
+<img src=".assets/image-20200719160943900.png" alt="image-20200719160943900" style="zoom:150%;" />
+
+
+
+##### ltrim
+
+> ltrim(name, start, end)
+
+切片。在 name 对应的列表中移除没有在 `start-end` 索引之间的值
+
+```shell
+# 参数：
+name，redis 的 name
+start，索引的起始位置
+end，索引结束位置
+```
+
+示例：
+
+```shell
+ltrim list3 1 2
+```
+
+![image-20200719163008349](.assets/image-20200719163008349.png)
+
+
+
+##### rpoplpush
+
+> rpoplpush(src, dst)
+
+从一个列表取出最右边的元素，同时将其添加至另一个列表的最左边
+
+```shell
+# 参数：
+src，要取数据的列表的 name
+dst，要添加数据的列表的 name
+```
+
+![image-20200719163303898](.assets/image-20200719163303898.png)
+
+
+
+##### brpoplpush
+
+> brpoplpush(src, dst, timeout=0)
+
+从一个列表的右侧移除一个元素并将其添加到另一个列表的左侧
+
+```shell
+# 参数：
+src，取出并要移除元素的列表对应的 name
+dst，要插入元素的列表对应的 name
+timeout，当 src 对应的列表中没有数据时，阻塞等待其有数据的超时时间（秒），0 表示永远阻塞
+```
+
+
 
 
 
