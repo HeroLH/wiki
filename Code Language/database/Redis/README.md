@@ -2252,8 +2252,6 @@ spop set2 2
 
 
 
-
-
 #### 特殊
 
 ##### scard
@@ -2508,6 +2506,231 @@ smove key1 key2 value1
 ```
 
 ![image-20220301231617406](.assets/image-20220301231617406.png)
+
+
+
+### 有序集合(Zset)
+
+&emsp;&emsp;在集合的基础上，为元素排序；元素的排序需要根据另外一个值来进行比较，所以，对于有序集合，每一个元素有两个值，即：值和分数，分数专门用来做排序。
+
+
+
+#### 添加值
+
+##### zadd
+
+> zadd(name, *args, **kwargs)
+
+在 name 对应的有序集合中添加元素
+
+```python
+# 如：
+zadd('zz', 'n1', 1, 'n2', 2)
+# 或
+zadd('zz', n1=11, n2=22)
+```
+
+示例:
+
+```shell
+zadd zset1 10 A
+# 添加内容 A 到 zset1， 权重为10
+```
+
+![image-20200719210429838](.assets/image-20200719210429838.png)
+
+
+
+#### 获取值
+
+##### zrange
+
+> zrange( name, start, end, desc=False, withscores=False, score_cast_func=float)
+
+按照索引范围获取name对应的有序集合的元素
+
+```shell
+# 参数：
+name，redis的name
+start，有序集合索引起始位置（非分数）
+end，有序集合索引结束位置（非分数）
+desc，排序规则，默认按照分数从小到大排序
+withscores，是否获取元素的分数，默认只获取元素的值
+score_cast_func，对分数进行数据转换的函数
+
+# 更多：
+
+# 从大到小排序
+zrevrangebyscore(name, max, min, start=None, num=None, withscores=False, score_cast_func=float)
+```
+
+示例：
+
+```shell
+zrange zset1 0 -1
+zrange zset1 0 -1 withscores
+```
+
+![image-20200719210429838](.assets/image-20200719210429838.png)
+
+
+
+##### zrevrange
+
+> zrevrange(name, start, end, withscores=False, score_cast_func=float)
+
+从大到小排序，按照索引范围获取 name 对应的有序集合的元素
+
+示例：
+
+```shell
+zrevrange zset1 0 -1
+```
+
+![image-20200719211007096](.assets/image-20200719211007096.png)
+
+
+
+##### zrangebyscore
+
+> zrangebyscore(name, min, max, start=None, num=None, withscores=False, score_cast_func=float)
+
+ 按照分数范围获取name对应的有序集合的元素
+
+示例：
+
+```shell
+zrangebyscore zset1 9 11
+```
+
+![image-20200719211507228](.assets/image-20200719211507228.png)
+
+
+
+##### zrevrangebyscore
+
+> zrevrangebyscore(name, max, min, start=None, num=None, withscores=False, score_cast_func=float)
+
+从大到小排序, 按照分数范围获取name对应的有序集合的元素
+
+示例：
+
+```shell
+zrevrangebyscore zset1 0 -1
+```
+
+
+
+##### zrank
+
+> zrank(name, value)
+
+获取某个值在 name对应的有序集合中的排行（从 0 开始）
+
+示例：
+
+```shell
+zrank zset1 S
+```
+
+![image-20200719212223984](.assets/image-20200719212223984.png)
+
+
+
+##### zrevrank
+
+> zrevrank(name, value)
+
+从大到小排序
+
+示例：
+
+```shell
+zrevrank zset1 S
+```
+
+![image-20200719212340989](.assets/image-20200719212340989.png)
+
+
+
+##### zscore
+
+> zscore(name, value)
+
+获取 name 对应有序集合中 value 对应的分数
+
+示例：
+
+```shell
+
+```
+
+
+
+#### 删除值
+
+##### zrem
+
+> zrem(name, values)
+
+ 删除 name 对应的有序集合中值是 values 的成员
+
+
+
+##### zremrangebyrank
+
+> zremrangebyrank(name, min, max)
+
+根据排行范围删除
+
+
+
+##### zremrangebyscore
+
+> zremrangebyscore(name, min, max)
+
+根据分数范围删除
+
+
+
+
+
+#### 特殊
+
+##### zinterstore
+
+> zinterstore(dest, keys, aggregate=None)
+
+获取两个有序集合的交集，如果遇到相同值不同分数，则按照 `aggregate` 进行操作
+
+```shell
+# aggregate的值为: SUM MIN MAX
+```
+
+
+
+##### zunionstore
+
+> zunionstore(dest, keys, aggregate=None)
+
+获取两个有序集合的并集，如果遇到相同值不同分数，则按照aggregate进行操作
+
+```shell
+# aggregate的值为: SUM MIN MAX
+```
+
+
+
+##### zscan
+
+> zscan(name, cursor=0, match=None, count=None, score_cast_func=float)
+> zscan_iter(name, match=None, count=None,score_cast_func=float)
+
+\# 同字符串相似，相较于字符串新增score_cast_func，用来对分数进行操作
+
+
+
+
 
 
 
@@ -2822,259 +3045,6 @@ hincrbyfloat info age 1.1
 ```
 
 ![image-20200716221423876](.assets/image-20200716221423876.png)
-
-
-
-
-
-#### set 集合操作
-
-set 操作，set 集合就是不允许重复的列表
-
-##### 设置值
-
-###### sadd
-
-> sadd(name, values)
-
-name 对应的集合中添加元素
-
-示例：
-
-```shell
-sadd set1 1 2 3 4 4
-```
-
-![image-20200719164840172](.assets/image-20200719164840172.png)
-
-
-
-##### 获取值
-
-###### smembers
-
-> smembers(name)
-
-获取 name 对应的集合的所有成员
-
-示例：
-
-```shell
-smembers set1
-```
-
-![image-20200719164932717](.assets/image-20200719164932717.png)
-
-
-
-###### srandmember
-
-> srandmember(name, numbers)
-
-从name对应的集合中随机获取 numbers 个元素
-
-示例：
-
-```shell
-srandmember set1 3
-```
-
-![image-20200719171838199](.assets/image-20200719171838199.png)
-
-
-
-###### sscan
-
-> sscan(name, cursor=0, match=None, count=None)
-> sscan_iter(name, match=None, count=None)
-
-同字符串的操作，用于增量迭代分批获取元素，避免内存消耗太大
-
-
-
-
-
-##### 删除值
-
-###### srem
-
-> srem(name, values)
-
-在 name 对应的集合中删除某些值
-
-示例:
-
-```shell
-srem set3 3
-```
-
-![image-20200719172531917](.assets/image-20200719172531917.png)
-
-
-
-###### spop
-
-> spop(name)
-
-用于移除集合中的指定 key 的一个或多个随机元素，移除后会返回移除的元素。
-
-示例：
-
-```shell
-spop set2
-spop set2 2
-```
-
-![image-20200719171514698](.assets/image-20200719171514698.png)
-
-
-
-##### 特殊
-
-###### scard
-
-> scard(name)
-
-获取 name 对应的集合中元素个数
-
-示例：
-
-```shell
-scard set1
-```
-
-![image-20200719165059470](.assets/image-20200719165059470.png)
-
-
-
-###### sismember
-
-> sismember(name, value)
-
-检查 value 是否是 name 对应的集合的成员
-
-示例：
-
-```shell
- sismember set3 1
-```
-
-![image-20200719170534806](.assets/image-20200719170534806.png)
-
-
-
-###### sdiff
-
-> sdiff(keys, *args)
-
-在第一个 name 对应的集合中且不在其他 name 对应的集合的元素集合
-
-示例：
-
-```shell
-sdiff set1 set2
-sdiff set2 set1
-```
-
-![image-20200719165256484](.assets/image-20200719165256484.png)
-
-
-
-###### sdiffstore
-
-> sdiffstore(dest, keys, *args)
-
- 获取第一个 name 对应的集合中且不在其他 name 对应的集合，再将其新加入到 dest 对应的集合中
-
-示例：
-
-```shell
-sdiffstore set3 set1 set2
-#  获取在· set1 中且不在 set2 的集合，再将其新加入到 set3 对应的集合中
-```
-
-![image-20200719165639100](.assets/image-20200719165639100.png)
-
-
-
-###### sinter
-
-> sinter(keys, *args)
-
-获取多一个 name 对应集合的交集
-
-示例：
-
-```shell
-sinter set1 set2
-```
-
-![image-20200719170015381](.assets/image-20200719170015381.png)
-
-
-
-###### sinterstore
-
-> sinterstore(dest, keys, *args)
-
-获取多一个 name 对应集合的并集，再讲其加入到 dest 对应的集合中
-
-示例：
-
-```shell
-sinterstore set3 set1 set2
-```
-
-![image-20200719170312821](.assets/image-20200719170312821.png)
-
-
-
-###### sunion
-
-> sunion(keys, *args)
-
-获取多一个 name 对应的集合的并集
-
-示例：
-
-```shell
-sunion set1 set2
-```
-
-![image-20200719172224998](.assets/image-20200719172224998.png)
-
-
-
-###### sunionstore
-
-> sunionstore(dest,keys, *args)
-
-获取多一个 name 对应的集合的并集，并将结果保存到 dest 对应的集合中
-
-示例：
-
-```shell
- sunionstore set3 set2 set1
-# 获取set2 和 set1 的并集，并将结果保存到 set3 对应的集合中
-```
-
-![image-20200719172320363](.assets/image-20200719172320363.png)
-
-
-
-###### smove
-
-> smove(src, dst, value)
-
-将某个成员从一个集合中移动到另外一个集合
-
-示例：
-
-```shell
-smove set1 set2 1
-```
-
-![image-20200719170813317](.assets/image-20200719170813317.png)
 
 
 
