@@ -1922,21 +1922,45 @@ OK
 
 set 操作，set 集合就是不允许重复的列表
 
+- [官方中文操作文档](https://www.redis.net.cn/order/3594.html)
+
+
+
 #### 设置值
 
 ##### sadd
 
-> sadd(name, values)
+将一个或多个成员元素加入到集合中，已经存在于集合的成员元素将被忽略。
 
-name 对应的集合中添加元素
+```shell
+SADD key value1 value2 .. valueN
+```
+
+- 假如集合 key 不存在，则创建一个只包含添加的元素作成员的集合。
+- 当集合 key 不是集合类型时，返回一个错误。
+
+
+
+###### 注意：
+
+- 在Redis2.4版本以前， SADD 只接受单个成员值。
+
+
+
+###### 返回值
+
+- 被添加到集合中的新元素的数量，不包括被忽略的元素。
+
+
 
 示例：
 
 ```shell
-sadd set1 1 2 3 4 4
+> sadd key1 1 2 2 4
+(integer) 3
 ```
 
-![image-20200719164840172](.assets/image-20200719164840172.png)
+![image-20220301193217061](.assets/image-20220301193217061.png)
 
 
 
@@ -1944,21 +1968,69 @@ sadd set1 1 2 3 4 4
 
 ##### smembers
 
-> smembers(name)
+返回集合中的所有的成员。 不存在的集合 key 被视为空集合。
 
-获取 name 对应的集合的所有成员
+```shell
+SMEMBERS key
+```
+
+
+
+###### 返回值
+
+- 集合中的所有成员。
+
+
 
 示例：
 
 ```shell
-smembers set1
+smembers key1
 ```
 
-![image-20200719164932717](.assets/image-20200719164932717.png)
+![image-20220301193730911](.assets/image-20220301193730911.png)
 
 
 
 ##### srandmember
+
+
+
+```shell
+SRANDMEMBER key [count]
+
+# count:		返回一个包含 count 个元素的数组
+```
+
+- 如果 count 大于等于集合基数，那么返回整个集合。
+- 如果 count 为正数，且小于集合基数，那么命令返回一个包含 count 个元素的数组，数组中的元素==各不相同==。
+- 如果 count 为负数，那么命令返回一个数组，==数组中的元素可能会重复出现多次==，而数组的长度为 count 的绝对值。
+
+
+
+###### 注意
+
+从 Redis 2.6 版本开始， Srandmember 命令接受可选的 count 参数
+
+
+
+###### 返回值
+
+- nil
+
+    > 如果集合为空，返回 nil 
+
+- value
+
+    > 只提供集合 key 参数时，返回一个元素
+
+- [value1, value2]
+
+    > 如果提供了 count 参数，那么返回一个数组；如果集合为空，返回空数组。
+
+
+
+
 
 > srandmember(name, numbers)
 
@@ -1967,19 +2039,141 @@ smembers set1
 示例：
 
 ```shell
-srandmember set1 3
+> exists key1
+(integer) 0
+> srandmember key1			# 如果集合为空，返回 nil
+(nil)
+> srandmember key1 1		# 如果提供了 count 参数，并且集合为空，返回空数组。
+(empty array)
+> sadd key1 1 2 3 4 5 6
+(integer) 6
+> srandmember key1 3		# count 为正数且小于集合基数，返回一个包含 count 个元素的数组，数组中的元素各不相同。
+1) "1"
+2) "5"
+3) "3"
+> srandmember key1 -4		# count 为负数，返回一个数组，数组中的元素可能会重复出现多次，而数组的长度为 count 的绝对值。
+1) "1"
+2) "1"
+3) "4"
+4) "4"
 ```
 
-![image-20200719171838199](.assets/image-20200719171838199.png)
+![image-20220301194638348](.assets/image-20220301194638348.png)
+
+
+
+##### sismember
+
+判断成员元素是否是集合的成员。
+
+```shell
+SISMEMBER key value
+```
+
+
+
+###### 返回值
+
+- 如果成员元素是集合的成员，返回 1 。
+-  如果成员元素不是集合的成员，或 key 不存在，返回 0 。
+
+
+
+###### 示例
+
+```shell
+ sismember set3 1
+```
+
+![image-20220301213336418](.assets/image-20220301213336418.png)
 
 
 
 ##### sscan
 
-> sscan(name, cursor=0, match=None, count=None)
-> sscan_iter(name, match=None, count=None)
+用于迭代集合键中的元素。
 
-同字符串的操作，用于增量迭代分批获取元素，避免内存消耗太大
+```shell
+SSCAN KEY cursor [MATCH pattern] [COUNT count]
+
+# cursor - 游标。
+# pattern - 匹配的模式。
+# count - 指定从数据集里返回多少元素，默认值为 10 。
+```
+
+- 用于增量迭代，分批获取元素，避免内存消耗太大。
+
+    > 每次调用只返回少量的元素，因此可以在生产环境中使用它们，而不会出现 KEYS 或 SMEMBERS 等命令的缺点，这些命令可能会长时间(甚至几秒钟)阻塞服务器，而这些命令是针对大量的键或元素集合调用的。
+
+
+
+###### 注意
+
+- 迭代过程中值会发生改变
+
+    > 尽管像 SMEMBERS 这样的阻塞命令能够在给定的时刻提供 Set 中的所有元素，SCAN 命令家族只能提供有限的返回元素的保证，因为我们==在迭代过程中增量迭代的集合可以改变==。
+
+- count选项后面跟的数字**并不是意味着每次返回的元素数量，而是scan命令每次遍历字典槽的数量**
+
+    [Redis 中 scan 命令太坑了，千万别乱用！！](https://segmentfault.com/a/1190000039936716)
+
+    ![img](.assets/1460000039936721.png)
+
+    ![img](.assets/1460000039936722.png)
+
+    ==在使用`scan`命令的时候，如果需要迭代的遍历，需要每次调用都需要使用上一次这个调用返回的游标作为该次调用的游标参数，以此来延续之前的迭代过程。==
+
+
+
+###### 返回值
+
+- [游标位置, [val1, val2]]
+
+    > 返回一个数组，第一项为游标的位置，第二项是key的列表。
+    >
+    > 如果游标到达了末尾，第一项会返回0。
+
+
+
+###### 示例
+
+> TODO: 被count 整懵了
+
+```shell
+> exists key1
+(integer) 0
+> sscan key1 0     				# 游标为0, 空列表
+1) "0"
+2) (empty array)
+> sadd key1 google taobao yahoo tianmao oppo
+(integer) 5
+> sscan key1 0	
+1) "0"
+2) 1) "google"
+   2) "tianmao"
+   3) "yahoo"
+   4) "taobao"
+   5) "oppo"
+> sscan key1 0 count 2
+1) "3"
+2) 1) "google"
+   2) "tianmao"
+> sscan key1 3 count 2
+1) "0"
+2) 1) "yahoo"
+   2) "taobao"
+   3) "oppo"
+> sscan key1 3 match *o* count 2
+1) "0"
+2) 1) "yahoo"
+   2) "taobao"
+   3) "oppo"
+>
+```
+
+![image-20220301212110016](.assets/image-20220301212110016.png)
+
+
 
 
 
@@ -1989,25 +2183,63 @@ srandmember set1 3
 
 ##### srem
 
-> srem(name, values)
-
-在 name 对应的集合中删除某些值
-
-示例:
+移除集合中的一个或多个成员元素，不存在的成员元素会被忽略。
 
 ```shell
-srem set3 3
+SREM key val1 val2 .. valN
 ```
 
-![image-20200719172531917](.assets/image-20200719172531917.png)
+当 key 不是集合类型，返回一个错误。
+
+
+
+###### 注意
+
+- 在 Redis 2.4 版本以前， SREM 只接受单个成员值。
+
+
+
+###### 返回值
+
+被成功移除的元素的数量，不包括被忽略的元素。
+
+
+
+###### 示例
+
+```shell
+srem key1 val1 val2
+```
+
+![image-20220301232049552](.assets/image-20220301232049552.png)
 
 
 
 ##### spop
 
-> spop(name)
-
 用于移除集合中的指定 key 的一个或多个随机元素，移除后会返回移除的元素。
+
+```shell
+SPOP key [count]
+```
+
+
+
+###### 返回值
+
+- nil
+
+    >  当集合不存在或是空集时，返回 nil 。
+
+- value
+
+    > 被移除的随机元素。
+
+- [val1, value2]
+
+    > 当count > 0时
+
+
 
 示例：
 
@@ -2016,7 +2248,9 @@ spop set2
 spop set2 2
 ```
 
-![image-20200719171514698](.assets/image-20200719171514698.png)
+![image-20220301232731751](.assets/image-20220301232731751.png)
+
+
 
 
 
@@ -2024,65 +2258,106 @@ spop set2 2
 
 ##### scard
 
-> scard(name)
+> Returns the **s**et **card**inality (number of elements) of the set stored at `key`.
 
-获取 name 对应的集合中元素个数
+```shell
+SCARD key
+```
 
-示例：
+返回集合中元素的数量。
+
+
+
+###### 返回值
+
+- 集合的数量。 
+
+    >  当集合 key 不存在时，返回 0 。
+
+
+
+###### 示例
 
 ```shell
 scard set1
 ```
 
-![image-20200719165059470](.assets/image-20200719165059470.png)
+![image-20220301213805884](.assets/image-20220301213805884.png)
 
 
-
-##### sismember
-
-> sismember(name, value)
-
-检查 value 是否是 name 对应的集合的成员
-
-示例：
-
-```shell
- sismember set3 1
-```
-
-![image-20200719170534806](.assets/image-20200719170534806.png)
 
 
 
 ##### sdiff
 
-> sdiff(keys, *args)
-
-在第一个 name 对应的集合中且不在其他 name 对应的集合的元素集合
-
-示例：
+返回给定集合之间的差集。不存在的集合 key 将视为空集。
 
 ```shell
-sdiff set1 set2
-sdiff set2 set1
+SDIFF first_key other_key1 other_key2 .. other_keyN 
 ```
 
-![image-20200719165256484](.assets/image-20200719165256484.png)
+返回在第一个对应的集合中且不在其他 对应的集合的元素集合
+
+
+
+
+
+###### 返回值
+
+- 包含差集成员的列表。
+
+
+
+###### 示例
+
+```shell
+sdiff key1 key2 key3
+```
+
+![image-20220301214247672](.assets/image-20220301214247672.png)
 
 
 
 ##### sdiffstore
 
-> sdiffstore(dest, keys, *args)
-
- 获取第一个 name 对应的集合中且不在其他 name 对应的集合，再将其新加入到 dest 对应的集合中
-
-示例：
+将给定集合之间的差集存储在指定的集合中。如果指定的集合 key 已存在，则会被覆盖。
 
 ```shell
-sdiffstore set3 set1 set2
-#  获取在· set1 中且不在 set2 的集合，再将其新加入到 set3 对应的集合中
+SDIFFSTORE destination_key first_key other_key1 other_key2 .. other_keyN 
 ```
+
+获取第一个 name 对应的集合中且不在其他 name 对应的集合，再将其新加入到 dest 对应的集合中
+
+
+
+###### 返回值
+
+结果集中的元素数量。
+
+
+
+###### 示例
+
+```shell
+> exists result key1 key2
+(integer) 0
+> sadd result val1 val2
+(integer) 2
+> sdiffstore result key1 key2      # result 的值被覆盖了
+(integer) 0
+> smembers result
+(empty array)
+> sadd key1 1 2 3 4
+(integer) 4
+> sadd key2 1 2 3
+(integer) 3
+> sdiffstore result key1 key2
+(integer) 1
+> smembers result
+1) "4"
+```
+
+![image-20220301214839472](.assets/image-20220301214839472.png)
 
 ![image-20200719165639100](.assets/image-20200719165639100.png)
 
@@ -2090,84 +2365,149 @@ sdiffstore set3 set1 set2
 
 ##### sinter
 
-> sinter(keys, *args)
-
-获取多一个 name 对应集合的交集
-
-示例：
+返回给定所有给定集合的交集。
 
 ```shell
-sinter set1 set2
+SINTER key1 key2 .. keyN
 ```
 
-![image-20200719170015381](.assets/image-20200719170015381.png)
+- 不存在的集合 key 被视为空集。
+- 当给定集合当中有一个空集时，结果也为空集(根据集合运算定律)。
+
+
+
+###### 返回值
+
+- 交集成员的列表。
+
+
+
+###### 示例
+
+```shell
+sinter key1 key2
+```
+
+![image-20220301215242389](.assets/image-20220301215242389.png)
+
+
 
 
 
 ##### sinterstore
 
-> sinterstore(dest, keys, *args)
+将给定集合之间的交集存储在指定的集合中。
 
-获取多一个 name 对应集合的并集，再讲其加入到 dest 对应的集合中
+```shell
+SINTERSTORE dest_key key1 key2 .. keyN
+```
 
-示例：
+获取多个或一个对应集合的并集，再将其加入到 dest 对应的集合中
+
+
+
+###### 返回值
+
+- 交集成员的数量。
+
+
+
+###### 示例
 
 ```shell
 sinterstore set3 set1 set2
 ```
 
-![image-20200719170312821](.assets/image-20200719170312821.png)
+![image-20220301215851172](.assets/image-20220301215851172.png)
 
 
 
 ##### sunion
 
-> sunion(keys, *args)
+返回给定集合的并集。不存在的集合 key 被视为空集。
 
-获取多一个 name 对应的集合的并集
+```shell
+SUNION key1 key2 .. keyN
+```
 
-示例：
+不存在的集合 key 被视为空集。
+
+
+
+###### 返回值
+
+- 并集成员的列表。
+
+
+
+###### 示例
 
 ```shell
 sunion set1 set2
 ```
 
-![image-20200719172224998](.assets/image-20200719172224998.png)
+![image-20220301220348927](.assets/image-20220301220348927.png)
 
 
 
 ##### sunionstore
 
-> sunionstore(dest,keys, *args)
+将给定集合的并集存储在指定的集合 destination 中。
 
-获取多一个 name 对应的集合的并集，并将结果保存到 dest 对应的集合中
+```shell
+SUNIONSTORE dest_key key1 key2 .. keyN
+```
 
-示例：
+获取多个或一个对应的集合的并集，并将结果保存到 dest 对应的集合中
+
+
+
+###### 返回值
+
+结果集中的元素数量。
+
+
+
+###### 示例
 
 ```shell
  sunionstore set3 set2 set1
 # 获取set2 和 set1 的并集，并将结果保存到 set3 对应的集合中
 ```
 
-![image-20200719172320363](.assets/image-20200719172320363.png)
+![image-20220301231101085](.assets/image-20220301231101085.png)
 
 
 
 ##### smove
 
-> smove(src, dst, value)
-
 将某个成员从一个集合中移动到另外一个集合
 
-示例：
-
 ```shell
-smove set1 set2 1
+SMOVE source_key dest_key value
 ```
 
-![image-20200719170813317](.assets/image-20200719170813317.png)
+- SMOVE 是原子性操作。
+- 如果 source 集合不存在或不包含指定的 member 元素，则 SMOVE 命令不执行任何操作，仅返回 0 。否则， member 元素从 source 集合中被移除，并添加到 destination 集合中去。
+- 当 destination 集合已经包含 member 元素时， SMOVE 命令只是简单地将 source 集合中的 member 元素删除。
+- 当 source 或 destination 不是集合类型时，返回一个错误。
 
 
+
+###### 返回值
+
+- 如果成员元素被成功移除，返回 1 。 
+- 如果成员元素不是 source 集合的成员，并且没有任何操作对 destination 集合执行，那么返回 0 。
+
+
+
+###### 示例
+
+```shell
+smove key1 key2 value1
+```
+
+![image-20220301231617406](.assets/image-20220301231617406.png)
 
 
 
