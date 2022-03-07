@@ -2732,15 +2732,7 @@ zrevrank zset1 S
 
 
 
-
-
-
-
-## Redis API 使用个体
-
-### 操作
-
-#### Hash 操作
+### 字典(Hash)
 
 &emsp;&emsp;hash 表现形式上有些像 pyhton 中的 dict,可以存储一组关联性较强的数据，redis 中 Hash 在内存中的存储格式如下图：　　
 
@@ -2748,23 +2740,38 @@ zrevrank zset1 S
 
 
 
-##### 设置值
+#### 设置值
 
-###### hset
+##### hset
 
->  hset(name, key, value)
-
-name 对应的 hash 中设置一个键值对（不存在，则创建；否则，修改）
+用于为哈希表中的字段赋值 。
 
 ```shell
+HSET key field value 
+
 # 参数：
-name，redis 的name
-key，name 对应的 hash 中的 key
-value，name 对应的 hash 中的 value
- 
-# 注：
-hsetnx(name, key, value),当name对应的hash中不存在当前key时则创建（相当于添加）
+# key:		redis 的 key
+# field:	字典对应的 key
+# value		字典中 field 对应的 value
 ```
+
+- 如果哈希表不存在，一个新的哈希表被创建并进行 HSET 操作。
+
+- 如果字段已经存在于哈希表中，旧值将被覆盖。
+
+
+
+###### 返回值
+
+- 1
+
+    > 如果字段是哈希表中的一个新建字段，并且值设置成功，返回 1 
+
+- 0
+
+    > 如果哈希表中域字段已经存在且旧值已被新值覆盖，返回 0 。
+
+
 
 示例：
 
@@ -2773,136 +2780,234 @@ hset info name lin
 hset info age 18
 ```
 
+![image-20220307221501867](.assets/image-20220307221501867.png)
+
 ![image-20200716214834135](.assets/image-20200716214834135.png)
 
 
 
-###### hmset
+##### hsetnx
 
-> hmset(name, mapping)
+> hset **N**ot **E**xist
 
-在 name 对应的 hash 中批量设置键值对
+用于为哈希表中不存在的的字段赋值 。
 
 ```shell
-# 参数：
-name，redis 的 name
-mapping，字典，如：{'k1':'v1', 'k2': 'v2'}
- 
-# 如：
-r.hmset('xx', {'k1':'v1', 'k2': 'v2'})
+
 ```
 
-示例：
+- 如果哈希表不存在，一个新的哈希表被创建并进行 HSET 操作。
+- 如果字段已经存在于哈希表中，操作无效。
+- 如果 key 不存在，一个新哈希表被创建并执行 HSETNX 命令。
+
+
+
+###### 返回值
+
+- 设置成功，返回 1 。 
+- 如果给定字段已经存在且没有操作被执行，返回 0 。
+
+
+
+###### 示例
+
+```shell
+> exists key1
+(integer) 0
+> hsetnx key1 k1 v1
+(integer) 1
+> hsetnx key1 k1 v1
+(integer) 0
+> hsetnx key1 k1 v2   #  # 操作无效， key-value-store 已存在
+(integer) 0
+> hget key1 k1
+"v1"
+```
+
+![image-20220307222644133](.assets/image-20220307222644133.png)
+
+
+
+##### hmset
+
+同时将多个 (字段-值)对设置到哈希表中。
+
+```shell
+HMSET key filed1 value1 .. filedN valueN  
+```
+
+
+
+###### 返回值
+
+如果命令执行成功，返回 OK 。
+
+
+
+###### 示例
 
 ```shell
 hmset info1 name lin age 18
 ```
 
-![image-20200716215139663](.assets/image-20200716215139663.png)
+![image-20220307222047939](.assets/image-20220307222047939.png)
 
 
 
 
 
-##### 获取值
+#### 获取值
 
-###### hget
+##### hget
 
-> hget(name, key)
+用于返回哈希表中指定字段的值。
 
-在 name 对应的 hash 中获取根据 key 获取 value
+```shell
+HGET key filed
+```
 
-示例：
+
+
+###### 返回值
+
+- 返回给定字段的值。
+
+- nil
+
+    > 如果给定的字段或 key 不存在时，返回 nil 。
+
+
+
+###### 示例
 
 ```shell
 hget info name
 ```
 
-![image-20200716215406557](.assets/image-20200716215406557.png)
+![image-20220307223056098](.assets/image-20220307223056098.png)
 
 
 
-###### hmget
 
-> hmget(name, keys, *args)
 
-在 name 对应的 hash 中获取多个 key 的值
+##### hmget
+
+用于返回哈希表中，一个或多个给定字段的值。
 
 ```shell
-# 参数：
-name，reids 对应的 name
-keys，要获取 key 集合，如：['k1', 'k2', 'k3']
-*args，要获取的 key，如：k1,k2,k3
- 
-# 如：
-r.mget('xx', ['k1', 'k2'])
-# 或
-r.hmget('xx', 'k1', 'k2')
+HMGET key filed1 filed2 .. filedN
 ```
 
-示例：
+
+
+
+
+###### 返回值
+
+- 一个包含多个给定字段关联值的表，表值的排列顺序和指定字段的请求顺序一样。
+- 如果指定的字段不存在于哈希表，那么返回一个 nil 值。
+
+
+
+###### 示例
 
 ```shell
 hmget info name age
 ```
 
-![image-20200716215641622](.assets/image-20200716215641622.png)
+![image-20220307223434364](.assets/image-20220307223434364.png)
 
 
 
-###### hgetall
 
-> hgetall(name)
 
-获取 name 对应 hash 的所有键值
+##### hgetall
 
-示例：
+用于返回哈希表中，所有的字段和值。
+
+```shell
+HGETALL key
+```
+
+
+
+###### 返回值
+
+- 以列表形式返回哈希表的字段及字段值。
+
+- 若 key 不存在，返回空列表。
+
+
+
+###### 示例
 
 ```shell
 hgetall info
 ```
 
-![image-20200716215911358](.assets/image-20200716215911358.png)
+![image-20220307223738440](.assets/image-20220307223738440.png)
 
 
 
-###### hkeys
+##### hkeys
 
-> hkeys(name)
-
-获取 name 对应的 hash 中所有的 key 的值
-
-示例：
+用于获取哈希表中的所有字段名。
 
 ```shell
-hkeys info
+HKEYS key
 ```
 
-![image-20200716220336671](.assets/image-20200716220336671.png)
+
+
+###### 返回值
+
+- 当 key 不存在时，返回一个空列表。
+- 包含哈希表中所有字段的列表。 
 
 
 
-###### hvals
-
-> hvals(name)
-
-获取 name 对应的 hash 中所有的 value 的值
-
-示例：
+示例
 
 ```shell
-hvals info
+hkeys key1
 ```
 
-![image-20200716220400820](.assets/image-20200716220400820.png)
+![image-20220307224436749](.assets/image-20220307224436749.png)
 
 
 
-###### hscan
+##### hvals
+
+返回哈希表所有字段的值。
+
+```shell
+HVALS key
+```
+
+
+
+###### 返回值
+
+- 当 key 不存在时，返回一个空表。
+- 一个包含哈希表中所有值的表。
+
+
+
+###### 示例
+
+```shell
+kvals key1
+```
+
+![image-20220307224737609](.assets/image-20220307224737609.png)
+
+
+
+##### hscan
 
 > hscan(name, cursor=0, match=None, count=None)
 
-增量式迭代获取，对于数据大的数据非常有用，hscan可以实现分片的获取数据，并非一次性将数据全部获取完，从而放置内存被撑爆
+增量式迭代获取，对于数据大的数据非常有用，hscan可以实现分片的获取数据，并非一次性将数据全部获取完，从而防止内存被撑爆
 
 ```shell
 # 参数：
@@ -2948,107 +3053,169 @@ for item in r.hscan_iter('xx'):
 
 
 
-##### 删除值
+#### 删除值
 
-###### hdel
+##### hdel
 
-> hdel(name,*keys)
+用于删除哈希表 key 中的一个或多个指定字段，不存在的字段将被忽略。
 
-将 name 对应的 hash 中指定 key 的键值对删除
+```shell
+HDEL key field1 field2 .. fieldN 
+```
 
-示例：
+
+
+###### 返回值
+
+被成功删除字段的数量，不包括被忽略的字段。
+
+
+
+###### 示例
 
 ```shell
 hdel info age
 hkeys info
 ```
 
-![image-20200716220849269](.assets/image-20200716220849269.png)
+![image-20220307225224760](.assets/image-20220307225224760.png)
 
 
 
-##### 特殊
+#### 特殊
 
-###### hlen
+##### hlen
 
-> hlen(name)
-
-获取 name 对应的 hash 中键值对的个数
-
-示例：
+用于获取哈希表中字段的数量。
 
 ```shell
-hlen info
+HLEN key
 ```
 
-![image-20200716220130969](.assets/image-20200716220130969.png)
+
+
+###### 返回值
+
+- 哈希表中字段的数量。 
+
+- 当 key 不存在时，返回 0 。
 
 
 
-###### hexists
+###### 示例
 
-> hexists(name, key)
+```shell
+HLEN key1
+```
 
-检查 name 对应的 hash 是否存在当前传入的 key
+![image-20220307225435579](.assets/image-20220307225435579.png)
 
-示例：
+
+
+##### hexists
+
+用于查看哈希表的指定字段是否存在。
+
+```shell
+HEXISTS key1 field
+```
+
+
+
+###### 返回值
+
+- 如果哈希表含有给定字段，返回 1 。 
+
+- 如果哈希表不含有给定字段，或 key 不存在，返回 0 。
+
+
+
+###### 示例
 
 ```shell
 hexists info sex
 hexists info name
 ```
 
-![image-20200716220736025](.assets/image-20200716220736025.png)
+![image-20220307225802533](.assets/image-20220307225802533.png)
 
 
 
-###### hincrby
+##### hincrby
 
-> hincrby(name, key, amount=1)
-
-自增name对应的hash中的指定key的值，不存在则创建key=amount
+用于为哈希表中的字段值加上指定增量值。
 
 ```shell
-# 参数：
-name，redis 中的 name
-key， hash 对应的 key
-amount，自增数（整数）
+HINCRBY key field amount
+
+# amount：		自增数（整数）
 ```
 
-示例：
+- 增量也可以为负数，相当于对指定字段进行减法操作。
+- 如果哈希表的 key 不存在，一个新的哈希表被创建并执行 HINCRBY 命令。
+- 如果指定的字段不存在，那么在执行命令前，字段的值被初始化为 0 。
+- 对一个储存字符串值的字段执行 HINCRBY 命令将造成一个错误。
+- 本操作的值被限制在 64 位(bit)有符号数字表示之内。
+
+
+
+###### 返回值
+
+- 执行 HINCRBY 命令之后，哈希表中字段的值。
+
+- error
+
+    > 执行 HINCRBY 命令之后，哈希表中字段的值。
+
+
+
+###### 示例
 
 ```shell
-hincrby info age 1
+hincrby key1 k1 1
 ```
 
-![image-20200716221311988](.assets/image-20200716221311988.png)
+![image-20220307234338200](.assets/image-20220307234338200.png)
 
 
 
-###### hincrbyfloat
+##### hincrbyfloat
 
-> hincrbyfloat(name, key, amount=1.0)
-
-自增 name 对应的 hash 中的指定 key 的值，不存在则创建 `key=amount`
+用于为哈希表中的字段值加上指定浮点数增量值。
 
 ```shell
-# 参数：
-name，redis 中的 name
-key， hash 对应的 key
-amount，自增数（浮点数）
+HINCRBYFLOAT key field amount
+
+# amount：		自增数
 ```
 
-示例：
+
+
+###### 返回值
+
+- 执行 HINCRBYFLOAT 命令之后，哈希表中字段的值。
+
+- error
+
+    > 执行 HINCRBYFLOAT 命令之后，哈希表中字段的值。
+
+
+
+###### 示例
 
 ```shell
 hincrbyfloat info age 1.1
 ```
 
-![image-20200716221423876](.assets/image-20200716221423876.png)
+![image-20220307234718640](.assets/image-20220307234718640.png)
 
 
 
 
+
+## Redis API 使用个体
+
+### 操作
 
 #### zset 有序集合操作
 
