@@ -2511,7 +2511,7 @@ smove key1 key2 value1
 
 ### 有序集合(Zset)
 
-&emsp;&emsp;在集合的基础上，为元素排序；元素的排序需要根据另外一个值来进行比较，所以，对于有序集合，每一个元素有两个值，即：值和分数，分数专门用来做排序。
+&emsp;&emsp;在集合的基础上，为元素排序；元素的排序需要根据另外一个值来进行比较，所以，对于有序集合，每一个元素有两个值，即：值和权重，权重专门用来做排序。
 
 
 
@@ -2519,18 +2519,34 @@ smove key1 key2 value1
 
 ##### zadd
 
-> zadd(name, *args, **kwargs)
+将一个或多个成员元素及其权重加入到有序集当中。
 
-在 name 对应的有序集合中添加元素
+```shell
+ZADD key score1 value1 score2 value2 ... scoreN valueN
 
-```python
-# 如：
-zadd('zz', 'n1', 1, 'n2', 2)
-# 或
-zadd('zz', n1=11, n2=22)
+# score: 		分数值可以是整数值或双精度浮点数。
 ```
 
-示例:
+- 如果某个成员已经是有序集的成员，那么更新这个成员的分数值，并通过重新插入这个成员元素，来保证该成员在正确的位置上。
+- 如果有序集合 key 不存在，则创建一个空的有序集并执行 ZADD 操作。
+- 当 key 存在但不是有序集类型时，返回一个错误。
+- 权重越高越靠后。
+
+
+
+###### 注意
+
+ 在 Redis 2.4 版本以前， ZADD 每次只能添加一个元素。
+
+
+
+###### 返回值
+
+- 被成功添加的新成员的数量，不包括那些被更新的、已经存在的成员。
+
+
+
+###### 示例
 
 ```shell
 zadd zset1 10 A
@@ -2545,87 +2561,200 @@ zadd zset1 10 A
 
 ##### zrange
 
-> zrange( name, start, end, desc=False, withscores=False, score_cast_func=float)
-
-按照索引范围获取name对应的有序集合的元素
+返回有序集中指定区间内的成员， 其中成员的位置按分数值递增(从小到大)来排序。。
 
 ```shell
-# 参数：
-name，redis的name
-start，有序集合索引起始位置（非分数）
-end，有序集合索引结束位置（非分数）
-desc，排序规则，默认按照分数从小到大排序
-withscores，是否获取元素的分数，默认只获取元素的值
-score_cast_func，对分数进行数据转换的函数
+ZRANGE key start stop [WITHSCORES]
 
-# 更多：
-
-# 从大到小排序
-zrevrangebyscore(name, max, min, start=None, num=None, withscores=False, score_cast_func=float)
+# start：		有序集合索引起始位置（非分数）
+# end：			有序集合索引结束位置（非分数）
+# withscores：	是否获取元素的分数，默认只获取元素的值
 ```
 
-示例：
+- 具有相同分数值的成员按字典序(lexicographical order )来排列。
+
+- 下标参数 start 和 stop 都以 0 为底，也就是说，以 0 表示有序集第一个成员，以 1 表示有序集第二个成员，以此类推。
+- 你也可以使用负数下标，以 -1 表示最后一个成员， -2 表示倒数第二个成员，以此类推。
+
+
+
+###### 返回值
+
+指定区间内，带有分数值(可选)的有序集成员的列表。
+
+
+
+###### 示例
 
 ```shell
 zrange zset1 0 -1
 zrange zset1 0 -1 withscores
 ```
 
-![image-20200719210429838](.assets/image-20200719210429838.png)
+![image-20220308211046178](.assets/image-20220308211046178.png)
 
 
 
 ##### zrevrange
 
-> zrevrange(name, start, end, withscores=False, score_cast_func=float)
+返回有序集中指定区间内的成员，其中成员的位置按分数值递减(从大到小)来排列。
 
-从大到小排序，按照索引范围获取 name 对应的有序集合的元素
+```shell
+ZREVRANGE key start stop [WITHSCORES]
 
-示例：
+# start：		有序集合索引起始位置（非分数）
+# end：			有序集合索引结束位置（非分数）
+# withscores：	是否获取元素的分数，默认只获取元素的值
+```
+
+- 具有相同分数值的成员按字典序的逆序(reverse lexicographical order)排列。
+
+- 除了成员按分数值递减的次序排列这一点外， ZREVRANGE 命令的其他方面和 ZRANGE 命令一样。
+
+
+
+###### 返回值
+
+指定区间内，带有分数值(可选)的有序集成员的列表。
+
+
+
+###### 示例
 
 ```shell
 zrevrange zset1 0 -1
 ```
 
-![image-20200719211007096](.assets/image-20200719211007096.png)
+![image-20220308211803282](.assets/image-20220308211803282.png)
+
+
 
 
 
 ##### zrangebyscore
 
-> zrangebyscore(name, min, max, start=None, num=None, withscores=False, score_cast_func=float)
+返回有序集合中指定分数区间的成员列表。有序集成员按分数值递增(从小到大)次序排列。
 
- 按照分数范围获取name对应的有序集合的元素
+```shell
+ZRANGEBYSCORE key min max [WITHSCORES] [LIMIT offset count]
 
-示例：
+# min： 			 最小的权重
+# max:			 最小的权重
+```
+
+- 具有相同分数值的成员按字典序来排列(该属性是有序集提供的，不需要额外的计算)。
+
+- 默认情况下，区间的取值使用闭区间 (小于等于或大于等于)，你也可以通过给参数前增加 `(` 符号来使用可选的开区间 `(` 小于或大于 `)`。
+
+
+
+###### 返回值
+
+指定区间内，带有分数值(可选)的有序集成员的列表。
+
+
+
+###### 示例
 
 ```shell
 zrangebyscore zset1 9 11
+ZRANGEBYSCORE zset (1 5  	# 返回所有符合条件 1 < score <= 5 的成员
+ZRANGEBYSCORE zset (5 (10	# 返回所有符合条件 5 < score < 10 的成员
+zrangebyscore zset1 -inf +inf		# 返回所有(无穷小到无穷大)
 ```
 
-![image-20200719211507228](.assets/image-20200719211507228.png)
+![image-20220308212819982](.assets/image-20220308212819982.png)
 
 
 
 ##### zrevrangebyscore
 
-> zrevrangebyscore(name, max, min, start=None, num=None, withscores=False, score_cast_func=float)
+返回有序集中指定分数区间内的所有的成员。有序集成员按分数值递减(从大到小)的次序排列。
 
-从大到小排序, 按照分数范围获取name对应的有序集合的元素
+```shell
+ZREVRANGEBYSCORE key max min [WITHSCORES] [LIMIT offset count]
+
+# min： 			 最小的权重
+# max:			 最小的权重
+```
+
+- 具有相同分数值的成员按字典序的逆序(reverse lexicographical order )排列。
+
+- 除了成员按分数值递减的次序排列这一点外， ZREVRANGEBYSCORE 命令的其他方面和 ZRANGEBYSCORE 命令一样。
+
+
+
+###### 返回值
+
+指定区间内，带有分数值(可选)的有序集成员的列表。
 
 示例：
 
 ```shell
-zrevrangebyscore zset1 0 -1
+zrevrangebyscore zset1 9 11
+zrevrangebyscore zset (4 1  # 返回所有符合条件 1 <= score < 4 的成员
+zrevrangebyscore zset (5 (1 # 返回所有符合条件 1 < score < 1 的成员
+zrevrangebyscore zset1 -inf +inf		# 返回所有(无穷小到无穷大)
 ```
+
+![image-20220308214403914](.assets/image-20220308214403914.png)
+
+
+
+##### zrangebylex
+
+通过字典区间返回有序集合的成员
+
+```shell
+ZRANGEBYLEX key min max [LIMIT offset count]
+```
+
+###### 可用版本
+
+\>= 2.8.9
+
+
+
+###### 返回值
+
+指定区间内的元素列表。
+
+
+
+###### 示例
+
+```shell
+zrangebylex key1 - +
+zrangebylex key1 [a [b
+```
+
+![image-20220308230125897](.assets/image-20220308230125897.png)
+
+
+
+
 
 
 
 ##### zrank
 
-> zrank(name, value)
+返回有序集中指定成员的排名。其中有序集成员按分数值递增(从小到大)顺序排列。
+
+```shell
+ZRANK key member
+```
 
 获取某个值在 name对应的有序集合中的排行（从 0 开始）
+
+
+
+###### 返回值
+
+- 如果成员是有序集 key 的成员，返回 member 的排名。
+
+- 如果成员不是有序集 key 的成员，返回 nil 。
+
+
 
 示例：
 
@@ -2633,17 +2762,31 @@ zrevrangebyscore zset1 0 -1
 zrank zset1 S
 ```
 
-![image-20200719212223984](.assets/image-20200719212223984.png)
+![image-20220308215007675](.assets/image-20220308215007675.png)
+
+
 
 
 
 ##### zrevrank
 
-> zrevrank(name, value)
+返回有序集中成员的排名。其中有序集成员按分数值递减(从大到小)排序。
 
-从大到小排序
+```shell
+ZREVRANK key member
+```
 
-示例：
+
+
+###### 返回值
+
+- 如果成员是有序集 key 的成员，返回成员的排名。 
+
+- 如果成员不是有序集 key 的成员，返回 nil 。
+
+
+
+###### 示例
 
 ```shell
 zrevrank zset1 S
@@ -2655,15 +2798,33 @@ zrevrank zset1 S
 
 ##### zscore
 
-> zscore(name, value)
-
-获取 name 对应有序集合中 value 对应的分数
-
-示例：
+返回有序集中成员的分数值。
 
 ```shell
-
+ZSCORE key member
 ```
+
+
+
+###### 返回值
+
+- 成员的分数值，以字符串形式表示。
+
+- nil
+
+    > 不存在的 key
+
+
+
+###### 示例
+
+```shell
+zscore key1 a
+```
+
+![image-20220308221507486](.assets/image-20220308221507486.png)
+
+
 
 
 
@@ -2671,31 +2832,208 @@ zrevrank zset1 S
 
 ##### zrem
 
-> zrem(name, values)
+移除有序集中的一个或多个成员，不存在的成员将被忽略。
 
- 删除 name 对应的有序集合中值是 values 的成员
+```shell
+ZREM key member
+```
+
+
+
+###### 返回值
+
+- 被成功移除的成员的数量，不包括被忽略的成员。
+
+- nil
+
+    > 不存在的 key
+
+
+
+###### 示例
+
+```shell
+zrem key1 a
+```
+
+![image-20220308221745041](.assets/image-20220308221745041.png)
+
+
 
 
 
 ##### zremrangebyrank
 
-> zremrangebyrank(name, min, max)
+移除有序集中，指定排名(rank)区间内的所有成员。
 
-根据排行范围删除
+```shell
+ZREMRANGEBYRANK key start stop
+```
+
+
+
+###### 返回值
+
+被移除成员的数量。
+
+
+
+###### 示例
+
+```shell
+zremrangebyrank key1 0 -1
+```
+
+![image-20220308222259690](.assets/image-20220308222259690.png)
+
+
 
 
 
 ##### zremrangebyscore
 
-> zremrangebyscore(name, min, max)
+移除有序集中，指定分数（score）区间内的所有成员。
 
-根据分数范围删除
+```shell
+ZREMRANGEBYSCORE key min max
+```
 
 
+
+###### 返回值
+
+被移除成员的数量。
+
+
+
+###### 示例
+
+```shell
+zremrangebyscore key1 (1 2
+```
+
+![image-20220308222641304](.assets/image-20220308222641304.png)
+
+
+
+#### 更新值
+
+##### zincrby
+
+对有序集合中指定成员的分数加上增量 increment
+
+```shell
+ZINCRBY key increment member
+```
+
+- 可以通过传递一个负数值 increment ，让分数减去相应的值，比如 `ZINCRBY key -5 member1`，就是让 member1 的 score 值减去 5 。
+- 当 key 不存在，或分数不是 key 的成员时， ZINCRBY key increment member 等同于 ZADD key increment member 。
+- 当 key 不是有序集类型时，返回一个错误。
+- 分数值可以是整数值或双精度浮点数。
+
+
+
+###### 返回值
+
+member 成员的新分数值，以字符串形式表示。
+
+
+
+###### 示例
+
+```shell
+incrby key1 1 a
+zincrby key1 -2.1 a
+```
+
+![image-20220308225006351](.assets/image-20220308225006351.png)
 
 
 
 #### 特殊
+
+##### zcard
+
+用于计算集合中元素的数量。
+
+```shell
+ZCARD key
+```
+
+
+
+###### 返回值
+
+当 key 存在且是有序集类型时，返回有序集的基数。 
+
+当 key 不存在时，返回 0 。
+
+
+
+###### 示例
+
+```shell
+zcard key1
+```
+
+![image-20220308225323355](.assets/image-20220308225323355.png)
+
+
+
+##### zcount 
+
+用于计算有序集合中指定分数区间的成员数量。
+
+```shell
+ZCOUNT key min max
+```
+
+
+
+###### 返回值
+
+分数值在 min 和 max 之间的成员的数量。
+
+
+
+###### 示例
+
+```shell
+zcount key1 (1 2
+zcount key1 -inf +inf
+```
+
+![image-20220308224013530](.assets/image-20220308224013530.png)
+
+
+
+##### zlexcount
+
+在计算有序集合中指定字典区间内成员数量。
+
+```shell
+ZLEXCOUNT key min max
+```
+
+
+
+###### 返回值
+
+指定区间内的成员数量。
+
+
+
+###### 示例
+
+```shell
+zlexcount key1 - +
+zlexcount key1 [a [e
+zlexcount key1 (a (e
+```
+
+![image-20220308224446709](.assets/image-20220308224446709.png)
+
+
 
 ##### zinterstore
 
@@ -2737,6 +3075,12 @@ zrevrank zset1 S
 &emsp;&emsp;hash 表现形式上有些像 pyhton 中的 dict,可以存储一组关联性较强的数据，redis 中 Hash 在内存中的存储格式如下图：　　
 
 <img src=".assets/720333-20161224162531620-762875117-1594045299240.png" alt="img" style="zoom: 33%;" />
+
+
+
+#### 使用场景
+
+- 存变更数据， 如用户信息等
 
 
 
