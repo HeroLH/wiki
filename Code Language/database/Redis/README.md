@@ -3037,17 +3037,72 @@ zlexcount key1 (a (e
 
 ##### zinterstore
 
-> zinterstore(dest, keys, aggregate=None)
-
-获取两个有序集合的交集，如果遇到相同值不同分数，则按照 `aggregate` 进行操作
+计算给定的一个或多个有序集的交集，其中给定 key 的数量必须以 numkeys 参数指定，并将该交集(结果集)储存到 destination 。
 
 ```shell
-# aggregate的值为: SUM MIN MAX
+ZINTERSTORE destination N key1 key2 ... keyN [AGGREGATE SUM|MIN|MAX]
+
+# destination: 有值的会被覆盖
 ```
+
+默认情况下，结果集中某个成员的分数值是所有给定集下该成员分数值之和。
+
+
+
+###### 返回值
+
+保存到目标结果集的的成员数量。
+
+
+
+###### 示例
+
+```shell
+zinterstore key0 2 key1 key2  # 默认 aggregate sum
+zinterstore key0 2 key1 key2 aggregate sum
+```
+
+![image-20220309231602591](.assets/image-20220309231602591.png)
+
+![image-20220309231845467](.assets/image-20220309231845467.png)
+
+![image-20220309232047457](.assets/image-20220309232047457.png)
 
 
 
 ##### zunionstore
+
+计算给定的一个或多个有序集的并集，其中给定 key 的数量必须以 numkeys 参数指定，并将该并集(结果集)储存到 destination 。
+
+```shell
+ZINTERSTORE destination N key1 key2 ... keyN [AGGREGATE SUM|MIN|MAX]
+
+# destination: 有值的会被覆盖
+```
+
+默认情况下，结果集中某个成员的分数值是所有给定集下该成员分数值之和 。
+
+
+
+###### 返回值
+
+保存到 destination 的结果集的成员数量。
+
+
+
+示例
+
+```shell
+zunionstore key0 2 key1 key2
+```
+
+![image-20220309232351191](.assets/image-20220309232351191.png)
+
+![image-20220309233134230](.assets/image-20220309233134230.png)
+
+![image-20220309233211268](.assets/image-20220309233211268.png)
+
+
 
 > zunionstore(dest, keys, aggregate=None)
 
@@ -3882,3 +3937,4 @@ getbit usercount 100				# 查看第 100 用户是否登录
 
 
 
+ w
