@@ -1,10 +1,9 @@
 import os
 import platform
-
-# 加载平台路径分隔符
 from dataclasses import dataclass
 
 
+# 加载平台路径分隔符
 def load_platform_path_delimiter():
     if platform.system().lower() == 'windows':
         return "\\"
@@ -12,55 +11,87 @@ def load_platform_path_delimiter():
         return "/"
 
 
-def scan_files(directory, prefix=None, postfix=None):
-    child_file_list = list()
+@dataclass
+class FileInfoDto:
+    name: str  # 文件名
+    is_dir: bool  # 是否目录
+    relative_path: str  # 相对路径
+    has_child_folder: bool = False  # 是否有子文件
+    child_node: list = None  # 子文件
 
-    files_list = []
+
+def scan_files(directory, skip: list = []) -> FileInfoDto:
     path_delimiter = load_platform_path_delimiter()
+    file_name_list = directory.split(path_delimiter)
+    file_name = file_name_list[-1] if len(file_name_list) >= 2 else ""
 
-    for root, sub_dirs, files in os.walk(directory):
-        print(root, sub_dirs, files)
-        rootList = root.split(path_delimiter)
-        if len(rootList) >= 2:
-            if rootList[1] in [".git", ".docsify", ".assets"]:
-                continue
-        if rootList[-1] in [".assets", "assets"]:
+    root_node = FileInfoDto(name=file_name, is_dir=True, relative_path=directory)
+    file_node_list, has_child_folder = list(), False
+    files = os.listdir(directory)
+    for f in files:
+        if f in skip:
             continue
 
-        if len(files) == 0:
-            continue
+        if os.path.isfile(directory + path_delimiter + f):
+            file_node = FileInfoDto(name=f, is_dir=False, relative_path=directory, child_node=[])
+        else:
+            has_child_folder = True
+            file_node = scan_files(directory + path_delimiter + f, skip)
 
-        for special_file in files:
-            file_path = os.path.join(root, special_file)
-            is_dir = os.path.isdir(file_path)
-            file_info = FileInfoDto(name=special_file, is_dir=is_dir, relative_path=file_path)
-            filetree[special_file] = file_info
-            if postfix:
-                if special_file.endswith(postfix):
-                    files_list.append(os.path.join(root, special_file))
-            elif prefix:
-                if special_file.startswith(prefix):
-                    files_list.append(os.path.join(root, special_file))
+        file_node_list.append(file_node)
+    root_node.child_node = file_node_list
+    root_node.has_child_folder = has_child_folder
+
+    return root_node
+
+
+file_tree = scan_files("..", [".git", ".idea", ".docsify", ".gitignore", ".nojekyll", "index.html", "file template.md",
+                              "README.en.md", ".assets"])
+
+
+def build_navbar(file_node: FileInfoDto):
+    if len(file_node.child_node) <= 0:
+        return
+    if file_node.has_child_folder:
+        mkdoc = ""
+        for f in file_node.child_node:
+            title = f.name
+            link = f.relative_path.replace(" ", "%20") + load_platform_path_delimiter()
+            if f.is_dir:
+                if f.has_child_folder:
+                    link = link[2:] + "_navbar"
+                else:
+                    link = link[2:] + "README"
             else:
-                files_list.append(os.path.join(root, special_file))
+                link = link[2:] + f.name
+                title = title.split(".")[0]
+            if title == "_navbar":
+                continue
 
-    return files_list
+            mkdoc += "* [**{title}**]({link})  \n".format(title=title, link=link)
+            build_navbar(f)
 
+        with open(file_node.relative_path+load_platform_path_delimiter()+"_navbar.md", "w", encoding="utf8") as f_io:
+            f_io.write(mkdoc)
 
-def create_dir(root_dir, path_list):
-    if len(path_list) <= 1 and type(root_dir) == dict:
-        return path_list[0]
+build_navbar(file_tree)
+
+readme = "## 目录\n"
+for f in file_tree.child_node:
+    title = f.name
+    link = f.relative_path.replace(" ", "%20") + load_platform_path_delimiter()
+    if f.is_dir:
+        if f.has_child_folder:
+            link = link[2:] + "_navbar"
+        else:
+            link = link[2:] + "README"
     else:
-        root_dir = dict()
-        root_dir[root_dir] = root_dir
-    if path_list[0] not in root_dir:
-        root_dir[path_list[0]] = create_dir({}, path_list[1:])
-    else:
-        root_dir[path_list[0]] = create_dir(root_dir[path_list[0]], path_list[1:])
+        link = link[2:] + f.name
+        title = title.split(".")[0]
+    if title == "_navbar":
+        continue
 
-    return root_dir
+    readme += "* [{title}]({link})  \n".format(title=title, link=link)
 
-
-md_file_list = scan_files("..", "", ".md")
-
-print("-" * 30)
+with open(file_tree.relative_path + load_platform_path_delimiter() + "README.md", "w", encoding="utf8") as f_io:
+    f_io.write(readme)

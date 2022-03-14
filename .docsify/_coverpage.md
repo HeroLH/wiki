@@ -16,4 +16,4 @@
 
 [Gitee](https://gitee.com/lin_river)
 [GitHub](https://github.com/HeroLH)
-[Get Started](?id=目录)
+[Get Started](README)

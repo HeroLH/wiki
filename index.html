@@ -70,7 +70,7 @@
   <script>
 	// begin: markdown 支持 mermaid 的配置(3/4)
     var num = 0;
-	mermaid.initialize({ startOnLoad: false });
+	  mermaid.initialize({ startOnLoad: false });
 	// -end-: markdown 支持 mermaid 的配置(3/4)
 
     window.$docsify = {
@@ -81,32 +81,31 @@
 	  auto2top: true,							            // 切换页面后是否自动跳转到页面顶部。
 	  mergeNavbar: true,						          // 小屏设备下合并导航栏到侧边栏
 	  formatUpdated: '{MM}/{DD} {HH}:{mm}',		// 配置日期格式。通过 {docsify-updated} 变量显示文档更新日期. 
-	  onlyCover: false,							          // 只在访问主页时加载封面。
+	  onlyCover: true,							          // 只在访问主页时加载封面。
 	  coverpage: {
 		  '/': '.docsify/_coverpage.md',
 	  },
-    loadSidebar: true,                      // 嵌套的侧边栏
-    alias: {
-      '/.*/_sidebar.md': '/_sidebar.md'
+    // loadSidebar: true,                      // 嵌套的侧边栏
+    // subMaxLevel: 6,
+    loadNavbar: true,                          // 定制导航栏
+    logo: '.docsify/img/icon.svg',            // 在侧边栏中出现的网站图标，加了这个 name 就失效了
+
+    search: {
+      paths: 'auto',
+      placeholder: '搜索',
+      noData: '找不到结果',
+      depth: 6,
     },
-	  
-	  
-      search: {
-        paths: 'auto',
-        placeholder: '搜索',
-        noData: '找不到结果',
-        depth: 6,
-      },
 	  // begin: 字数统计
-      count:{
-        countable:true,
-		position: 'top',							// 设置展示位置, 'top/bottom'
-		margin: '10px',								// 设置与邻近 DOM 的距离
-		float: 'top',								// 设置元素对齐	'right/top'	
-        fontsize:'0.8em',							// 设置字体大小
-        color:'rgb(133,133,133)',					// 设置颜色
-        // language:'chinese',							// 设置语言
-		isExpected: true							// 是否显示预计阅读时长 'true(默认值Default) / false'
+    count:{
+      countable:true,
+		  position: 'top',							// 设置展示位置, 'top/bottom'
+		  margin: '10px',								// 设置与邻近 DOM 的距离
+		  float: 'top',								// 设置元素对齐	'right/top'	
+      fontsize:'0.8em',							// 设置字体大小
+      color:'rgb(133,133,133)',					// 设置颜色
+      // language:'chinese',							// 设置语言
+		  isExpected: true							// 是否显示预计阅读时长 'true(默认值Default) / false'
       },
 	  // -end-: 字数统计
 	  
@@ -133,33 +132,33 @@
 	  // -end-: markdown 支持 mermaid 的配置(4/4)
 	  
 	  pagination: {
-		previousText: 'PREV',
-		nextText: 'NEXT',
+		previousText: '上一篇文章',
+		nextText: '下一篇文章',
 	  },
 	
 	// begin: 页脚
-	// footer: {
-    //   copy: '<span>Acme &copy; 2020</span>',		// 显示版权文本
-    //   auth: 'by Herolh',							// 作者
-    //   // pre: '<hr/>',								// Html预页脚文本
-    //   style: 'text-align: right;',					// 页脚CSS内联样式
-    //   class: 'className',
-    // },
+	footer: {
+      copy: '<span>Copyright © 2019 - 至今</span>',		// 显示版权文本
+      auth: 'by Herolh',							          // 作者
+      // pre: '<hr/>',								          // Html预页脚文本
+      style: 'text-align: right;',					    // 页脚CSS内联样式
+      class: 'className',
+    },
 	// -end-: 页脚
 	  
 	  // 自定义插件
 	  plugins: [
         function(hook, vm) {
           hook.beforeEach(function (html) {
-            var url = 'https://gitee.com/lin_river/learn/tree/feat-lws/' + vm.route.file
-              // var editHtml = '[📝 EDIT DOCUMENT](' + url + ')\n'
+            // var url = 'https://gitee.com/lin_river/learn/tree/feat-lws/' + vm.route.file
+            // var editHtml = '[📝 EDIT DOCUMENT](' + url + ')\n'
 			  var editHtml = ''
-              var editHtml_end = '[🖊 Edit Document](' + url + ')\n'
+              // var editHtml_end = '[🖊 Edit Document](' + url + ')\n'
               return editHtml
                    + html
                    + '\n----\n'
                    + '> Last Modified {docsify-updated} '
-                   + editHtml_end
+                  //  + editHtml_end
           })
         },
       ],
@@ -185,6 +184,24 @@
    <!--shell代码高亮-->
   <!-- <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-bash.min.js"></script> -->
   <script src=".docsify/js/prism-bash.min.js"></script>
+  <!-- dart 代码高亮-->
+  <!-- <script src="https://cdn.jsdelivr.net/npm/prismjs@1.22.0/components/prism-dart.min.js"></script> -->
+  <script src=".docsify/js/prism-dart.min.js"></script>
+  <!-- sql 代码高亮-->
+  <!-- <script src="https://cdn.jsdelivr.net/npm/prismjs@1.22.0/components/prism-sql.min.js"></script> -->
+  <script src=".docsify/js/prism-sql.min.js"></script>
+  <!-- go 代码高亮-->
+  <!-- <script src="https://cdn.jsdelivr.net/npm/prismjs@1.22.0/components/prism-go.min.js"></script> -->
+  <script src=".docsify/js/prism-go.min.js"></script>
+  <!-- python 代码高亮-->
+  <!-- <script src="https://cdn.jsdelivr.net/npm/prismjs@1.22.0/components/prism-python.min.js"></script> -->
+  <script src=".docsify/js/prism-python.min.js"></script>
+  <!-- json 代码高亮-->
+  <!-- <script src="https://cdn.jsdelivr.net/npm/prismjs@1.22.0/components/prism-json.min.js"></script> -->
+  <script src=".docsify/js/prism-json.min.js"></script>
+  <!-- yaml 代码高亮-->
+  <!-- <script src="https://cdn.jsdelivr.net/npm/prismjs@1.22.0/components/prism-yaml.min.js"></script> -->
+  <script src=".docsify/js/prism-yaml.min.js"></script>
   <!-- 回到顶部按钮 -->
   <!-- <script src="//unpkg.com/docsify-scroll-to-top/dist/docsify-scroll-to-top.min.js"></script> -->
   <script src=".docsify/js/docsify-scroll-to-top.min.js"></script>
@@ -200,7 +217,7 @@
   <script src=".docsify/js/docsify-katex.js"></script>
   
   <!-- 页脚 -->
-  <!-- <script src="//unpkg.com/docsify-footer-enh/dist/docsify-footer-enh.min.js"></script> -->
+  <script src=".docsify/js/docsify-footer-enh.min.js"></script>
   
   <!-- docsify-darklight-theme 主题模式切换 -->
   <!-- <script src="//cdn.jsdelivr.net/npm/docsify-darklight-theme@latest/dist/index.min.js" type="text/javascript"> -->
@@ -214,10 +231,8 @@
              "若要转载或引用请务必保留原文链接，并申明来源。如果你觉得本仓库不错，那就来 GitHub 给个 Star 吧 😊   - by Herolh",
              "success"); };
   </script>
-  
   <!-- mouse click -->
   <script src="https://cdn.jsdelivr.net/gh/wugenqiang/NoteBook@master/plugin/click_heart.js"></script>
-  
   <!-- 右下角看板娘 -->
   <!-- <script src="https://eqcn.ajz.miesnfu.com/wp-content/plugins/wp-3d-pony/live2dw/lib/L2Dwidget.min.js"></script> -->
   <script src=".docsify/js/L2Dwidget/L2Dwidget.min.js"></script>
