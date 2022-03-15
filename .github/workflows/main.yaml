@@ -20,6 +20,8 @@ jobs:
           git config --global user.name "github action"
           git config --global user.email "github@action.com"
           git pull --unshallow --rebase
+          git checkout -b github-page-docsify origin/github-page-docsify
+          git merge --no-edit origin/feat/docsify
 
       - name: build doc navbar
         run: |
@@ -28,9 +30,7 @@ jobs:
 
       - name: Commit
         run: |
-          git checkout -b github-page-docsify origin/github-page-docsify
-          git merge --no-edit origin/feat/docsify
           git add .
           git commit -m"action:`date +'%Y-%m-%d'`"
-          git push origin github-page-docsify
+          git push origin github-page-docsify -f
 
