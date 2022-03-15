@@ -178,7 +178,7 @@ MySQL 在那个年代推出了表分区！这个并没有多少公司使用！ M
 
 
 # redis 介绍
-> Redis（**R**emote **D**ictionary **S**erver )，即远程字典服务 !
+> Redis（**Re**mote **Di**ctionary **S**erver )，即远程字典服务 !
 
 &emsp;&emsp;redis 是一个开源的使用 C 语言编写、支持网络、==可基于内存亦可持久化==的日志型、Key-Value数据库， 并提供多种语言的API。
 &emsp;&emsp;和 Memcached 类似，它支持存储的 value 类型相对更多，包括 **string(字符串)、list(链表)、set(集合)、zset(sorted set 有序集合)和 hash(哈希类型)**。这些数据类型都支持 push/pop、add/remove 及取交集并集和差集及更丰富的操作，而且这些操作都是原子性的。在此基础上，redis支持各种不同方式的排序。
@@ -3610,230 +3610,350 @@ hincrbyfloat info age 1.1
 
 
 
+## 三种特殊数据类型
 
+### 地理位置(geo)
 
-## Redis API 使用个体
+> Redis 的 Geo 在Redis3.2 版本就推出了！ 这个功能可以推算地理位置的信息，两地之间的距离，方圆几里的人！ 
 
-### 操作
-
-#### zset 有序集合操作
-
-&emsp;&emsp;在集合的基础上，为每元素排序；元素的排序需要根据另外一个值来进行比较，所以，对于有序集合，每一个元素有两个值，即：值和分数，分数专门用来做排序。
+可以查询一些测试数据：[城市经纬度查询](http://www.jsons.cn/lngcode/)
 
 
 
-##### 添加值
+#### geoadd
 
-###### zadd
+> 将指定的地理空间位置（纬度、经度、名称）添加到指定的 `key` 中。这些数据将会存储到 `sorted set` 这样的目的是为了方便使用 [GEORADIUS](https://www.redis.net.cn/order/3689.html) 或者 [GEORADIUSBYMEMBER](https://www.redis.net.cn/order/3690.html) 命令对数据进行半径查询等操作。
 
-> zadd(name, *args, **kwargs)
-
-在 name 对应的有序集合中添加元素
-
-```python
-# 如：
-zadd('zz', 'n1', 1, 'n2', 2)
-# 或
-zadd('zz', n1=11, n2=22)
-```
-
-示例:
+geoadd 用于存储指定的地理空间位置，可以将一个或多个经度(longitude)、纬度(latitude)、位置名称(member)添加到指定的 key 中。
 
 ```shell
-zadd zset1 10 A
-# 添加内容 A 到 zset1， 权重为10
+GEOADD key [NX|XX] [CH] x y member [x y member ...]
+
+# 注意: XX 和 NX 选项是互斥的。
+# NX：			不要更新已有的元素。总是添加新的元素
+# XX：			只更新已存在的元素。不要添加元素
+# CH:			将返回值从添加的新元素数目修改为更改的元素总数
+
+# x: 			经度
+# y: 			纬度
+# member：		位置名称
 ```
 
-![image-20200719210429838](.assets/image-20200719210429838.png)
+该命令以采用标准格式的参数x,y,所以经度必须在纬度之前。这些坐标的限制是可以被编入索引的，区域面积可以很接近极点但是不能索引。具体的限制，由EPSG:900913 / EPSG:3785 / OSGEO:41001 规定如下：
+
+- 有效的经度从-180度到180度。
+- 有效的纬度从-85.05112878度到85.05112878度。(两级无法直接添加)
+- 当坐标位置超出上述指定范围时，该命令将会返回一个错误。
 
 
 
-##### 获取值
+##### 返回值
 
-###### zrange
+- 在没有可选参数的情况下使用时，添加到排序集中的元素数(不包括分数更新)
+- 如果有 `CH` 参数，则更改(添加或更新)的元素数
 
-> zrange( name, start, end, desc=False, withscores=False, score_cast_func=float)
 
-按照索引范围获取name对应的有序集合的元素
+
+##### 示例
 
 ```shell
-# 参数：
-name，redis的name
-start，有序集合索引起始位置（非分数）
-end，有序集合索引结束位置（非分数）
-desc，排序规则，默认按照分数从小到大排序
-withscores，是否获取元素的分数，默认只获取元素的值
-score_cast_func，对分数进行数据转换的函数
-
-# 更多：
-
-# 从大到小排序
-zrevrangebyscore(name, max, min, start=None, num=None, withscores=False, score_cast_func=float)
+geoadd china:city 116.405285 39.904989 beijing
+geoadd china:city xx ch 116 39 beijing 121 31 shanghai
 ```
 
-示例：
+![image-20220315212224325](.assets/image-20220315212224325.png)
+
+
+
+#### geopos
+
+> Return the **pos**itions (longitude,latitude) of all the specified members of the **geo**spatial index represented by the sorted set at *key*.
+
+geopos 用于从给定的 key 里返回所有指定名称(member)的位置（经度和纬度），不存在的返回 nil。
 
 ```shell
-zrange zset1 0 -1
-zrange zset1 0 -1 withscores
+GEOPOS key member [member ...]
 ```
 
-![image-20200719210429838](.assets/image-20200719210429838.png)
+
+
+##### 返回值
+
+- 数组
+
+    > 该命令返回一个数组，其中每个元素是一个双元素数组，表示作为参数传递给命令的每个成员名的经纬度。
+
+- nil
+
+    > 不存在的元素被报告为数组的 NULL 元素。
 
 
 
-###### zrevrange
-
-> zrevrange(name, start, end, withscores=False, score_cast_func=float)
-
-从大到小排序，按照索引范围获取 name 对应的有序集合的元素
-
-示例：
+##### 示例
 
 ```shell
-zrevrange zset1 0 -1
+geopos key1 k1
 ```
 
-![image-20200719211007096](.assets/image-20200719211007096.png)
+![image-20220315212800704](.assets/image-20220315212800704.png)
 
 
 
-###### zrangebyscore
+#### geodist
 
-> zrangebyscore(name, min, max, start=None, num=None, withscores=False, score_cast_func=float)
+> Return the **dist**ance between two members in the **geo**spatial index represented by the sorted set.
 
- 按照分数范围获取name对应的有序集合的元素
-
-示例：
+返回两个给定位置之间的距离。
 
 ```shell
-zrangebyscore zset1 9 11
+GEODIST key member1 member2 [m|km|ft|mi]
+
+# member1 member2: 为两个地理位置。
+# 最后一个距离单位参数说明：
+# m 			：米，默认单位。
+# km 			：千米。
+# mi 			：英里。
+# ft 			：英尺。
 ```
 
-![image-20200719211507228](.assets/image-20200719211507228.png)
+假设地球是一个完美的球体，那么距离是计算出来的，因此在边缘情况下误差可能达到0.5% 。
 
 
 
-###### zrevrangebyscore
 
-> zrevrangebyscore(name, max, min, start=None, num=None, withscores=False, score_cast_func=float)
 
-从大到小排序, 按照分数范围获取name对应的有序集合的元素
+##### 返回值
 
-示例：
+- nil
+
+    > 如果缺少一个或两个成员，则该命令返回 NULL。
+
+- 大容量字符串回复
+
+
+
+##### 示例
 
 ```shell
-zrevrangebyscore zset1 0 -1
+geodist key1 beijing shanghai
 ```
 
+![image-20220315213458045](.assets/image-20220315213458045.png)
 
 
-###### zrank
 
-> zrank(name, value)
 
-获取某个值在 name对应的有序集合中的排行（从 0 开始）
 
-示例：
+#### georadius
+
+以给定的经纬度为中心， 返回键包含的位置元素当中， 与中心的距离不超过给定最大距离的所有位置元素。
 
 ```shell
-zrank zset1 S
+GEORADIUS key longitude latitude radius m|km|ft|mi [WITHCOORD] [WITHDIST] [WITHHASH] [COUNT count] [ASC|DESC] [STORE key] [STOREDIST key]
+
+# 距离单位参数说明：
+# m 			：米，默认单位。
+# km 			：千米。
+# mi 			：英里。
+# ft 			：英尺。
+
+# WITHDIST: 	在返回位置元素的同时， 将位置元素与中心之间的距离也一并返回。
+# WITHCOORD: 	将位置元素的经度和纬度也一并返回。
+# COUNT 		限定返回的记录数。
+# ASC: 			查找结果根据距离从近到远排序。
+# DESC: 		查找结果根据从远到近排序。
 ```
 
-![image-20200719212223984](.assets/image-20200719212223984.png)
+在给定以下可选项时， 命令会返回额外的信息：
+
+- `WITHDIST`: 在返回位置元素的同时， 将位置元素与中心之间的距离也一并返回。 距离的单位和用户给定的范围单位保持一致。
+- `WITHCOORD`: 将位置元素的经度和维度也一并返回。
+- `WITHHASH`: 以 52 位有符号整数的形式， 返回位置元素经过原始 geohash 编码的有序集合分值。 这个选项主要用于底层应用或者调试， 实际中的作用并不大。
+
+命令默认返回未排序的位置元素。 通过以下两个参数， 用户可以指定被返回位置元素的排序方式：
+
+- `ASC`: 根据中心的位置， 按照从近到远的方式返回位置元素。
+- `DESC`: 根据中心的位置， 按照从远到近的方式返回位置元素。
+
+在默认情况下， GEORADIUS 命令会返回所有匹配的位置元素。 虽然用户可以使用 **COUNT `<count>`** 选项去获取前 N 个匹配元素， 但是因为命令在内部可能会需要对所有被匹配的元素进行处理， 所以在对一个非常大的区域进行搜索时， 即使只使用 `COUNT` 选项去获取少量元素， 命令的执行速度也可能会非常慢。 但是从另一方面来说， 使用 `COUNT` 选项去减少需要返回的元素数量， 对于减少带宽来说仍然是非常有用的。
 
 
 
-###### zrevrank
+##### 返回值
 
-> zrevrank(name, value)
+- 在没有给定任何 `WITH` 选项的情况下， 命令只会返回一个线性（linear）列表。
 
-从大到小排序
+    > [“New York”,”Milan”,”Paris”]
 
-示例：
+- 在指定了 `WITHCOORD` 、 `WITHDIST` 、 `WITHHASH` 等选项的情况下， 命令返回一个二层嵌套数组， 内层的每个子数组就表示一个元素。在返回嵌套数组时， 子数组的第一个元素总是位置元素的名字。 至于额外的信息， 则会作为子数组的后续元素， 按照以下顺序被返回：
+
+    - 以浮点数格式返回的中心与位置元素之间的距离， 单位与用户指定范围时的单位一致。
+    - geohash 整数。
+    - 由两个元素组成的坐标，分别为经度和纬度。
+
+
+
+##### 示例
 
 ```shell
-zrevrank zset1 S
+# 以 110，30 这个经纬度为中心，寻找方圆1000km内的坐标
+GEORADIUS key1 110 30 5000 km 
+
+# 显示到中间距离的位置
+GEORADIUS china:city 110 30 500 km withdist 
+
+# 显示其他坐标的定位信息
+GEORADIUS china:city 110 30 500 km withcoord 
+
+# 筛选出指定的结果！
+GEORADIUS china:city 110 30 500 km withdist withcoord count 2
 ```
 
-![image-20200719212340989](.assets/image-20200719212340989.png)
+![image-20220315220626563](.assets/image-20220315220626563.png)
 
 
 
-###### zscore
+#### georadiusbymember
 
-> zscore(name, value)
-
-获取 name 对应有序集合中 value 对应的分数
-
-示例：
+georadiusbymember 和 GEORADIUS 命令一样， 都可以找出位于指定范围内的元素， 但是 georadiusbymember 的中心点是由给定的位置元素决定的， 而不是使用经度和纬度来决定中心点。
 
 ```shell
+GEORADIUSBYMEMBER key member radius m|km|ft|mi [WITHCOORD] [WITHDIST] [WITHHASH] [COUNT count] [ASC|DESC] [STORE key] [STOREDIST key]
 
+# 距离单位参数说明：
+# m 			：米，默认单位。
+# km 			：千米。
+# mi 			：英里。
+# ft 			：英尺。
+
+# WITHDIST: 	在返回位置元素的同时， 将位置元素与中心之间的距离也一并返回。
+# WITHCOORD: 	将位置元素的经度和纬度也一并返回。
+# COUNT 		限定返回的记录数。
+# ASC: 			查找结果根据距离从近到远排序。
+# DESC: 		查找结果根据从远到近排序。
 ```
 
-
-
-##### 删除值
-
-###### zrem
-
-> zrem(name, values)
-
- 删除 name 对应的有序集合中值是 values 的成员
+- WITHHASH: 以 52 位有符号整数的形式， 返回位置元素经过原始 geohash 编码的有序集合分值。 这个选项主要用于底层应用或者调试， 实际中的作用并不大。
 
 
 
-###### zremrangebyrank
-
-> zremrangebyrank(name, min, max)
-
-根据排行范围删除
-
-
-
-###### zremrangebyscore
-
-> zremrangebyscore(name, min, max)
-
-根据分数范围删除
-
-
-
-
-
-##### 特殊
-
-###### zinterstore
-
-> zinterstore(dest, keys, aggregate=None)
-
-获取两个有序集合的交集，如果遇到相同值不同分数，则按照 `aggregate` 进行操作
+##### 示例
 
 ```shell
-# aggregate的值为: SUM MIN MAX
+# 找出位于指定元素周围的其他元素！
+GEORADIUSBYMEMBER china:city beijing 1000 km
 ```
 
+![image-20220315221637121](.assets/image-20220315221637121.png)
 
 
-###### zunionstore
 
-> zunionstore(dest, keys, aggregate=None)
 
-获取两个有序集合的并集，如果遇到相同值不同分数，则按照aggregate进行操作
+
+#### geohash
+Redis GEO 使用 geohash 来保存地理位置的坐标。geohash 用于获取一个或多个位置元素的 geohash 值。
 
 ```shell
-# aggregate的值为: SUM MIN MAX
+GEOHASH key member [member ...]
 ```
 
 
 
-###### zscan
+##### 返回值
 
-> zscan(name, cursor=0, match=None, count=None, score_cast_func=float)
-> zscan_iter(name, match=None, count=None,score_cast_func=float)
+一个数组， 数组的每个项都是一个 geohash 。 命令返回的 geohash 的位置与用户给定的位置元素的位置一一对应。
 
-\# 同字符串相似，相较于字符串新增score_cast_func，用来对分数进行操作
+
+
+##### 示例
+
+```shell
+geohash key1 beijing shanghai
+```
+
+![image-20220315222116587](.assets/image-20220315222116587.png)
+
+
+
+
+
+#### geosearch
+
+该命令扩展了 GEORADIUS 命令，因此除了在圆形区域内搜索外，它还支持在矩形区域内搜索。
+
+```shell
+GEOSEARCH key 
+[FROMMEMBER member] [FROMLONLAT long lat] 
+[BYRADIUS radius unit] [BYBOX width height unit] 
+[WITHCOORD] [WITHDIST] [WITHHASH] 
+[COUNT count] [ASC|DESC]
+
+# 搜索中心种指定方式：
+# FROMMEMBER：		从已经存在的key中读取经纬度。
+# FROMLONLAT：		从用户参数传递经纬度。
+
+# 搜索条件：
+# BYRADIUS：			根据给定半径长度按照圆形搜索，命令效果等同于GEORADIUS。
+# BYBOX：			根据给定的width和height按照矩形搜索，矩形是轴对称矩形。
+```
+
+- 默认情况下，返回的匹配项是未排序的。
+
+- 默认情况下返回所有匹配项。若要将结果限制为前 n 个匹配项，请使用 COUNT 选项。
+
+    > 当使用 ANY 选项时，只要找到足够的匹配项，命令就会返回。这意味着返回的结果可能不是最接近指定点的结果，但服务器生成这些结果的工作量要少得多。如果没有提供 ANY，命令将执行与匹配指定区域的项数量成比例的操作，并对它们进行排序，因此使用非常小的 COUNT 选项查询非常大的区域可能会很慢，即使只返回少量结果。
+
+
+
+##### 注意
+
+- redis版本 >= 6.2
+
+    
+
+
+
+##### 示例
+
+举例如下，对于一个正方形（橙色区域）以及其内接圆（蓝色区域）的搜索，可以看到，位于正方形，但是没有在内接圆中的点edge1和edge2可以通过BYBOX指定矩形搜索的方式被搜索出来：
+
+![img](.assets/v2-8f6f221ed7c5b8c908bfada4d27a0bf9_720w.jpg)
+
+```shell
+127.0.0.1:6379> GEOADD Sicily 13.361389 38.115556 "Palermo" 15.087269 37.502669 "Catania"
+(integer) 2
+127.0.0.1:6379> GEOADD Sicily 12.758489 38.788135 "edge1" 17.241510 38.788135 "edge2"
+(integer) 2
+127.0.0.1:6379> GEOSEARCH Sicily FROMLONLAT 15 37 BYRADIUS 200 km ASC
+1) "Catania"
+2) "Palermo"
+127.0.0.1:6379> GEOSEARCH Sicily FROMLONLAT 15 37 BYBOX 400 400 km ASC
+1) "Catania"
+2) "Palermo"
+3) "edge2"
+4) "edge1"
+```
+
+
+
+#### geosearchstore
+
+> GEOSEARCHSTORE与GEOSEARCH相似，只是将搜索结果存储在指定的key中。
+
+```shell
+```
+
+
+
+
+
+### Hyperloglog 基数
+
+
+
+
+
+### Bitmap
 
 
 
