@@ -1,0 +1,36 @@
+name: Build Github Pages
+
+on:
+  push:
+    branches: [ feat/docsify ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+      
+      - name: code repo Init
+        run: |
+          git config --global user.name "github action"
+          git config --global user.email "github@action.com"
+          git pull --unshallow --rebase
+
+      - name: build doc navbar
+        run: |
+          cd .docsify
+          python build_sidebar.py
+
+      - name: Commit
+        run: |
+          git checkout -b github-page-docsify origin/github-page-docsify
+          git merge --no-edit origin/feat/docsify
+          git add .
+          git commit -m"action:`date +'%Y-%m-%d'`"
+          git push origin github-page-docsify
+

@@ -45,7 +45,7 @@ def scan_files(directory, skip: list = []) -> FileInfoDto:
     return root_node
 
 
-file_tree = scan_files("..", [".git", ".idea", ".docsify", ".gitignore", ".nojekyll", "index.html", "file template.md",
+file_tree = scan_files("..", [".git", ".idea", ".docsify", ".github", ".gitignore", ".nojekyll", "index.html", "file template.md",
                               "README.en.md", ".assets"])
 
 
