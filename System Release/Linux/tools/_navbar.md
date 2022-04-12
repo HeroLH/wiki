@@ -1,6 +1,6 @@
 * [**Zathura**](/System%20Release/Linux/tools/Zathura/_navbar)  
+* [**shell**](/System%20Release/Linux/tools/shell/_navbar)  
+* [**suckless**](/System%20Release/Linux/tools/suckless/_navbar)  
 * [**修图**](/System%20Release/Linux/tools/修图/_navbar)  
 * [**shell tools**](/System%20Release/Linux/tools/shell%20tools/_navbar)  
-* [**shell**](/System%20Release/Linux/tools/shell/_navbar)  
 * [**README**](/System%20Release/Linux/tools/README.md)  
-* [**suckless**](/System%20Release/Linux/tools/suckless/_navbar)  

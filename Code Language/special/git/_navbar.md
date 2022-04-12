@@ -1,5 +1,5 @@
-* [**install**](/Code%20Language/special/git/install/README)  
 * [**use-base**](/Code%20Language/special/git/use-base/README)  
-* [**tools**](/Code%20Language/special/git/tools/_navbar)  
+* [**install**](/Code%20Language/special/git/install/README)  
 * [**use-mid**](/Code%20Language/special/git/use-mid/README)  
+* [**tools**](/Code%20Language/special/git/tools/_navbar)  
 * [**git standard**](/Code%20Language/special/git/git%20standard/_navbar)  
