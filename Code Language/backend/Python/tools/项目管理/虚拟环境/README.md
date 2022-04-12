@@ -360,7 +360,7 @@ pipenv install -r dev-requirements.txt --dev
 ### 安装poetry
 
 ```shell
-pip install -i https://pypi.dianchu.cc/simple/ poetry
+pip install poetry
 
 poetry --version			# 确认是否安装成功以及查看版本号
 ```
