@@ -98,6 +98,16 @@ cd /Applications && curl http://www.ninjamonkeysoftware.com/slate/versions/slate
 
 
 
+### 压缩解压工具
+
+#### The Unarchiver
+
+[app store 下载地址](https://apps.apple.com/app/the-unarchiver/id425424353)
+
+![image-20220317222139237](.assets/image-20220317222139237.png)
+
+
+
 
 
 ## 包管理工具

@@ -239,7 +239,7 @@ mount /dev/sda1 /mnt/boot
 ## *正式安装系统
 
 ```shell
-pacstrap /mnt base linux linux-firmware base-devel NetworkManager vim git intel-ucode
+pacstrap /mnt base linux linux-firmware base-devel networkmanager neovim git intel-ucode zsh
  # base : linux 基础软件
  # linux : linux 内核
  # linux-firmware： linux 框架
