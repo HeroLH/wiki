@@ -2,7 +2,7 @@
 > *Made By Herolh*
 ----------------------------------------------
 
-# 基本使用 {#index}
+# git 的基本使用 {#index}
 
 [TOC]
 
@@ -18,7 +18,16 @@
 
 
 
+# 版本管理的演变
+
+![image-20220404173418263](.assets/image-20220404173418263.png)
+
+![image-20220404173510636](.assets/image-20220404173510636.png)
+
+
+
 # 常见版本管理工具介绍
+
 - **VSS-- Visual Source Safe**
 
   > &emsp;&emsp;此工具是 Microsoft 提供的，可以与 VS.net 进行无缝集成，成为了独立开发人员和小型开发团队所适合的工具，基本上使用者都是 Window 平台上开发的中小型企业，当规模较大后，其性能通常是无法忍受的，对分支与并行开发支持的比较有限。
@@ -300,6 +309,8 @@ git reset --hard 版本号
     ```shell
     git config --global user.email "you@example.com"
     git config --global user.name "your name"
+    
+    # --global： 对当前用户的所有仓库生效
     ```
 
 - **生成版本**  
@@ -830,7 +841,7 @@ git tag -d [tag名]
     git config --local 配置
     ```
 
-- **全局配置文件**
+- **用户全局配置文件**
 
     用户级别的配置默认保存在当前系统用户的主目录下的 `.gitconfig` 文件内
 
@@ -838,7 +849,7 @@ git tag -d [tag名]
     > linux 下:  `vi ~/.gitconfig`
 
     ```shell
-    # 修改全局项目配置文件
+    # 修改用户全局项目配置文件， 对当前用户的所有仓库生效
     git config --global 配置
     ```
 
@@ -850,9 +861,10 @@ git tag -d [tag名]
     > linux 下:  `vi /etc/.gitconfig`
 
     ```SHELL
-     git config --system 配置
+    # 对系统所有登录的用户有效
+    git config --system 配置
     ```
-
+    
     
 
 ### 查看 Git 当前配置
@@ -877,7 +889,14 @@ git tag -d [tag名]
     git config --system -l
     ```
 
-    
+
+注意：
+
+```shell
+-l：			--list
+```
+
+
 
 ### 编辑配置文件
 
